@@ -34,7 +34,12 @@ export class AuthService {
         const email = authUser.email.toLowerCase();
         
         // 1. Safety fallback for admins
-        if (email === 'pakanatijayasri@gmail.com' || email === 'chinthalacheruvuamareswar@gmail.com') {
+        if (
+          email === 'pakanatijayasri@gmail.com' || 
+          email === 'chinthalacheruvuamareswar@gmail.com' ||
+          email === 'balasri.org@gmail.com' ||
+          email === 'jayasri798@gmail.com'
+        ) {
           this.isAdmin.set(true);
           this.loading.set(false);
           return;

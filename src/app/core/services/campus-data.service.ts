@@ -197,13 +197,21 @@ export class CampusDataService {
         });
       }
 
-      // 5. Seed Admin Email
-      const adminRef = doc(this.firestore, 'admins/pakanatijayasri@gmail.com');
-      await setDoc(adminRef, {
-        email: 'pakanatijayasri@gmail.com',
-        role: 'admin',
-        createdAt: new Date().toISOString()
-      });
+      // 5. Seed Admin Emails
+      const adminEmails = [
+        'pakanatijayasri@gmail.com',
+        'chinthalacheruvuamareswar@gmail.com',
+        'balasri.org@gmail.com',
+        'jayasri798@gmail.com'
+      ];
+      for (const email of adminEmails) {
+        const adminRef = doc(this.firestore, `admins/${email}`);
+        await setDoc(adminRef, {
+          email,
+          role: 'admin',
+          createdAt: new Date().toISOString()
+        });
+      }
 
       console.log('Firestore Database successfully seeded with College Compass Main Block (Floor 3) data.');
     } catch (error) {
