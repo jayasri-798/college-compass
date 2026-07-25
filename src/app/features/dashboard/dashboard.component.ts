@@ -35,13 +35,24 @@ export class DashboardComponent implements OnInit {
   showQrModal = signal<boolean>(false);
 
   // Form Models
-  roomForm = signal<any>({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '' });
+  roomForm = signal<any>({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '', buildingId: 'MainBlock', floorId: 'Floor3', buildingName: '' });
   buildingForm = signal<any>({ name: '', code: '', totalFloors: 1, latitude: 0, longitude: 0 });
   qrForm = signal<any>({ code: '', locationName: '', targetRoomId: '', targetBuildingId: 'MainBlock', targetFloorId: 'Floor3' });
 
+  getFloorsForSelectedBuilding(): string[] {
+    const bldgCode = this.roomForm().buildingId;
+    const bldg = this.buildings().find(b => b.code === bldgCode || b.id === bldgCode);
+    if (!bldg) return ['Floor3'];
+    const floors: string[] = [];
+    for (let i = 1; i <= bldg.totalFloors; i++) {
+      floors.push(`Floor${i}`);
+    }
+    return floors;
+  }
+
   // Operations
   openRoomModal() {
-    this.roomForm.set({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '' });
+    this.roomForm.set({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '', buildingId: 'MainBlock', floorId: 'Floor3', buildingName: '' });
     this.showRoomModal.set(true);
   }
 
@@ -51,6 +62,14 @@ export class DashboardComponent implements OnInit {
       return;
     }
     try {
+      const selectedBldg = this.buildings().find(b => b.code === this.roomForm().buildingId || b.id === this.roomForm().buildingId);
+      if (selectedBldg) {
+        this.roomForm.update(form => ({ 
+          ...form, 
+          buildingName: selectedBldg.name,
+          buildingId: selectedBldg.id || selectedBldg.code
+        }));
+      }
       await this.campusService.addRoom(this.roomForm());
       this.showRoomModal.set(false);
       this.loadCampusData();
@@ -59,16 +78,16 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  async deleteRoom(roomId: string | undefined, event: Event) {
+  async deleteRoom(room: any, event: Event) {
     event.stopPropagation();
     if (!this.authService.isAdmin()) {
       alert('Access Denied: Only administrators can delete rooms.');
       return;
     }
-    if (!roomId) return;
+    if (!room || !room.id) return;
     if (confirm('Are you sure you want to delete this room?')) {
       try {
-        await this.campusService.deleteRoom(roomId);
+        await this.campusService.deleteRoom(room.id, room.buildingId || 'MainBlock', room.floorId || 'Floor3');
         this.loadCampusData();
       } catch (err: any) {
         alert(`Error deleting room: ${err.message}`);

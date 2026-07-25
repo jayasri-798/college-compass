@@ -6,7 +6,8 @@ import {
   getDocs,
   doc,
   setDoc,
-  deleteDoc
+  deleteDoc,
+  collectionGroup
 } from '@angular/fire/firestore';
 import { Observable, from, forkJoin, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
@@ -110,19 +111,14 @@ export class CampusDataService {
    */
   getAllRoomsFlat(): Observable<Room[]> {
     try {
-      const roomsCol = collection(this.firestore, 'buildings/MainBlock/floors/Floor3/rooms');
+      const roomsCol = collectionGroup(this.firestore, 'rooms');
       return (collectionData(roomsCol, { idField: 'id' }) as Observable<Room[]>).pipe(
         map(rooms => {
           if (rooms.length === 0) {
             console.log('No rooms in active Firestore stream. Displaying default mock data.');
             return this.mockRooms;
           }
-          return rooms.map(room => ({
-            ...room,
-            buildingId: 'MainBlock',
-            floorId: 'Floor3',
-            buildingName: 'Main Block - Administrative & Tech'
-          }));
+          return rooms;
         }),
         catchError((err) => {
           console.warn('Firestore live streaming failed. Falling back to mock rooms.', err);
@@ -174,7 +170,10 @@ export class CampusDataService {
           type: r.type,
           x: r.x,
           y: r.y,
-          qrCodeId: r.qrCodeId
+          qrCodeId: r.qrCodeId,
+          buildingId: 'MainBlock',
+          floorId: 'Floor3',
+          buildingName: 'Main Block - Administrative & Tech'
         });
       }
 
@@ -223,7 +222,9 @@ export class CampusDataService {
   // CRUD Operations for Rooms
   addRoom(room: Partial<Room>): Promise<void> {
     const roomId = room.id || `room-${room.number}`;
-    const roomRef = doc(this.firestore, `buildings/MainBlock/floors/Floor3/rooms/${roomId}`);
+    const buildingId = room.buildingId || 'MainBlock';
+    const floorId = room.floorId || 'Floor3';
+    const roomRef = doc(this.firestore, `buildings/${buildingId}/floors/${floorId}/rooms/${roomId}`);
     return setDoc(roomRef, {
       number: room.number || '',
       name: room.name || '',
@@ -233,12 +234,15 @@ export class CampusDataService {
       qrCodeId: room.qrCodeId || '',
       isFree: room.isFree !== undefined ? room.isFree : true,
       currentSubject: room.currentSubject || '',
-      occupiedBy: room.occupiedBy || ''
+      occupiedBy: room.occupiedBy || '',
+      buildingId: buildingId,
+      floorId: floorId,
+      buildingName: room.buildingName || 'Main Block'
     });
   }
 
-  deleteRoom(roomId: string): Promise<void> {
-    const roomRef = doc(this.firestore, `buildings/MainBlock/floors/Floor3/rooms/${roomId}`);
+  deleteRoom(roomId: string, buildingId: string = 'MainBlock', floorId: string = 'Floor3'): Promise<void> {
+    const roomRef = doc(this.firestore, `buildings/${buildingId}/floors/${floorId}/rooms/${roomId}`);
     return deleteDoc(roomRef);
   }
 
