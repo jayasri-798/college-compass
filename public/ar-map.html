@@ -311,18 +311,51 @@
                     buildingRefGps = { lat: 16.30671, lon: 80.43652 };
                 }
 
-                // 3. Fetch Rooms across all floors in this building
-                const roomsQuery = query(collectionGroup(db, 'rooms'), where('buildingId', '==', scannedGate.targetBuildingId));
-                const querySnap = await getDocs(roomsQuery);
+                // 3. Fetch Rooms across all floors in this building dynamically (without requiring composite indexes)
                 roomsList = [];
-                querySnap.forEach((doc) => {
-                    const data = doc.data();
-                    roomsList.push({ 
-                        id: doc.id, 
-                        ...data,
-                        floorId: data.floorId || scannedGate.targetFloorId
+                try {
+                    const floorsCol = collection(db, `buildings/${scannedGate.targetBuildingId}/floors`);
+                    const floorsSnap = await getDocs(floorsCol);
+                    
+                    const roomsPromises = [];
+                    floorsSnap.forEach(floorDoc => {
+                        const floorId = floorDoc.id;
+                        const roomsCol = collection(db, `buildings/${scannedGate.targetBuildingId}/floors/${floorId}/rooms`);
+                        roomsPromises.push(getDocs(roomsCol).then(snap => {
+                            snap.forEach(roomDoc => {
+                                roomsList.push({ 
+                                    id: roomDoc.id, 
+                                    floorId: floorId, 
+                                    ...roomDoc.data() 
+                                });
+                            });
+                        }));
                     });
-                });
+                    
+                    // Also always fetch the scanned floor to ensure startRoom is loaded
+                    const startFloorCol = collection(db, `buildings/${scannedGate.targetBuildingId}/floors/${scannedGate.targetFloorId}/rooms`);
+                    roomsPromises.push(getDocs(startFloorCol).then(snap => {
+                        snap.forEach(roomDoc => {
+                            if (!roomsList.some(r => r.id === roomDoc.id)) {
+                                roomsList.push({ 
+                                    id: roomDoc.id, 
+                                    floorId: scannedGate.targetFloorId, 
+                                    ...roomDoc.data() 
+                                });
+                            }
+                        });
+                    }));
+
+                    await Promise.all(roomsPromises);
+                } catch (fetchErr) {
+                    console.warn("Failed fetching multi-floor data, falling back to scanned floor rooms:", fetchErr);
+                    // Fallback to query only the scanned gate's floor rooms
+                    const fallbackCol = collection(db, `buildings/${scannedGate.targetBuildingId}/floors/${scannedGate.targetFloorId}/rooms`);
+                    const fallbackSnap = await getDocs(fallbackCol);
+                    fallbackSnap.forEach(doc => {
+                        roomsList.push({ id: doc.id, floorId: scannedGate.targetFloorId, ...doc.data() });
+                    });
+                }
 
                 // Find user's starting room linked to gate
                 startRoom = roomsList.find(r => r.id === scannedGate.targetRoomId);
