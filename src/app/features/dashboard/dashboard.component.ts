@@ -25,6 +25,18 @@ export class DashboardComponent implements OnInit {
   activeTab = signal<string>('rooms');
   qrCodeDataUrls = signal<{[key: string]: string}>({});
 
+  // Floor Plan Mapper Selection States
+  selectedMapperBuildingId = signal<string>('MainBlock');
+  selectedMapperFloorId = signal<string>('Floor3');
+  floorsOfMapperBuilding = signal<Floor[]>([]);
+  customFloorPlanUrl = signal<string>('');
+
+  roomsForSelectedMapper = computed(() => {
+    const bId = this.selectedMapperBuildingId();
+    const fId = this.selectedMapperFloorId();
+    return this.rooms().filter(r => r.buildingId === bId && r.floorId === fId);
+  });
+
   switchTab(tabName: string) {
     this.activeTab.set(tabName);
   }
@@ -194,6 +206,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadCampusData();
+    this.loadMapperFloors();
   }
 
   loadCampusData() {
@@ -366,6 +379,55 @@ export class DashboardComponent implements OnInit {
       console.error(err);
       this.seedingStatus.set(`Seeding failed: ${err.message || 'Check environment configuration'}`);
       setTimeout(() => this.seedingStatus.set(null), 5000);
+    }
+  }
+
+  onMapperBuildingChange(buildingId: string) {
+    this.selectedMapperBuildingId.set(buildingId);
+    this.selectedMapperFloorId.set('Floor1');
+    this.loadMapperFloors();
+  }
+
+  onMapperFloorChange(floorId: string) {
+    this.selectedMapperFloorId.set(floorId);
+    const activeFloor = this.floorsOfMapperBuilding().find(f => f.id === floorId);
+    this.customFloorPlanUrl.set(activeFloor ? (activeFloor.floorPlanUrl || '') : '');
+  }
+
+  loadMapperFloors() {
+    const bId = this.selectedMapperBuildingId();
+    this.campusService.getFloors(bId).subscribe(floors => {
+      this.floorsOfMapperBuilding.set(floors);
+      // Fallback to Floor3 if selectedFloorId is not in list and selected is default Floor3
+      let activeFloor = floors.find(f => f.id === this.selectedMapperFloorId());
+      if (!activeFloor && floors.length > 0) {
+        // Automatically choose first available floor
+        this.selectedMapperFloorId.set(floors[0].id || 'Floor1');
+        activeFloor = floors[0];
+      }
+      if (activeFloor) {
+        this.customFloorPlanUrl.set(activeFloor.floorPlanUrl || '');
+      } else {
+        this.customFloorPlanUrl.set('');
+      }
+    });
+  }
+
+  async saveCustomFloorPlan() {
+    if (!this.authService.isAdmin()) return;
+    const bId = this.selectedMapperBuildingId();
+    const fId = this.selectedMapperFloorId();
+    const url = this.customFloorPlanUrl();
+    if (!url) {
+      alert('Please provide a valid image URL first.');
+      return;
+    }
+    try {
+      await this.campusService.updateFloorPlan(bId, fId, url);
+      alert('Floor plan successfully updated!');
+      this.loadMapperFloors();
+    } catch (err: any) {
+      alert(`Error updating floor plan: ${err.message}`);
     }
   }
 

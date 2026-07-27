@@ -264,6 +264,15 @@ export class CampusDataService {
     return deleteDoc(buildingRef);
   }
 
+  updateFloorPlan(buildingId: string, floorId: string, floorPlanUrl: string): Promise<void> {
+    const floorRef = doc(this.firestore, `buildings/${buildingId}/floors/${floorId}`);
+    return setDoc(floorRef, { 
+      floorPlanUrl: floorPlanUrl,
+      level: Number(floorId.replace('Floor', '')) || 1,
+      name: `${floorId} Plan`
+    }, { merge: true });
+  }
+
   // CRUD Operations for QR Codes
   addQrCode(qr: Partial<QrCode>): Promise<void> {
     const qrId = qr.id || `qr-${qr.code?.toLowerCase() || Math.random().toString(36).substr(2, 9)}`;

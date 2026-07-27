@@ -436,9 +436,31 @@
 
         <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
-          <div>
-            <h5 class="text-md font-bold text-white">Interactive 2D Floor Plan Mapper</h5>
-            <p class="text-slate-400 text-xs mt-0.5">Click anywhere on the blue vector corridors to auto-prefill X and Y coordinates and map a new room pin instantly.</p>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h5 class="text-md font-bold text-white">Interactive 2D Floor Plan Mapper</h5>
+              <p class="text-slate-400 text-xs mt-0.5">Filter by building & floor, click anywhere on the plan to place a new room pin instantly.</p>
+            </div>
+            
+            <!-- Filters & Floor Plan Input -->
+            <div class="flex flex-wrap items-center gap-3">
+              <div>
+                <select [ngModel]="selectedMapperBuildingId()" (ngModelChange)="onMapperBuildingChange($event)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none">
+                  <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
+                </select>
+              </div>
+              <div>
+                <select [ngModel]="selectedMapperFloorId()" (ngModelChange)="onMapperFloorChange($event)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none">
+                  <option *ngFor="let f of ['Floor1', 'Floor2', 'Floor3', 'Floor4', 'Floor5']" [value]="f">{{ f }}</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="text" [(ngModel)]="customFloorPlanUrl" placeholder="Paste Floor Plan Image URL..." class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none w-[200px]">
+                <button (click)="saveCustomFloorPlan()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-slate-900 text-xs font-bold rounded-xl transition-all">
+                  Save Plan
+                </button>
+              </div>
+            </div>
           </div>
           
           <div class="relative w-full aspect-[2/1] bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden group select-none">
@@ -450,23 +472,28 @@
               class="w-full h-full cursor-crosshair relative z-10" 
               (click)="onCanvasClick($event)">
               
-              <!-- Blueprint Corridor Outlines -->
-              <!-- Main Horizontal Corridor -->
-              <rect x="50" y="170" width="700" height="60" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
-              <!-- Left Vertical Corridor -->
-              <rect x="100" y="50" width="60" height="300" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
-              <!-- Right Vertical Corridor -->
-              <rect x="640" y="50" width="60" height="300" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
-              <!-- Central Lobby Hub -->
-              <rect x="350" y="150" width="100" height="100" rx="50" class="fill-sky-500/10 stroke-sky-500/30 stroke-2" />
+              <!-- Custom Floor Plan Image Background (rendered if URL provided) -->
+              <image *ngIf="customFloorPlanUrl()" [attr.href]="customFloorPlanUrl()" x="0" y="0" width="800" height="400" preserveAspectRatio="none" />
+
+              <!-- Blueprint Corridor Outlines (rendered as fallback if no image provided) -->
+              <g *ngIf="!customFloorPlanUrl()">
+                <!-- Main Horizontal Corridor -->
+                <rect x="50" y="170" width="700" height="60" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
+                <!-- Left Vertical Corridor -->
+                <rect x="100" y="50" width="60" height="300" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
+                <!-- Right Vertical Corridor -->
+                <rect x="640" y="50" width="60" height="300" rx="6" class="fill-sky-500/5 stroke-sky-500/20 stroke-2" stroke-dasharray="6,4" />
+                <!-- Central Lobby Hub -->
+                <rect x="350" y="150" width="100" height="100" rx="50" class="fill-sky-500/10 stroke-sky-500/30 stroke-2" />
+                
+                <!-- Labels for corridors and halls -->
+                <text x="400" y="205" class="text-[10px] fill-sky-400/40 font-bold font-mono text-anchor-middle pointer-events-none">Central Lobby Hub</text>
+                <text x="130" y="330" class="text-[9px] fill-sky-400/30 font-bold font-mono text-anchor-middle pointer-events-none" transform="rotate(-90 130 330)">Left Wing corridor</text>
+                <text x="670" y="330" class="text-[9px] fill-sky-400/30 font-bold font-mono text-anchor-middle pointer-events-none" transform="rotate(-90 670 330)">Right Wing corridor</text>
+              </g>
               
-              <!-- Labels for corridors and halls -->
-              <text x="400" y="205" class="text-[10px] fill-sky-400/40 font-bold font-mono text-anchor-middle pointer-events-none">Central Lobby Hub</text>
-              <text x="130" y="330" class="text-[9px] fill-sky-400/30 font-bold font-mono text-anchor-middle pointer-events-none" transform="rotate(-90 130 330)">Left Wing corridor</text>
-              <text x="670" y="330" class="text-[9px] fill-sky-400/30 font-bold font-mono text-anchor-middle pointer-events-none" transform="rotate(-90 670 330)">Right Wing corridor</text>
-              
-              <!-- Placed Room Pins circles -->
-              <g *ngFor="let room of rooms()">
+              <!-- Placed Room Pins circles (filtered for the selected mapper floor) -->
+              <g *ngFor="let room of roomsForSelectedMapper()">
                 <!-- Outer glowing aura for rooms -->
                 <circle 
                   [attr.cx]="room.x" 
