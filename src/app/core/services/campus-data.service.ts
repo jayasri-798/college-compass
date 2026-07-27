@@ -273,6 +273,21 @@ export class CampusDataService {
     }, { merge: true });
   }
 
+  addFloor(buildingId: string, floor: Partial<Floor>): Promise<void> {
+    const floorId = floor.id || `Floor${floor.level || 1}`;
+    const floorRef = doc(this.firestore, `buildings/${buildingId}/floors/${floorId}`);
+    return setDoc(floorRef, {
+      level: Number(floor.level) || 1,
+      name: floor.name || `${floorId} Plan`,
+      floorPlanUrl: floor.floorPlanUrl || ''
+    }, { merge: true });
+  }
+
+  deleteFloor(buildingId: string, floorId: string): Promise<void> {
+    const floorRef = doc(this.firestore, `buildings/${buildingId}/floors/${floorId}`);
+    return deleteDoc(floorRef);
+  }
+
   // CRUD Operations for QR Codes
   addQrCode(qr: Partial<QrCode>): Promise<void> {
     const qrId = qr.id || `qr-${qr.code?.toLowerCase() || Math.random().toString(36).substr(2, 9)}`;

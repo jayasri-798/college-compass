@@ -45,11 +45,13 @@ export class DashboardComponent implements OnInit {
   showRoomModal = signal<boolean>(false);
   showBuildingModal = signal<boolean>(false);
   showQrModal = signal<boolean>(false);
+  showFloorModal = signal<boolean>(false);
 
   // Form Models
   roomForm = signal<any>({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '', buildingId: 'MainBlock', floorId: 'Floor3', buildingName: '' });
   buildingForm = signal<any>({ name: '', code: '', totalFloors: 1, latitude: 0, longitude: 0 });
   qrForm = signal<any>({ code: '', locationName: '', targetRoomId: '', targetBuildingId: 'MainBlock', targetFloorId: 'Floor3' });
+  floorForm = signal<any>({ id: '', name: '', level: 1, floorPlanUrl: '' });
 
   getFloorsForSelectedBuilding(): string[] {
     const bldgCode = this.roomForm().buildingId;
@@ -428,6 +430,51 @@ export class DashboardComponent implements OnInit {
       this.loadMapperFloors();
     } catch (err: any) {
       alert(`Error updating floor plan: ${err.message}`);
+    }
+  }
+
+  openFloorModal() {
+    this.floorForm.set({ id: '', name: '', level: 1, floorPlanUrl: '' });
+    this.showFloorModal.set(true);
+  }
+
+  async saveFloor() {
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can add floors.');
+      return;
+    }
+    const bId = this.selectedMapperBuildingId();
+    const form = this.floorForm();
+    if (!form.id || !form.name) {
+      alert('Please provide both a Floor ID (e.g. Floor1) and a Floor Name.');
+      return;
+    }
+    try {
+      await this.campusService.addFloor(bId, form);
+      this.showFloorModal.set(false);
+      alert('Floor successfully saved!');
+      this.loadMapperFloors();
+    } catch (err: any) {
+      alert(`Error saving floor: ${err.message}`);
+    }
+  }
+
+  async deleteFloor(floorId: string | undefined, event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can delete floors.');
+      return;
+    }
+    if (!floorId) return;
+    const bId = this.selectedMapperBuildingId();
+    if (confirm(`Are you sure you want to delete ${floorId}? This will remove it from this building.`)) {
+      try {
+        await this.campusService.deleteFloor(bId, floorId);
+        alert('Floor successfully deleted.');
+        this.loadMapperFloors();
+      } catch (err: any) {
+        alert(`Error deleting floor: ${err.message}`);
+      }
     }
   }
 
