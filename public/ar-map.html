@@ -182,6 +182,14 @@
           </svg>
         </div>
 
+        <!-- Floor Transition Alert Banner & Button -->
+        <div id="floor-transition-panel" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); pointer-events: auto; display: none; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: white; width: calc(100% - 40px); box-sizing: border-box; margin-left: 20px; margin-right: 20px; z-index: 20;">
+            <div style="font-size: 13px; font-weight: bold; color: #f43f5e;" id="floor-transition-message">📶 Go to Lobby/Stairs to change floor</div>
+            <button id="floor-transition-btn" style="padding: 10px 18px; border: none; border-radius: 8px; background: #38bdf8; color: #0f172a; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(56,189,248,0.25); transition: all 0.2s; outline: none; width: 100%;">
+                I have arrived at target floor
+            </button>
+        </div>
+
         <!-- Target Destination Selector -->
         <div class="control-panel">
             <label for="places-dropdown">Choose Your Campus Target:</label>
@@ -220,7 +228,7 @@
     
     <script type="module">
         import { initializeApp } from "firebase/app";
-        import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
+        import { getFirestore, doc, getDoc, collection, getDocs, collectionGroup, query, where } from "firebase/firestore";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCufaWUCmST9OcJJ6LNrvf82v0U_bZis7w",
@@ -303,19 +311,32 @@
                     buildingRefGps = { lat: 16.30671, lon: 80.43652 };
                 }
 
-                // 3. Fetch Rooms
-                const roomsColRef = collection(db, `buildings/${scannedGate.targetBuildingId}/floors/${scannedGate.targetFloorId}/rooms`);
-                const querySnap = await getDocs(roomsColRef);
+                // 3. Fetch Rooms across all floors in this building
+                const roomsQuery = query(collectionGroup(db, 'rooms'), where('buildingId', '==', scannedGate.targetBuildingId));
+                const querySnap = await getDocs(roomsQuery);
                 roomsList = [];
                 querySnap.forEach((doc) => {
-                    roomsList.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    roomsList.push({ 
+                        id: doc.id, 
+                        ...data,
+                        floorId: data.floorId || scannedGate.targetFloorId
+                    });
                 });
 
                 // Find user's starting room linked to gate
                 startRoom = roomsList.find(r => r.id === scannedGate.targetRoomId);
                 if (!startRoom) {
                     // Fallback to lobby coordinates if room not found
-                    startRoom = { number: "Entrance", name: "Entrance Corridor", x: 400, y: 200 };
+                    startRoom = { 
+                        number: "Entrance", 
+                        name: "Entrance Corridor", 
+                        x: 400, 
+                        y: 200,
+                        floorId: scannedGate.targetFloorId 
+                    };
+                } else if (!startRoom.floorId) {
+                    startRoom.floorId = scannedGate.targetFloorId;
                 }
 
                 // Populate Dropdown
@@ -323,7 +344,8 @@
                 roomsList.forEach(room => {
                     const opt = document.createElement("option");
                     opt.value = room.id;
-                    opt.innerText = `🚪 Room ${room.number}: ${room.name}`;
+                    const floorLabel = room.floorId ? ` (${room.floorId})` : '';
+                    opt.innerText = `🚪 Room ${room.number}${floorLabel}: ${room.name}`;
                     dropdown.appendChild(opt);
                 });
 
@@ -340,23 +362,108 @@
             }
         }
 
+        const transitionPanel = document.getElementById("floor-transition-panel");
+        const transitionMessage = document.getElementById("floor-transition-message");
+        const transitionBtn = document.getElementById("floor-transition-btn");
+
+        let activeTargetRoom = null;
+        let isTransitionState = false;
+
         // Dropdown change trigger
         dropdown.addEventListener("change", (e) => {
             const targetRoomId = e.target.value;
             const targetRoom = roomsList.find(r => r.id === targetRoomId);
             if (!targetRoom) return;
 
-            // 1. Calculate Dijkstra Path on 2D coordinates
-            const path = calculatePath(startRoom, targetRoom);
+            activeTargetRoom = targetRoom;
+            
+            // Check if room is on a different floor
+            const startFloor = startRoom.floorId || scannedGate.targetFloorId;
+            const destFloor = targetRoom.floorId;
 
-            // 2. Render Path on 2D minimap
+            if (destFloor && startFloor && destFloor !== startFloor) {
+                // Different floor: Route to lobby/stairs first
+                isTransitionState = true;
+                
+                // Show transition panel
+                transitionMessage.innerHTML = `📶 Take Stairs / Elevator to <b>${destFloor}</b>`;
+                transitionPanel.style.display = "flex";
+
+                // virtual stairs target at (400, 200) representing stairs/lobby
+                const stairsNode = { 
+                    id: 'stairs-transition',
+                    number: 'Stairs',
+                    name: 'Stairs / Elevator Corridor',
+                    x: 400,
+                    y: 200,
+                    floorId: startFloor
+                };
+
+                // Calculate Path to Stairs on start floor
+                const path = calculatePath(startRoom, stairsNode);
+
+                // Render Path on 2D minimap
+                const pointsStr = path.map(p => `${p.x},${p.y}`).join(" ");
+                minimapPath.setAttribute("points", pointsStr);
+                minimapEnd.setAttribute("cx", stairsNode.x);
+                minimapEnd.setAttribute("cy", stairsNode.y);
+
+                // Render dynamic 3D waypoints in AR space
+                render3DPath(path);
+                
+                // Show intermediate status
+                statusText.innerHTML = `🏁 Head to <b>Stairs / Lobby</b> to go to ${destFloor}`;
+
+            } else {
+                // Same floor: standard direct routing
+                isTransitionState = false;
+                transitionPanel.style.display = "none";
+
+                const path = calculatePath(startRoom, targetRoom);
+                const pointsStr = path.map(p => `${p.x},${p.y}`).join(" ");
+                minimapPath.setAttribute("points", pointsStr);
+                minimapEnd.setAttribute("cx", targetRoom.x);
+                minimapEnd.setAttribute("cy", targetRoom.y);
+                render3DPath(path);
+            }
+        });
+
+        // Click handler for target floor arrival
+        transitionBtn.addEventListener("click", () => {
+            if (!activeTargetRoom) return;
+
+            // Transition user to the stairs node on the destination floor
+            const destFloor = activeTargetRoom.floorId;
+            
+            // Set startRoom virtual position to stairs on destFloor
+            startRoom = {
+                number: "Stairs",
+                name: "Stairs / Elevator Corridor",
+                x: 400,
+                y: 200,
+                floorId: destFloor
+            };
+
+            // Reset start marker on minimap
+            minimapStart.setAttribute("cx", startRoom.x);
+            minimapStart.setAttribute("cy", startRoom.y);
+
+            // Calculate path from Stairs to final destination on destFloor
+            const path = calculatePath(startRoom, activeTargetRoom);
+
+            // Render Path on 2D minimap
             const pointsStr = path.map(p => `${p.x},${p.y}`).join(" ");
             minimapPath.setAttribute("points", pointsStr);
-            minimapEnd.setAttribute("cx", targetRoom.x);
-            minimapEnd.setAttribute("cy", targetRoom.y);
+            minimapEnd.setAttribute("cx", activeTargetRoom.x);
+            minimapEnd.setAttribute("cy", activeTargetRoom.y);
 
-            // 3. Render dynamic 3D waypoints in AR space
+            // Render 3D waypoints on destFloor
             render3DPath(path);
+
+            // Update UI
+            transitionPanel.style.display = "none";
+            isTransitionState = false;
+            statusText.innerHTML = `📍 Navigating on <b>${destFloor}</b> to Room ${activeTargetRoom.number}`;
         });
 
         function calculatePath(startPt, endPt) {
