@@ -136,15 +136,25 @@ export class CampusDataService {
    */
   async seedSampleData(): Promise<void> {
     try {
-      // 1. Seed Main Building
-      const buildingRef = doc(this.firestore, 'buildings/MainBlock');
-      await setDoc(buildingRef, {
-        name: 'Main Block - Administrative & Tech',
-        code: 'MAIN',
-        totalFloors: 5,
-        latitude: 16.3122,
-        longitude: 80.4362
-      });
+      // 1. Seed KHIT Buildings with actual coordinates
+      const buildings = [
+        { id: 'MainBlock', name: 'Main Block - Administrative & Tech', code: 'MAIN', totalFloors: 5, latitude: 16.258009, longitude: 80.332492 },
+        { id: 'Block2', name: 'Block 2 (Computer Science)', code: 'BLOCK2', totalFloors: 4, latitude: 16.258056, longitude: 80.332672 },
+        { id: 'Block3', name: 'Block 3 (ECE & EEE)', code: 'BLOCK3', totalFloors: 4, latitude: 16.258339, longitude: 80.333195 },
+        { id: 'Library', name: 'Central Library', code: 'LIBRARY', totalFloors: 2, latitude: 16.257509, longitude: 80.333457 },
+        { id: 'MainGate', name: 'Main Gate Entrance', code: 'GATE', totalFloors: 1, latitude: 16.256891, longitude: 80.333380 }
+      ];
+
+      for (const b of buildings) {
+        const bRef = doc(this.firestore, `buildings/${b.id}`);
+        await setDoc(bRef, {
+          name: b.name,
+          code: b.code,
+          totalFloors: b.totalFloors,
+          latitude: b.latitude,
+          longitude: b.longitude
+        });
+      }
 
       // 2. Seed Floor 3
       const floorRef = doc(this.firestore, 'buildings/MainBlock/floors/Floor3');

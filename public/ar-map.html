@@ -307,8 +307,8 @@
                     const bdata = bsnap.data();
                     buildingRefGps = { lat: bdata.latitude, lon: bdata.longitude };
                 } else {
-                    // Fallback reference coordinates
-                    buildingRefGps = { lat: 16.30671, lon: 80.43652 };
+                    // Fallback reference coordinates (aligned with KHIT Main Office)
+                    buildingRefGps = { lat: 16.258009, lon: 80.332492 };
                 }
 
                 // 3. Fetch Rooms across all floors in this building dynamically (without requiring composite indexes)
