@@ -419,20 +419,22 @@
       <!-- ADMIN CONSOLE MANAGEMENT TAB -->
       <div *ngIf="activeTab() === 'admin' && authService.isAdmin()" class="space-y-6">
         <!-- Database Utilities Header -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 class="text-lg font-bold text-white">Database Operations Center</h4>
-            <p class="text-slate-400 text-xs mt-1">Perform administrative actions, database seeding, and system initialization.</p>
+            <h4 class="text-lg font-bold text-slate-800">Database Operations Center</h4>
+            <p class="text-slate-500 text-xs mt-1">Perform administrative actions, database seeding, and system initialization.</p>
           </div>
           <button 
             (click)="seedData()"
-            class="flex items-center gap-1.5 px-4 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-slate-900 text-sm font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
+            class="flex items-center gap-1.5 px-4 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-sm font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Seed Sample Database Data
           </button>
-                <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
+        </div>
+        
+        <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>

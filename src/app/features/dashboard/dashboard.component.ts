@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CampusDataService } from '../../core/services/campus-data.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Building, Floor, Room, QrCode } from '../../core/models/campus.model';
+import { Building, Floor, Room, QrCode, Waypoint, Road } from '../../core/models/campus.model';
 import * as QRCode from 'qrcode';
 
 @Component({
