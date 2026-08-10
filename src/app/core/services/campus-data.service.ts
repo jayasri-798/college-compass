@@ -11,7 +11,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, from, forkJoin, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { Building, Floor, Room, QrCode } from '../models/campus.model';
+import { Building, Floor, Room, QrCode, Waypoint, Road } from '../models/campus.model';
 
 @Injectable({
   providedIn: 'root'
@@ -222,7 +222,73 @@ export class CampusDataService {
         });
       }
 
-      console.log('Firestore Database successfully seeded with College Compass Main Block (Floor 3) data.');
+      // 6. Seed Default Campus Map Config
+      const configRef = doc(this.firestore, 'configs/campusMap');
+      await setDoc(configRef, { imageUrl: 'campus-map.jpg' });
+
+      // 7. Seed Default Waypoints
+      const defaultWaypoints = [
+        { id: 'gate', x: 400, y: 360, label: 'Main Gate Entrance', isBuilding: false },
+        { id: 'road_mid', x: 400, y: 250, label: 'Main Block Junction', isBuilding: false },
+        { id: 'road_left', x: 260, y: 250, label: 'Block 2 Branch', isBuilding: false },
+        { id: 'road_right', x: 500, y: 250, label: 'Library / Court Branch', isBuilding: false },
+        { id: 'road_top_left', x: 260, y: 140, label: 'KHIT Ground Branch', isBuilding: false },
+        { id: 'road_top_right', x: 540, y: 180, label: 'Block 3 Junction', isBuilding: false },
+        { id: 'MainBlock', x: 400, y: 200, label: 'Main Block - Admin', isBuilding: true, buildingId: 'MainBlock' },
+        { id: 'Block2', x: 220, y: 220, label: 'Block 2 (CSE)', isBuilding: true, buildingId: 'Block2' },
+        { id: 'Block3', x: 580, y: 150, label: 'Block 3 (ECE)', isBuilding: true, buildingId: 'Block3' },
+        { id: 'Library', x: 500, y: 200, label: 'Central Library', isBuilding: true, buildingId: 'Library' },
+        { id: 'Court', x: 560, y: 220, label: 'Basketball Court', isBuilding: false },
+        { id: 'Ground', x: 260, y: 80, label: 'KHIT Ground', isBuilding: false }
+      ];
+
+      for (const w of defaultWaypoints) {
+        const wRef = doc(this.firestore, `waypoints/${w.id}`);
+        await setDoc(wRef, {
+          x: w.x,
+          y: w.y,
+          label: w.label,
+          isBuilding: w.isBuilding,
+          buildingId: w.buildingId || ''
+        });
+      }
+
+      // 8. Seed Default Roads
+      const defaultRoads = [
+        { fromNode: 'gate', toNode: 'road_mid' },
+        { fromNode: 'road_mid', toNode: 'gate' },
+        { fromNode: 'road_mid', toNode: 'road_left' },
+        { fromNode: 'road_left', toNode: 'road_mid' },
+        { fromNode: 'road_mid', toNode: 'road_right' },
+        { fromNode: 'road_right', toNode: 'road_mid' },
+        { fromNode: 'road_mid', toNode: 'MainBlock' },
+        { fromNode: 'MainBlock', toNode: 'road_mid' },
+        { fromNode: 'road_left', toNode: 'road_top_left' },
+        { fromNode: 'road_top_left', toNode: 'road_left' },
+        { fromNode: 'road_left', toNode: 'Block2' },
+        { fromNode: 'Block2', toNode: 'road_left' },
+        { fromNode: 'road_right', toNode: 'road_top_right' },
+        { fromNode: 'road_top_right', toNode: 'road_right' },
+        { fromNode: 'road_right', toNode: 'Library' },
+        { fromNode: 'Library', toNode: 'road_right' },
+        { fromNode: 'road_right', toNode: 'Court' },
+        { fromNode: 'Court', toNode: 'road_right' },
+        { fromNode: 'road_top_left', toNode: 'Ground' },
+        { fromNode: 'Ground', toNode: 'road_top_left' },
+        { fromNode: 'road_top_right', toNode: 'Block3' },
+        { fromNode: 'Block3', toNode: 'road_top_right' }
+      ];
+
+      for (const r of defaultRoads) {
+        const rId = `${r.fromNode}-${r.toNode}`;
+        const rRef = doc(this.firestore, `roads/${rId}`);
+        await setDoc(rRef, {
+          fromNode: r.fromNode,
+          toNode: r.toNode
+        });
+      }
+
+      console.log('Firestore Database successfully seeded with College Compass Main Block (Floor 3) and KHIT Campus Map data.');
     } catch (error) {
       console.error('Failed to seed Firestore data:', error);
       throw error;
@@ -315,5 +381,75 @@ export class CampusDataService {
   deleteQrCode(qrId: string): Promise<void> {
     const qrRef = doc(this.firestore, `qr_codes/${qrId}`);
     return deleteDoc(qrRef);
+  }
+
+  // CRUD Operations for Waypoints
+  getWaypointsFlat(): Promise<Waypoint[]> {
+    const waypointsCol = collection(this.firestore, 'waypoints');
+    return getDocs(waypointsCol).then(snap => {
+      const list: Waypoint[] = [];
+      snap.forEach(d => {
+        list.push({ id: d.id, ...d.data() } as Waypoint);
+      });
+      return list;
+    });
+  }
+
+  addWaypoint(waypoint: Waypoint): Promise<void> {
+    const wRef = doc(this.firestore, `waypoints/${waypoint.id}`);
+    return setDoc(wRef, {
+      x: Number(waypoint.x),
+      y: Number(waypoint.y),
+      label: waypoint.label,
+      isBuilding: !!waypoint.isBuilding,
+      buildingId: waypoint.buildingId || ''
+    });
+  }
+
+  deleteWaypoint(waypointId: string): Promise<void> {
+    const wRef = doc(this.firestore, `waypoints/${waypointId}`);
+    return deleteDoc(wRef);
+  }
+
+  // CRUD Operations for Roads
+  getRoadsFlat(): Promise<Road[]> {
+    const roadsCol = collection(this.firestore, 'roads');
+    return getDocs(roadsCol).then(snap => {
+      const list: Road[] = [];
+      snap.forEach(d => {
+        list.push({ id: d.id, ...d.data() } as Road);
+      });
+      return list;
+    });
+  }
+
+  addRoad(road: Road): Promise<void> {
+    const roadId = road.id || `${road.fromNode}-${road.toNode}`;
+    const rRef = doc(this.firestore, `roads/${roadId}`);
+    return setDoc(rRef, {
+      fromNode: road.fromNode,
+      toNode: road.toNode
+    });
+  }
+
+  deleteRoad(roadId: string): Promise<void> {
+    const rRef = doc(this.firestore, `roads/${roadId}`);
+    return deleteDoc(rRef);
+  }
+
+  // Config Operations
+  getCampusMapConfig(): Promise<any> {
+    return getDocs(collection(this.firestore, 'configs')).then(snap => {
+      let data = { imageUrl: '' };
+      snap.forEach(d => {
+        if (d.id === 'campusMap') data = d.data() as any;
+      });
+      return data;
+    });
+  }
+
+  updateCampusMapConfig(imageUrl: string): Promise<void> {
+    const docRef = doc(this.firestore, 'configs/campusMap');
+    return setDoc(docRef, { imageUrl }, { merge: true });
   }
 }

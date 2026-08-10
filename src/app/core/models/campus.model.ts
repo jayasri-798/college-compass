@@ -39,3 +39,18 @@ export interface QrCode {
   targetRoomId: string;
   createdAt: string;
 }
+
+export interface Waypoint {
+  id: string;
+  x: number;
+  y: number;
+  label: string;
+  isBuilding: boolean;
+  buildingId?: string;
+}
+
+export interface Road {
+  id?: string;
+  fromNode: string;
+  toNode: string;
+}

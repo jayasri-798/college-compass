@@ -241,7 +241,7 @@
         const db = getFirestore(app);
 
         // KHIT Campus Road Waypoint Definitions (mapped to satellite view grid coordinates)
-        const waypoints = {
+        let waypoints = {
             "gate": { x: 400, y: 360, label: "Main Gate Entrance" },
             "road_mid": { x: 400, y: 250, label: "Main Block Junction" },
             "road_left": { x: 260, y: 250, label: "Block 2 Branch" },
@@ -258,7 +258,7 @@
             "Ground": { x: 260, y: 80, label: "KHIT Ground" }
         };
 
-        const graph = {
+        let graph = {
             "gate": ["road_mid"],
             "road_mid": ["gate", "road_left", "road_right", "MainBlock"],
             "MainBlock": ["road_mid"],
@@ -276,6 +276,66 @@
             "road_top_right": ["road_right", "Block3"],
             "Block3": ["road_top_right"]
         };
+
+        async function loadDatabaseWaypointsAndGraph() {
+            try {
+                // 1. Fetch Global Campus Map satellite config image url
+                const configsCol = collection(db, "configs");
+                const configsSnap = await getDocs(configsCol);
+                configsSnap.forEach(d => {
+                    if (d.id === "campusMap") {
+                        const data = d.data();
+                        if (data && data.imageUrl) {
+                            const mapImages = document.querySelectorAll('image');
+                            mapImages.forEach(img => {
+                                if (img.getAttribute('href') === 'campus-map.jpg') {
+                                    img.setAttribute('href', data.imageUrl);
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // 2. Fetch waypoints
+                const wSnap = await getDocs(collection(db, "waypoints"));
+                if (!wSnap.empty) {
+                    const newWaypoints = {};
+                    wSnap.forEach(d => {
+                        const data = d.data();
+                        newWaypoints[d.id] = {
+                            x: Number(data.x),
+                            y: Number(data.y),
+                            label: data.label || d.id
+                        };
+                    });
+                    waypoints = newWaypoints;
+                }
+
+                // 3. Fetch roads / connections graph
+                const rSnap = await getDocs(collection(db, "roads"));
+                if (!rSnap.empty) {
+                    const newGraph = {};
+                    Object.keys(waypoints).forEach(key => {
+                        newGraph[key] = [];
+                    });
+
+                    rSnap.forEach(d => {
+                        const data = d.data();
+                        const from = data.fromNode;
+                        const to = data.toNode;
+                        if (newGraph[from] && !newGraph[from].includes(to)) {
+                            newGraph[from].push(to);
+                        }
+                        if (newGraph[to] && !newGraph[to].includes(from)) {
+                            newGraph[to].push(from);
+                        }
+                    });
+                    graph = newGraph;
+                }
+            } catch (err) {
+                console.error("Failed to load dynamic database waypoints & roads graph, falling back to static config:", err);
+            }
+        }
 
         // DOM elements
         const dropdown = document.getElementById("places-dropdown");
@@ -295,7 +355,9 @@
         let buildingRefGps = null;
         let roomsList = [];
 
-        async function init() {
+        async function initMap() {
+            await loadDatabaseWaypointsAndGraph();
+
             if (!gateId) {
                 statusText.innerHTML = "⚠️ Scan a Gate QR Code first to initialize AR map.";
                 dropdown.innerHTML = '<option value="" disabled selected>Awaiting scan...</option>';

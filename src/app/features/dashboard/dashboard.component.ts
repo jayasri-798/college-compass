@@ -31,6 +31,15 @@ export class DashboardComponent implements OnInit {
   floorsOfMapperBuilding = signal<Floor[]>([]);
   customFloorPlanUrl = signal<string>('');
 
+  // Waypoint & Road Planner States
+  waypointsList = signal<Waypoint[]>([]);
+  roadsList = signal<Road[]>([]);
+  plannerMode = signal<'nodes' | 'roads'>('nodes');
+  selectedNodeForConnection = signal<string | null>(null);
+  showWaypointModal = signal<boolean>(false);
+  waypointForm = signal<any>({ id: '', label: '', x: 0, y: 0, isBuilding: false, buildingId: '' });
+  campusMapUrl = signal<string>('campus-map.jpg');
+
   roomsForSelectedMapper = computed(() => {
     const bId = this.selectedMapperBuildingId();
     const fId = this.selectedMapperFloorId();
@@ -209,6 +218,25 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.loadCampusData();
     this.loadMapperFloors();
+    this.loadWaypointsAndRoads();
+  }
+
+  async loadWaypointsAndRoads() {
+    try {
+      const waypoints = await this.campusService.getWaypointsFlat();
+      this.waypointsList.set(waypoints);
+      const roads = await this.campusService.getRoadsFlat();
+      this.roadsList.set(roads);
+      
+      const config = await this.campusService.getCampusMapConfig();
+      if (config && config.imageUrl) {
+        this.campusMapUrl.set(config.imageUrl);
+      } else {
+        this.campusMapUrl.set('campus-map.jpg');
+      }
+    } catch (e) {
+      console.error('Error loading waypoints/roads config:', e);
+    }
   }
 
   loadCampusData() {
@@ -476,6 +504,132 @@ export class DashboardComponent implements OnInit {
         alert(`Error deleting floor: ${err.message}`);
       }
     }
+  }
+
+  async saveCampusMapUrl() {
+    if (!this.authService.isAdmin()) return;
+    const url = this.campusMapUrl();
+    if (!url) {
+      alert('Please enter a valid image URL.');
+      return;
+    }
+    try {
+      await this.campusService.updateCampusMapConfig(url);
+      alert('Campus satellite map successfully updated!');
+      this.loadWaypointsAndRoads();
+    } catch (err: any) {
+      alert(`Error updating campus map image: ${err.message}`);
+    }
+  }
+
+  onPlannerMapClick(event: MouseEvent) {
+    if (!this.authService.isAdmin()) return;
+    if (this.plannerMode() !== 'nodes') return;
+    const svg = event.currentTarget as SVGGraphicsElement;
+    const rect = svg.getBoundingClientRect();
+    
+    // Scale relative mouse click coordinates to fit 800x400 viewBox
+    const x = Math.round(((event.clientX - rect.left) / rect.width) * 800);
+    const y = Math.round(((event.clientY - rect.top) / rect.height) * 400);
+
+    this.waypointForm.set({
+      id: '',
+      label: '',
+      x: x,
+      y: y,
+      isBuilding: false,
+      buildingId: ''
+    });
+    this.showWaypointModal.set(true);
+  }
+
+  async saveWaypoint() {
+    if (!this.authService.isAdmin()) return;
+    const form = this.waypointForm();
+    if (!form.id || !form.label) {
+      alert('Please fill out both the Node ID and Label.');
+      return;
+    }
+    try {
+      await this.campusService.addWaypoint(form);
+      this.showWaypointModal.set(false);
+      this.loadWaypointsAndRoads();
+    } catch (err: any) {
+      alert(`Error saving waypoint node: ${err.message}`);
+    }
+  }
+
+  async onWaypointNodeClick(waypoint: Waypoint, event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isAdmin()) return;
+    
+    if (this.plannerMode() === 'roads') {
+      const fromNode = this.selectedNodeForConnection();
+      if (!fromNode) {
+        // First node selected
+        this.selectedNodeForConnection.set(waypoint.id);
+      } else {
+        // Second node selected, connect them!
+        if (fromNode === waypoint.id) {
+          this.selectedNodeForConnection.set(null);
+          return;
+        }
+        try {
+          // Add segments in both directions for bi-directional pathing
+          await this.campusService.addRoad({ fromNode: fromNode, toNode: waypoint.id });
+          await this.campusService.addRoad({ fromNode: waypoint.id, toNode: fromNode });
+          this.selectedNodeForConnection.set(null);
+          this.loadWaypointsAndRoads();
+        } catch (err: any) {
+          alert(`Error saving road segment connection: ${err.message}`);
+        }
+      }
+    }
+  }
+
+  async deleteWaypointNode(id: string, event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isAdmin()) return;
+    if (confirm(`Are you sure you want to delete node ${id}? This will also delete any connecting roads.`)) {
+      try {
+        await this.campusService.deleteWaypoint(id);
+        
+        // Clean up connecting roads in DB
+        const roads = this.roadsList().filter(r => r.fromNode === id || r.toNode === id);
+        for (const road of roads) {
+          if (road.id) {
+            await this.campusService.deleteRoad(road.id);
+          }
+        }
+        
+        this.loadWaypointsAndRoads();
+      } catch (err: any) {
+        alert(`Error deleting waypoint: ${err.message}`);
+      }
+    }
+  }
+
+  async deleteRoadSegment(road: Road, event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isAdmin()) return;
+    if (confirm(`Delete the road connecting ${road.fromNode} and ${road.toNode}?`)) {
+      try {
+        if (road.id) {
+          await this.campusService.deleteRoad(road.id);
+          // Also delete opposite direction segment if it exists
+          const oppId = `${road.toNode}-${road.fromNode}`;
+          await this.campusService.deleteRoad(oppId);
+        }
+        this.loadWaypointsAndRoads();
+      } catch (err: any) {
+        alert(`Error deleting road segment: ${err.message}`);
+      }
+    }
+  }
+
+  getWaypointCoords(id: string): { x: number, y: number } | null {
+    const node = this.waypointsList().find(w => w.id === id);
+    return node ? { x: node.x, y: node.y } : null;
   }
 
   logout() {

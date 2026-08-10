@@ -536,6 +536,127 @@
           </div>
         </div>
 
+        <!-- CAMPUS ROAD & WAYPOINT MAP PLANNER -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h5 class="text-md font-bold text-slate-800">Campus Road & Waypoint Map Planner</h5>
+              <p class="text-slate-500 text-xs mt-0.5">Visually add waypoint nodes, connect road segments, and set your college satellite background.</p>
+            </div>
+            
+            <!-- Controls & Mode Selector -->
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+                <button 
+                  type="button" 
+                  (click)="plannerMode.set('nodes')"
+                  [ngClass]="plannerMode() === 'nodes' ? 'bg-sky-500 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
+                  class="px-3 py-1.5 text-xs rounded-lg transition-all">
+                  📍 Place Nodes
+                </button>
+                <button 
+                  type="button" 
+                  (click)="plannerMode.set('roads')"
+                  [ngClass]="plannerMode() === 'roads' ? 'bg-sky-500 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
+                  class="px-3 py-1.5 text-xs rounded-lg transition-all">
+                  2. 🛣️ Connect Roads
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input type="text" [(ngModel)]="campusMapUrl" name="campusMapUrl" placeholder="Paste Campus Map URL..." class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
+                <button (click)="saveCampusMapUrl()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl transition-all">
+                  Save Map Background
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Planner Instructions -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-600">
+            <span *ngIf="plannerMode() === 'nodes'">👉 **Node Placement Mode**: Click anywhere on the satellite map below to place a waypoint. Enter its ID, label, and whether it's a building.</span>
+            <span *ngIf="plannerMode() === 'roads'">👉 **Road Connection Mode**: Click Node A (turns green), then click Node B to draw a road line between them. Click lines/trash to delete.</span>
+          </div>
+
+          <div class="relative w-full aspect-[2/1] bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group select-none">
+            <!-- Grid Background Lines -->
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40"></div>
+            
+            <svg 
+              viewBox="0 0 800 400" 
+              class="w-full h-full cursor-crosshair relative z-10" 
+              (click)="onPlannerMapClick($event)">
+              
+              <!-- Campus Map Image Background -->
+              <image [attr.href]="campusMapUrl()" x="0" y="0" width="800" height="400" preserveAspectRatio="none" opacity="0.8" />
+              
+              <!-- Connecting Road Lines -->
+              <g *ngFor="let road of roadsList()">
+                <ng-container *ngIf="getWaypointCoords(road.fromNode) as from">
+                  <ng-container *ngIf="getWaypointCoords(road.toNode) as to">
+                    <line 
+                      [attr.x1]="from.x" 
+                      [attr.y1]="from.y" 
+                      [attr.x2]="to.x" 
+                      [attr.y2]="to.y" 
+                      stroke="#0284c7" 
+                      stroke-width="5" 
+                      stroke-linecap="round"
+                      class="opacity-60 cursor-pointer hover:stroke-red-500 hover:opacity-100 transition-colors"
+                      (click)="deleteRoadSegment(road, $event)">
+                      <title>Road Connection (Click to Delete)</title>
+                    </line>
+                  </ng-container>
+                </ng-container>
+              </g>
+
+              <!-- Placed Waypoints Nodes -->
+              <g *ngFor="let w of waypointsList()">
+                <!-- Active highlighted first node in road selection mode -->
+                <circle 
+                  *ngIf="selectedNodeForConnection() === w.id"
+                  [attr.cx]="w.x" 
+                  [attr.cy]="w.y" 
+                  r="14" 
+                  class="fill-emerald-500/30 stroke-emerald-500 animate-ping">
+                </circle>
+
+                <!-- Core node circle -->
+                <circle 
+                  [attr.cx]="w.x" 
+                  [attr.cy]="w.y" 
+                  [attr.r]="w.isBuilding ? 8 : 6" 
+                  [ngClass]="{
+                    'fill-sky-500 stroke-white': w.isBuilding,
+                    'fill-slate-700 stroke-white': !w.isBuilding,
+                    'fill-emerald-500 stroke-white': selectedNodeForConnection() === w.id
+                  }"
+                  class="stroke-2 cursor-pointer hover:scale-125 transition-transform"
+                  (click)="onWaypointNodeClick(w, $event)">
+                  <title>{{ w.label }} (ID: {{ w.id }})</title>
+                </circle>
+
+                <!-- Label text -->
+                <text 
+                  [attr.x]="w.x" 
+                  [attr.y]="w.y - 12" 
+                  class="text-[9px] fill-slate-800 font-extrabold font-sans text-anchor-middle pointer-events-none drop-shadow-md">
+                  {{ w.label }}
+                </text>
+                
+                <!-- Small delete badge on node -->
+                <g 
+                  *ngIf="plannerMode() === 'nodes'"
+                  [attr.transform]="'translate(' + (w.x + 8) + ',' + (w.y - 8) + ')'"
+                  class="cursor-pointer"
+                  (click)="deleteWaypointNode(w.id, $event)">
+                  <circle r="6" fill="#ef4444" />
+                  <text y="2" class="text-[7px] fill-white text-anchor-middle font-bold">✕</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+
         <!-- Grid Panels for CRUD management -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -881,6 +1002,51 @@
         <div class="pt-4 flex justify-end gap-3">
           <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Floor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- WAYPOINT PLANNER MODAL -->
+  <div *ngIf="showWaypointModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <h3 class="text-lg font-bold text-slate-800">Add Waypoint Node</h3>
+        <button (click)="showWaypointModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
+      </div>
+      <form (submit)="saveWaypoint(); $event.preventDefault();" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Node ID (Alphanumeric, Unique)</label>
+          <input type="text" [(ngModel)]="waypointForm().id" name="id" required placeholder="e.g. gate, road_mid, Block2" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Display Label</label>
+          <input type="text" [(ngModel)]="waypointForm().label" name="label" required placeholder="e.g. Block 2 Junction" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Coordinate X (px)</label>
+            <input type="number" [(ngModel)]="waypointForm().x" name="x" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none" readonly>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Coordinate Y (px)</label>
+            <input type="number" [(ngModel)]="waypointForm().y" name="y" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none" readonly>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" [(ngModel)]="waypointForm().isBuilding" name="isBuilding" id="isBuilding" class="w-4 h-4 bg-slate-50 border border-slate-300 focus:border-sky-500 rounded text-sky-600">
+          <label for="isBuilding" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">Maps to a Building Block</label>
+        </div>
+        <div *ngIf="waypointForm().isBuilding">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Building Block</label>
+          <select [(ngModel)]="waypointForm().buildingId" name="buildingId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
+            <option value="">-- Select Building --</option>
+            <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
+          </select>
+        </div>
+        <div class="pt-4 flex justify-end gap-3">
+          <button type="button" (click)="showWaypointModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Node</button>
         </div>
       </form>
     </div>
