@@ -1,24 +1,24 @@
-<div class="flex min-h-screen bg-slate-950 text-slate-100">
+<div class="flex min-h-screen bg-slate-50 text-slate-800">
   
   <!-- SIDEBAR NAVIGATION PANEL -->
-  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex">
     <div>
       <!-- Dashboard Logo -->
-      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800">
+      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-200">
         <div class="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center shadow-lg shadow-sky-500/25">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
           </svg>
         </div>
-        <span class="font-extrabold text-lg tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">College Compass</span>
+        <span class="font-extrabold text-lg tracking-wide bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">College Compass</span>
       </div>
 
       <!-- Navigation Links -->
       <nav class="p-4 space-y-2">
         <a href="#" 
            (click)="switchTab('rooms'); $event.preventDefault();"
-           [ngClass]="activeTab() === 'rooms' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20 font-medium' : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'"
+           [ngClass]="activeTab() === 'rooms' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -27,7 +27,7 @@
         </a>
         <a href="#" 
            (click)="switchTab('buildings'); $event.preventDefault();"
-           [ngClass]="activeTab() === 'buildings' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20 font-medium' : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'"
+           [ngClass]="activeTab() === 'buildings' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
@@ -36,14 +36,14 @@
         </a>
         <a href="#" 
            (click)="switchTab('qr'); $event.preventDefault();"
-           [ngClass]="activeTab() === 'qr' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20 font-medium' : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'"
+           [ngClass]="activeTab() === 'qr' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
           </svg>
           QR Configurations
         </a>
-        <a href="/ar-map.html" target="_blank" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 border border-transparent rounded-xl transition-all">
+        <a href="/ar-map.html" target="_blank" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent rounded-xl transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
           </svg>
@@ -52,7 +52,7 @@
         <a href="#" 
            *ngIf="authService.isAdmin()"
            (click)="switchTab('admin'); $event.preventDefault();"
-           [ngClass]="activeTab() === 'admin' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20 font-medium' : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'"
+           [ngClass]="activeTab() === 'admin' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.68-.34-1.44-.54-2.24-.54s-1.56.2-2.24.54m4.48 0L9 12.25M4.5 15.84 6.75 12.25m4.5 0A2.25 2.25 0 1 1 9 7.75a2.25 2.25 0 0 1 2.25 4.5ZM21 12c0 1.66-2 3-4.5 3s-4.5-1.34-4.5-3 2-3 4.5-3 4.5 1.34 4.5 3ZM12 12c0 1.66-2 3-4.5 3S3 13.66 3 12s2-3 4.5-3 4.5 1.34 4.5 3Z" />
@@ -63,17 +63,17 @@
     </div>
 
     <!-- Active User & Logout Panel -->
-    <div class="p-4 border-t border-slate-800">
+    <div class="p-4 border-t border-slate-200">
       <div *ngIf="authService.currentUser() as user" class="flex items-center gap-3 mb-4">
         <img [src]="user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'" alt="User profile photo" class="w-10 h-10 rounded-full border border-sky-500/30">
         <div class="overflow-hidden">
-          <p class="text-sm font-semibold text-white truncate">{{ user.displayName || 'Guest User' }}</p>
-          <p class="text-xs text-slate-400 truncate">{{ user.email }}</p>
+          <p class="text-sm font-semibold text-slate-800 truncate">{{ user.displayName || 'Guest User' }}</p>
+          <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
         </div>
       </div>
       <button 
         (click)="logout()"
-        class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 text-slate-300 font-medium rounded-xl border border-transparent transition-all">
+        class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-700 font-medium rounded-xl border border-slate-200 transition-all">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
         </svg>
@@ -85,28 +85,28 @@
   <!-- MAIN DASHBOARD CONTENT AREA -->
   <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
     <!-- Top Navbar Header -->
-    <header class="h-16 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
+    <header class="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
       <div class="flex items-center gap-4">
-        <h2 class="text-xl font-bold tracking-tight text-white">Dashboard Console</h2>
-        <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center gap-1.5">
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">Dashboard Console</h2>
+        <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> Live Connection
         </span>
       </div>
       <div class="flex items-center gap-4">
-        <span *ngIf="seedingStatus()" class="text-xs font-semibold px-2.5 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-lg animate-pulse">
+        <span *ngIf="seedingStatus()" class="text-xs font-semibold px-2.5 py-1 bg-sky-50 text-sky-600 border border-sky-200 rounded-lg animate-pulse">
           {{ seedingStatus() }}
         </span>
         <button 
           *ngIf="authService.isAdmin()"
           (click)="seedData()"
-          class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 active:scale-95 text-slate-900 text-xs font-bold rounded-lg shadow shadow-sky-500/25 transition-all">
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-lg shadow shadow-sky-500/25 transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
           Seed Sample Data
         </button>
         <!-- Quick Stats indicator -->
-        <span class="text-xs text-slate-400 hidden sm:inline">Last Sync: Just now</span>
+        <span class="text-xs text-slate-500 hidden sm:inline">Last Sync: Just now</span>
       </div>
     </header>
 
@@ -125,33 +125,33 @@
         <!-- STATS OVERVIEW CARDS -->
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <!-- Buildings Card -->
-          <div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-slate-700">
+          <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-sky-300 hover:shadow-xl">
             <div class="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-xl translate-x-5 -translate-y-5"></div>
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Campus Buildings</p>
-                <h3 class="text-3xl font-extrabold text-white mt-2">{{ totalBuildingsCount() }}</h3>
+                <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Campus Buildings</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ totalBuildingsCount() }}</h3>
               </div>
-              <div class="w-12 h-12 bg-sky-500/10 text-sky-400 rounded-xl flex items-center justify-center">
+              <div class="w-12 h-12 bg-sky-500/10 text-sky-600 rounded-xl flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
                 </svg>
               </div>
             </div>
             <div class="mt-4 text-xs text-slate-500 flex items-center gap-1">
-              <span class="text-sky-400 font-semibold">Active</span> mapping in database.
+              <span class="text-sky-600 font-semibold">Active</span> mapping in database.
             </div>
           </div>
 
           <!-- Rooms Card -->
-          <div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-slate-700">
+          <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-sky-300 hover:shadow-xl">
             <div class="absolute top-0 right-0 w-24 h-24 bg-violet-500/5 rounded-full blur-xl translate-x-5 -translate-y-5"></div>
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Mapped Rooms</p>
-                <h3 class="text-3xl font-extrabold text-white mt-2">{{ totalRoomsCount() }}</h3>
+                <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Mapped Rooms</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ totalRoomsCount() }}</h3>
               </div>
-              <div class="w-12 h-12 bg-violet-500/10 text-violet-400 rounded-xl flex items-center justify-center">
+              <div class="w-12 h-12 bg-violet-500/10 text-violet-600 rounded-xl flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75c.621 0 1.125.504 1.125 1.125v1.875c0 .621-.504 1.125-1.125 1.125H5.625A1.125 1.125 0 0 1 4.5 7.5V5.625c0-.621.504-1.125 1.125-1.125Z" />
                 </svg>
@@ -163,14 +163,14 @@
           </div>
 
           <!-- QR Codes Card -->
-          <div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-slate-700">
+          <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-sky-300 hover:shadow-xl">
             <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl translate-x-5 -translate-y-5"></div>
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">QR Entry Nodes</p>
-                <h3 class="text-3xl font-extrabold text-white mt-2">{{ totalQrCount() }}</h3>
+                <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">QR Entry Nodes</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ totalQrCount() }}</h3>
               </div>
-              <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center">
+              <div class="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-xl flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5ZM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z" />
                 </svg>
@@ -183,13 +183,13 @@
         </section>
 
         <!-- ROOMS FILTER & TABLE VIEW PORT -->
-        <section *ngIf="activeTab() === 'rooms'" class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg">
+        <section *ngIf="activeTab() === 'rooms'" class="bg-white border border-slate-200 rounded-2xl shadow-lg">
           <!-- Table Actions Header -->
-          <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
               <div>
-                <h4 class="text-lg font-bold text-white">Campus Rooms Directory</h4>
-                <p class="text-slate-400 text-xs mt-1">Configure layout coordinates and entry-gate linkages.</p>
+                <h4 class="text-lg font-bold text-slate-800">Campus Rooms Directory</h4>
+                <p class="text-slate-500 text-xs mt-1">Configure layout coordinates and entry-gate linkages.</p>
               </div>
             </div>
             
@@ -201,8 +201,8 @@
                   [ngModel]="searchQuery()" 
                   (ngModelChange)="searchQuery.set($event)"
                   placeholder="Search rooms, buildings..."
-                  class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 text-sm py-2 pl-9 pr-4 rounded-xl text-slate-200 outline-none transition-all placeholder:text-slate-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 absolute left-3 top-3">
+                  class="w-full bg-slate-100 border border-slate-200 focus:border-sky-500 text-sm py-2 pl-9 pr-4 rounded-xl text-slate-800 outline-none transition-all placeholder:text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400 absolute left-3 top-3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
                 </svg>
               </div>
@@ -211,7 +211,7 @@
               <select 
                 [ngModel]="selectedTypeFilter()" 
                 (ngModelChange)="selectedTypeFilter.set($event)"
-                class="bg-slate-950 border border-slate-800 focus:border-sky-500 text-sm py-2 px-3 rounded-xl text-slate-200 outline-none transition-all">
+                class="bg-slate-100 border border-slate-200 focus:border-sky-500 text-sm py-2 px-3 rounded-xl text-slate-800 outline-none transition-all">
                 <option value="all">All Room Types</option>
                 <option value="classroom">Classrooms</option>
                 <option value="lab">Laboratories</option>
@@ -225,7 +225,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40">
+                <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
                   <th class="px-6 py-4">Room No.</th>
                   <th class="px-6 py-4">Room Name</th>
                   <th class="px-6 py-4">Building</th>
@@ -235,22 +235,22 @@
                   <th class="px-6 py-4">Linked QR Gate</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-800 text-sm text-slate-300">
-                <tr *ngFor="let room of filteredRooms()" class="hover:bg-slate-800/20 transition-colors">
-                  <td class="px-6 py-4 font-mono font-bold text-white">{{ room.number }}</td>
+              <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                <tr *ngFor="let room of filteredRooms()" class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 font-mono font-bold text-slate-800">{{ room.number }}</td>
                   <td class="px-6 py-4">{{ room.name }}</td>
                   <td class="px-6 py-4">
-                    <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700">
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">
                       {{ room.buildingName || 'Building N/A' }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
                     <span 
                       [ngClass]="{
-                        'bg-sky-500/10 text-sky-400 border-sky-500/20': room.type === 'classroom',
-                        'bg-purple-500/10 text-purple-400 border-purple-500/20': room.type === 'lab',
-                        'bg-amber-500/10 text-amber-400 border-amber-500/20': room.type === 'office',
-                        'bg-rose-500/10 text-rose-400 border-rose-500/20': room.type === 'seminar'
+                        'bg-sky-50 text-sky-600 border-sky-200': room.type === 'classroom',
+                        'bg-purple-50 text-purple-600 border-purple-200': room.type === 'lab',
+                        'bg-amber-50 text-amber-600 border-amber-200': room.type === 'office',
+                        'bg-rose-50 text-rose-600 border-rose-200': room.type === 'seminar'
                       }"
                       class="px-2.5 py-0.5 rounded-full text-xs font-semibold border">
                       {{ room.type | titlecase }}
@@ -259,23 +259,23 @@
                   <td class="px-6 py-4">
                     <span 
                       [ngClass]="{
-                        'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': room.isFree !== false,
-                        'bg-red-500/10 text-red-400 border-red-500/20': room.isFree === false
+                        'bg-emerald-50 text-emerald-600 border-emerald-200': room.isFree !== false,
+                        'bg-red-50 text-red-600 border-red-200': room.isFree === false
                       }"
                       class="px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1.5 w-fit">
-                      <span [ngClass]="room.isFree !== false ? 'bg-emerald-400' : 'bg-red-400'" class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
+                      <span [ngClass]="room.isFree !== false ? 'bg-emerald-500' : 'bg-red-500'" class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
                       {{ room.isFree !== false ? 'Free' : (room.currentSubject ? room.currentSubject : 'Occupied') }}
-                      <span *ngIf="room.isFree === false && room.occupiedBy" class="text-[10px] text-red-300/80">({{room.occupiedBy}})</span>
+                      <span *ngIf="room.isFree === false && room.occupiedBy" class="text-[10px] text-red-600/80">({{room.occupiedBy}})</span>
                     </span>
                   </td>
-                  <td class="px-6 py-4 font-mono text-xs text-slate-400">
+                  <td class="px-6 py-4 font-mono text-xs text-slate-500">
                     X: {{ room.x }}px, Y: {{ room.y }}px
                   </td>
                   <td class="px-6 py-4">
-                    <span *ngIf="room.qrCodeId" class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">
+                    <span *ngIf="room.qrCodeId" class="text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded">
                       {{ room.qrCodeId }}
                     </span>
-                    <span *ngIf="!room.qrCodeId" class="text-xs text-slate-500 italic">
+                    <span *ngIf="!room.qrCodeId" class="text-xs text-slate-400 italic">
                       No Gate Linked
                     </span>
                   </td>
@@ -432,41 +432,39 @@
             </svg>
             Seed Sample Database Data
           </button>
-        </div>
-
-        <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
+                <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h5 class="text-md font-bold text-white">Interactive 2D Floor Plan Mapper</h5>
-              <p class="text-slate-400 text-xs mt-0.5">Filter by building & floor, click anywhere on the plan to place a new room pin instantly.</p>
+              <h5 class="text-md font-bold text-slate-800">Interactive 2D Floor Plan Mapper</h5>
+              <p class="text-slate-500 text-xs mt-0.5">Filter by building & floor, click anywhere on the plan to place a new room pin instantly.</p>
             </div>
             
             <!-- Filters & Floor Plan Input -->
             <div class="flex flex-wrap items-center gap-3">
               <div>
-                <select [ngModel]="selectedMapperBuildingId()" (ngModelChange)="onMapperBuildingChange($event)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none">
+                <select [ngModel]="selectedMapperBuildingId()" (ngModelChange)="onMapperBuildingChange($event)" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none">
                   <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
                 </select>
               </div>
               <div>
-                <select [ngModel]="selectedMapperFloorId()" (ngModelChange)="onMapperFloorChange($event)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none">
+                <select [ngModel]="selectedMapperFloorId()" (ngModelChange)="onMapperFloorChange($event)" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none">
                   <option *ngFor="let f of floorsOfMapperBuilding()" [value]="f.id">{{ f.name || f.id }}</option>
                   <option *ngIf="floorsOfMapperBuilding().length === 0" value="" disabled>No Floors Configured</option>
                 </select>
               </div>
               <div class="flex items-center gap-1.5">
-                <input type="text" [(ngModel)]="customFloorPlanUrl" placeholder="Paste Floor Plan Image URL..." class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-300 text-xs outline-none w-[200px]">
-                <button (click)="saveCustomFloorPlan()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-slate-900 text-xs font-bold rounded-xl transition-all">
+                <input type="text" [(ngModel)]="customFloorPlanUrl" placeholder="Paste Floor Plan Image URL..." class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
+                <button (click)="saveCustomFloorPlan()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl transition-all">
                   Save Plan
                 </button>
               </div>
             </div>
           </div>
           
-          <div class="relative w-full aspect-[2/1] bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden group select-none">
+          <div class="relative w-full aspect-[2/1] bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group select-none">
             <!-- Grid Background Lines -->
-            <div class="absolute inset-0 bg-[linear-gradient(to_right,#020617_1px,transparent_1px),linear-gradient(to_bottom,#020617_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40"></div>
             
             <svg 
               viewBox="0 0 800 400" 
@@ -475,7 +473,7 @@
               
               <!-- Custom Floor Plan Image Background (rendered if URL provided) -->
               <image *ngIf="customFloorPlanUrl()" [attr.href]="customFloorPlanUrl()" x="0" y="0" width="800" height="400" preserveAspectRatio="none" />
-
+ 
               <!-- Blueprint Corridor Outlines (rendered as fallback if no image provided) -->
               <g *ngIf="!customFloorPlanUrl()">
                 <!-- KHIT Campus Satellite Map Fallback -->
@@ -517,14 +515,14 @@
                 <text 
                   [attr.x]="room.x" 
                   [attr.y]="room.y - 12" 
-                  class="text-[8px] fill-slate-300 font-bold font-mono text-anchor-middle pointer-events-none">
+                  class="text-[8px] fill-slate-600 font-bold font-mono text-anchor-middle pointer-events-none">
                   {{ room.number }}
                 </text>
               </g>
             </svg>
             
             <!-- Canvas Legend Badge overlay -->
-            <div class="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1.5 flex items-center gap-4 text-[9px] font-semibold text-slate-400 z-20 backdrop-blur">
+            <div class="absolute bottom-3 left-3 bg-white/90 border border-slate-200 rounded-lg px-2.5 py-1.5 flex items-center gap-4 text-[9px] font-semibold text-slate-600 z-20 backdrop-blur">
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-400 rounded-full"></span> Classroom</span>
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-purple-400 rounded-full"></span> Lab</span>
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-400 rounded-full"></span> Office</span>
@@ -532,7 +530,7 @@
             </div>
             
             <!-- Canvas Tips label overlay -->
-            <div class="absolute top-3 right-3 bg-slate-900/90 border border-slate-800 rounded-lg px-2 py-1 text-[9px] text-sky-400 font-mono z-20 backdrop-blur">
+            <div class="absolute top-3 right-3 bg-white/90 border border-slate-200 rounded-lg px-2 py-1 text-[9px] text-sky-600 font-mono z-20 backdrop-blur">
               ✨ Click on map to place pin
             </div>
           </div>
@@ -542,11 +540,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           <!-- 1. Manage Rooms Panel -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/20">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
               <div>
-                <h5 class="text-md font-bold text-white">Manage Rooms</h5>
-                <p class="text-slate-400 text-xs mt-0.5">Add or delete physical college rooms</p>
+                <h5 class="text-md font-bold text-slate-800">Manage Rooms</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete physical college rooms</p>
               </div>
               <button (click)="openRoomModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
                 + Add Room
@@ -555,30 +553,30 @@
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40 sticky top-0 z-10">
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
                     <th class="px-4 py-3">Room No.</th>
                     <th class="px-4 py-3">Room Name</th>
                     <th class="px-4 py-3">Building/Floor</th>
                     <th class="px-4 py-3 text-right">Delete</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800 text-xs text-slate-300">
-                  <tr *ngFor="let room of rooms()" class="hover:bg-slate-800/20 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-white">{{ room.number }}</td>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let room of rooms()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ room.number }}</td>
                     <td class="px-4 py-3 truncate max-w-[120px]">{{ room.name }}</td>
                     <td class="px-4 py-3">
-                      <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">
+                      <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
                         {{ room.buildingName || room.buildingId }} / {{ room.floorId }}
                       </span>
                     </td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="rooms().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-500">No rooms configured.</td>
+                    <td colspan="4" class="text-center py-4 text-slate-400">No rooms configured.</td>
                   </tr>
                 </tbody>
               </table>
@@ -586,11 +584,11 @@
           </div>
 
           <!-- 2. Manage Buildings Panel -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/20">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
               <div>
-                <h5 class="text-md font-bold text-white">Manage Buildings</h5>
-                <p class="text-slate-400 text-xs mt-0.5">Add or delete campus blocks</p>
+                <h5 class="text-md font-bold text-slate-800">Manage Buildings</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete campus blocks</p>
               </div>
               <button (click)="openBuildingModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
                 + Add Building
@@ -599,18 +597,18 @@
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40 sticky top-0 z-10">
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
                     <th class="px-4 py-3">Code</th>
                     <th class="px-4 py-3">Building Name</th>
                     <th class="px-4 py-3 text-right">Delete</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800 text-xs text-slate-300">
-                  <tr *ngFor="let building of buildings()" class="hover:bg-slate-800/20 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-white">{{ building.code }}</td>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let building of buildings()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ building.code }}</td>
                     <td class="px-4 py-3 truncate max-w-[150px]">{{ building.name }}</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
                         🗑️
                       </button>
                     </td>
@@ -624,11 +622,11 @@
           </div>
 
           <!-- 3. Manage Floors Panel -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/20">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
               <div>
-                <h5 class="text-md font-bold text-white">Manage Floors</h5>
-                <p class="text-slate-400 text-xs mt-0.5">Add or delete building floors</p>
+                <h5 class="text-md font-bold text-slate-800">Manage Floors</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete building floors</p>
               </div>
               <button (click)="openFloorModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
                 + Add Floor
@@ -637,24 +635,24 @@
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40 sticky top-0 z-10">
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
                     <th class="px-4 py-3">Floor ID</th>
                     <th class="px-4 py-3">Floor Name</th>
                     <th class="px-4 py-3 text-right">Delete</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800 text-xs text-slate-300">
-                  <tr *ngFor="let floor of floorsOfMapperBuilding()" class="hover:bg-slate-800/20 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-white">{{ floor.id }}</td>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let floor of floorsOfMapperBuilding()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ floor.id }}</td>
                     <td class="px-4 py-3 truncate max-w-[150px]">{{ floor.name }} (Lvl {{ floor.level }})</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="floorsOfMapperBuilding().length === 0">
-                    <td colspan="3" class="text-center py-4 text-slate-500">No floors configured for selected building.</td>
+                    <td colspan="3" class="text-center py-4 text-slate-400">No floors configured for selected building.</td>
                   </tr>
                 </tbody>
               </table>
@@ -662,11 +660,11 @@
           </div>
 
           <!-- 4. Manage QR Entry Gates Panel -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/20">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
               <div>
-                <h5 class="text-md font-bold text-white">Manage QR Entry Gates</h5>
-                <p class="text-slate-400 text-xs mt-0.5">Add or delete scanner entry points</p>
+                <h5 class="text-md font-bold text-slate-800">Manage QR Entry Gates</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete scanner entry points</p>
               </div>
               <button (click)="openQrModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
                 + Add QR Node
@@ -675,26 +673,26 @@
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40 sticky top-0 z-10">
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
                     <th class="px-4 py-3">Node ID</th>
                     <th class="px-4 py-3">Location Name</th>
                     <th class="px-4 py-3">Target Room</th>
                     <th class="px-4 py-3 text-right">Delete</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800 text-xs text-slate-300">
-                  <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-800/20 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-sky-400">{{ qr.id }}</td>
-                    <td class="px-4 py-3 truncate max-w-[200px] text-white">{{ qr.locationName }}</td>
-                    <td class="px-4 py-3 font-mono text-emerald-400">{{ qr.targetRoomId || 'N/A' }}</td>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-sky-600">{{ qr.id }}</td>
+                    <td class="px-4 py-3 truncate max-w-[200px] text-slate-800">{{ qr.locationName }}</td>
+                    <td class="px-4 py-3 font-mono text-emerald-600">{{ qr.targetRoomId || 'N/A' }}</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="qrCodes().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-500">No QR gates configured.</td>
+                    <td colspan="4" class="text-center py-4 text-slate-400">No QR gates configured.</td>
                   </tr>
                 </tbody>
               </table>
@@ -708,36 +706,36 @@
   </main>
 
   <!-- ROOM MODAL -->
-  <div *ngIf="showRoomModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add New Room</h3>
-        <button (click)="showRoomModal.set(false)" class="text-slate-400 hover:text-white">✕</button>
+  <div *ngIf="showRoomModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <h3 class="text-lg font-bold text-slate-800">Add New Room</h3>
+        <button (click)="showRoomModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveRoom(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Room Number</label>
-          <input type="text" [(ngModel)]="roomForm().number" name="number" required placeholder="e.g. 305" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Number</label>
+          <input type="text" [(ngModel)]="roomForm().number" name="number" required placeholder="e.g. 305" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Room Name</label>
-          <input type="text" [(ngModel)]="roomForm().name" name="name" required placeholder="e.g. Cloud Computing Lab" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Name</label>
+          <input type="text" [(ngModel)]="roomForm().name" name="name" required placeholder="e.g. Cloud Computing Lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Building (Block)</label>
-          <select [(ngModel)]="roomForm().buildingId" name="buildingId" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building (Block)</label>
+          <select [(ngModel)]="roomForm().buildingId" name="buildingId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
             <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor</label>
-          <select [(ngModel)]="roomForm().floorId" name="floorId" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor</label>
+          <select [(ngModel)]="roomForm().floorId" name="floorId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
             <option *ngFor="let f of getFloorsForSelectedBuilding()" [value]="f">{{ f }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Room Type</label>
-          <select [(ngModel)]="roomForm().type" name="type" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Type</label>
+          <select [(ngModel)]="roomForm().type" name="type" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
             <option value="classroom">Classroom</option>
             <option value="lab">Laboratory</option>
             <option value="office">Office</option>
@@ -746,34 +744,34 @@
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor Coordinate X (px)</label>
-            <input type="number" [(ngModel)]="roomForm().x" name="x" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Coordinate X (px)</label>
+            <input type="number" [(ngModel)]="roomForm().x" name="x" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor Coordinate Y (px)</label>
-            <input type="number" [(ngModel)]="roomForm().y" name="y" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Coordinate Y (px)</label>
+            <input type="number" [(ngModel)]="roomForm().y" name="y" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Linked QR Gate ID (Optional)</label>
-          <input type="text" [(ngModel)]="roomForm().qrCodeId" name="qrCodeId" placeholder="e.g. qr-cse-lab" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Linked QR Gate ID (Optional)</label>
+          <input type="text" [(ngModel)]="roomForm().qrCodeId" name="qrCodeId" placeholder="e.g. qr-cse-lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Current Subject / Class</label>
-            <input type="text" [(ngModel)]="roomForm().currentSubject" name="currentSubject" placeholder="e.g. Compiler Design" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Current Subject / Class</label>
+            <input type="text" [(ngModel)]="roomForm().currentSubject" name="currentSubject" placeholder="e.g. Compiler Design" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Occupied By</label>
-            <input type="text" [(ngModel)]="roomForm().occupiedBy" name="occupiedBy" placeholder="e.g. CSE-A 3rd Year" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Occupied By</label>
+            <input type="text" [(ngModel)]="roomForm().occupiedBy" name="occupiedBy" placeholder="e.g. CSE-A 3rd Year" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <input type="checkbox" [(ngModel)]="roomForm().isFree" name="isFree" id="isFree" class="w-4 h-4 bg-slate-950 border border-slate-800 focus:border-sky-500 rounded">
-          <label for="isFree" class="text-xs font-semibold text-slate-400 uppercase cursor-pointer">Room is currently Free</label>
+          <input type="checkbox" [(ngModel)]="roomForm().isFree" name="isFree" id="isFree" class="w-4 h-4 bg-slate-50 border border-slate-300 focus:border-sky-500 rounded text-sky-600">
+          <label for="isFree" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">Room is currently Free</label>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showRoomModal.set(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition-all">Cancel</button>
+          <button type="button" (click)="showRoomModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
           <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Room</button>
         </div>
       </form>
@@ -781,37 +779,37 @@
   </div>
 
   <!-- BUILDING MODAL -->
-  <div *ngIf="showBuildingModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add Campus Building</h3>
-        <button (click)="showBuildingModal.set(false)" class="text-slate-400 hover:text-white">✕</button>
+  <div *ngIf="showBuildingModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <h3 class="text-lg font-bold text-slate-800">Add Campus Building</h3>
+        <button (click)="showBuildingModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveBuilding(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Building Code</label>
-          <input type="text" [(ngModel)]="buildingForm().code" name="code" required placeholder="e.g. CSE" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building Code</label>
+          <input type="text" [(ngModel)]="buildingForm().code" name="code" required placeholder="e.g. CSE" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Building Name</label>
-          <input type="text" [(ngModel)]="buildingForm().name" name="name" required placeholder="e.g. Block A - Computer Science" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building Name</label>
+          <input type="text" [(ngModel)]="buildingForm().name" name="name" required placeholder="e.g. Block A - Computer Science" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Total Floors</label>
-          <input type="number" [(ngModel)]="buildingForm().totalFloors" name="totalFloors" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Total Floors</label>
+          <input type="number" [(ngModel)]="buildingForm().totalFloors" name="totalFloors" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">GPS Latitude</label>
-            <input type="number" step="any" [(ngModel)]="buildingForm().latitude" name="latitude" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">GPS Latitude</label>
+            <input type="number" step="any" [(ngModel)]="buildingForm().latitude" name="latitude" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">GPS Longitude</label>
-            <input type="number" step="any" [(ngModel)]="buildingForm().longitude" name="longitude" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">GPS Longitude</label>
+            <input type="number" step="any" [(ngModel)]="buildingForm().longitude" name="longitude" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showBuildingModal.set(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition-all">Cancel</button>
+          <button type="button" (click)="showBuildingModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
           <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Building</button>
         </div>
       </form>
@@ -819,37 +817,37 @@
   </div>
 
   <!-- QR MODAL -->
-  <div *ngIf="showQrModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add QR Entry Node</h3>
-        <button (click)="showQrModal.set(false)" class="text-slate-400 hover:text-white">✕</button>
+  <div *ngIf="showQrModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <h3 class="text-lg font-bold text-slate-800">Add QR Entry Node</h3>
+        <button (click)="showQrModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveQrCode(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">QR Code ID</label>
-          <input type="text" [(ngModel)]="qrForm().code" name="code" required placeholder="e.g. QR_CSE_LAB_110" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">QR Code ID</label>
+          <input type="text" [(ngModel)]="qrForm().code" name="code" required placeholder="e.g. QR_CSE_LAB_110" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Location Name</label>
-          <input type="text" [(ngModel)]="qrForm().locationName" name="locationName" required placeholder="e.g. CSE Wing Gate A" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Location Name</label>
+          <input type="text" [(ngModel)]="qrForm().locationName" name="locationName" required placeholder="e.g. CSE Wing Gate A" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Target Room ID</label>
-          <input type="text" [(ngModel)]="qrForm().targetRoomId" name="targetRoomId" placeholder="e.g. room-301" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Room ID</label>
+          <input type="text" [(ngModel)]="qrForm().targetRoomId" name="targetRoomId" placeholder="e.g. room-301" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Target Building ID</label>
-            <input type="text" [(ngModel)]="qrForm().targetBuildingId" name="targetBuildingId" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Building ID</label>
+            <input type="text" [(ngModel)]="qrForm().targetBuildingId" name="targetBuildingId" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Target Floor ID</label>
-            <input type="text" [(ngModel)]="qrForm().targetFloorId" name="targetFloorId" required class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Floor ID</label>
+            <input type="text" [(ngModel)]="qrForm().targetFloorId" name="targetFloorId" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showQrModal.set(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition-all">Cancel</button>
+          <button type="button" (click)="showQrModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Node</button>
         </div>
       </form>
@@ -857,31 +855,31 @@
   </div>
 
   <!-- FLOOR MODAL -->
-  <div *ngIf="showFloorModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add Building Floor</h3>
-        <button (click)="showFloorModal.set(false)" class="text-slate-400 hover:text-white">✕</button>
+  <div *ngIf="showFloorModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <h3 class="text-lg font-bold text-slate-800">Add Building Floor</h3>
+        <button (click)="showFloorModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveFloor(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor ID</label>
-          <input type="text" [(ngModel)]="floorForm().id" name="id" required placeholder="e.g. Floor1, GroundFloor" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor ID</label>
+          <input type="text" [(ngModel)]="floorForm().id" name="id" required placeholder="e.g. Floor1, GroundFloor" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor Name</label>
-          <input type="text" [(ngModel)]="floorForm().name" name="name" required placeholder="e.g. First Floor, Ground Floor" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Name</label>
+          <input type="text" [(ngModel)]="floorForm().name" name="name" required placeholder="e.g. First Floor, Ground Floor" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor Level (Numeric)</label>
-          <input type="number" [(ngModel)]="floorForm().level" name="level" required placeholder="e.g. 1, 0, -1" class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Level (Numeric)</label>
+          <input type="number" [(ngModel)]="floorForm().level" name="level" required placeholder="e.g. 1, 0, -1" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Floor Plan Image URL (Optional)</label>
-          <input type="text" [(ngModel)]="floorForm().floorPlanUrl" name="floorPlanUrl" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Plan Image URL (Optional)</label>
+          <input type="text" [(ngModel)]="floorForm().floorPlanUrl" name="floorPlanUrl" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition-all">Cancel</button>
+          <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Floor</button>
         </div>
       </form>
