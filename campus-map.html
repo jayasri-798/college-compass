@@ -557,6 +557,96 @@
       box-shadow: 0 2px 8px rgba(26,115,232,0.35);
     }
 
+    /* Start Location Selector Bar */
+    .gm-start-selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      width: 100%;
+    }
+    .gm-start-loc-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .gm-start-loc-chip {
+      flex: 1;
+      height: 34px;
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 18px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #202124;
+      font-family: inherit;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      transition: all 0.15s;
+    }
+    .gm-start-loc-chip:hover {
+      border-color: #1a73e8;
+      background: #f8f9fa;
+    }
+    .gm-start-gps-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      color: #1a73e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .gm-start-gps-btn:hover {
+      background: #e8f0fe;
+    }
+    .gm-start-gps-btn.spinning i {
+      animation: gmSpin 1s linear infinite;
+    }
+    @keyframes gmSpin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Off-campus Alert Banner */
+    .gm-offcampus-banner {
+      position: absolute;
+      top: 130px;
+      left: 16px;
+      right: 16px;
+      max-width: 440px;
+      margin: 0 auto;
+      background: #fef7e0;
+      border: 1px solid #f9ab00;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #3c4043;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 1200;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
     /* ==========================================================================
        5. FLOATING MAP ACTION BUTTONS (Compass, Recenter, Layers)
        ========================================================================== */
@@ -863,6 +953,19 @@
       </div>
     </div>
 
+    <!-- Start Location Indicator & Selector Bar -->
+    <div class="gm-start-selector-bar">
+      <span class="gm-start-loc-label">From:</span>
+      <button class="gm-start-loc-chip" id="open-start-picker-btn" title="Click to Change Starting Point or Use GPS">
+        <i class="fa-solid fa-crosshairs" style="color: #1a73e8;"></i>
+        <span id="current-start-label">Acquiring GPS...</span>
+        <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #5f6368;"></i>
+      </button>
+      <button class="gm-start-gps-btn" id="btn-sync-gps" title="Re-detect Live GPS">
+        <i class="fa-solid fa-location-arrow"></i>
+      </button>
+    </div>
+
     <!-- Category Filter Chips Row -->
     <div class="gm-chips-row">
       <button class="gm-chip" data-dest="main-office">
@@ -893,6 +996,98 @@
 
     <!-- Autocomplete Search Suggestions Dropdown -->
     <div class="gm-suggestions-card" id="gm-suggestions"></div>
+  </div>
+
+  <!-- Off-campus Alert Banner -->
+  <div class="gm-offcampus-banner" id="offcampus-banner">
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <i class="fa-solid fa-triangle-exclamation" style="color: #e37400; font-size: 15px;"></i>
+      <span>You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.</span>
+    </div>
+    <button class="gm-icon-btn" id="close-offcampus-banner" style="width: 24px; height: 24px; font-size: 14px;">&times;</button>
+  </div>
+
+  <!-- Start Location Selection Modal -->
+  <div class="gm-modal-overlay" id="start-location-modal" style="display: none;">
+    <div class="gm-modal-card" style="max-width: 440px;">
+      <div class="gm-modal-header">
+        <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-location-dot" style="color: var(--gm-blue);"></i>
+          <span>Choose Your Starting Location</span>
+        </div>
+        <button class="gm-icon-btn" id="close-start-modal">&times;</button>
+      </div>
+      <div style="padding: 14px 18px; max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <p style="font-size: 12px; color: #5f6368; margin-bottom: 6px;">
+          Select where you are right now in KHIT campus to set your starting location:
+        </p>
+        <button class="gm-start-option" data-type="gps" style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1.5px solid #1a73e8; background: #e8f0fe; border-radius: 12px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-location-arrow" style="font-size: 18px; color: #1a73e8;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #1a73e8;">Use My Real GPS Location</div>
+            <div style="font-size: 11px; color: #5f6368;">Auto-detects high-accuracy phone/device satellite GPS</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="qr" style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #dadce0; background: #fff; border-radius: 12px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-qrcode" style="font-size: 18px; color: #5f6368;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #202124;">Scan Door / Gate QR Code</div>
+            <div style="font-size: 11px; color: #5f6368;">Instantly locks your location with 100% precision</div>
+          </div>
+        </button>
+
+        <div style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase; margin-top: 6px;">Popular Campus Entrances:</div>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.256891,80.333380" data-label="Main Gate Entrance" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-door-open" style="color: #f9ab00;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">Main Gate Entrance (Gate 1)</div>
+            <div style="font-size: 11px; color: #5f6368;">Campus Security Office & Visitor Registration</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.258009,80.332492" data-label="Main Office Entrance" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-briefcase" style="color: #ea4335;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">Main Administrative Block Portico</div>
+            <div style="font-size: 11px; color: #5f6368;">Principal Office, Admissions & Exam Cell</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.258056,80.332672" data-label="CSE Block 2 Entrance" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-laptop-code" style="color: #1a73e8;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">CSE Block 2 Entrance</div>
+            <div style="font-size: 11px; color: #5f6368;">Computer Labs, AI/ML Wing & Seminar Halls</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.258339,80.3333195" data-label="ECE Block 3 Entrance" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-microchip" style="color: #1a73e8;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">ECE Block 3 Entrance</div>
+            <div style="font-size: 11px; color: #5f6368;">Electronics Labs & Power Systems</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.257509,80.333457" data-label="Central Library Entrance" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-book-open-reader" style="color: #f9ab00;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">Central Library Entrance</div>
+            <div style="font-size: 11px; color: #5f6368;">Digital Library, Reading Rooms & Book Bank</div>
+          </div>
+        </button>
+
+        <button class="gm-start-option" data-type="coords" data-coords="16.257200,80.332800" data-label="Cafeteria Food Court" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #dadce0; background: #fff; border-radius: 10px; cursor: pointer; text-align: left;">
+          <i class="fa-solid fa-utensils" style="color: #34a853;"></i>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: #202124;">Cafeteria & Food Court Entrance</div>
+            <div style="font-size: 11px; color: #5f6368;">Student Dining Hall & Canteen Lounge</div>
+          </div>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- GOOGLE MAPS NAVIGATION MODE: Top Green Directions Banner -->
@@ -1531,28 +1726,29 @@
       }, true);
     }
 
-    // Geolocation Live Tracker Button
-    let isGpsActive = false;
-    document.getElementById('fab-my-location').addEventListener('click', () => {
-      if (!isGpsActive) {
-        map.locate({ watch: true, enableHighAccuracy: true });
-        document.getElementById('fab-my-location').classList.add('tracking-active');
-        isGpsActive = true;
-      } else {
-        map.stopLocate();
-        document.getElementById('fab-my-location').classList.remove('tracking-active');
-        isGpsActive = false;
-      }
+    // Start Location state & deadband movement filter
+    const MIN_MOVEMENT_THRESHOLD_METERS = 4.0;
+    let lastGpsCoords = null;
+
+    function setStartLocationLabel(text) {
+      const el = document.getElementById('current-start-label');
+      if (el) el.innerText = text;
+    }
+
+    function showOffCampusBanner(distMeters) {
+      const banner = document.getElementById('offcampus-banner');
+      const distText = document.getElementById('offcampus-dist-text');
+      if (!banner) return;
+      const km = (distMeters / 1000).toFixed(1);
+      if (distText) distText.innerText = `${km} km outside`;
+      banner.style.display = 'flex';
+    }
+
+    document.getElementById('close-offcampus-banner').addEventListener('click', () => {
+      document.getElementById('offcampus-banner').style.display = 'none';
     });
 
-    map.on('locationfound', (e) => {
-      setUserPosition([e.latlng.lat, e.latlng.lng], 'Live GPS');
-      if (!isNavigating) {
-        map.panTo(e.latlng, { animate: true, duration: 0.5 });
-      }
-    });
-
-    // Real-time GPS Watcher during navigation
+    // Real-time GPS Watcher during navigation (With Deadband Filter!)
     function startGpsWatch() {
       if ('geolocation' in navigator) {
         if (watchGpsId !== null) {
@@ -1563,15 +1759,26 @@
             if (isSimulatingWalk) return;
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
             let heading = position.coords.heading;
 
-            if ((heading === null || isNaN(heading)) && userLocation) {
-              const d = getDistanceMeters(userLocation.lat, userLocation.lng, lat, lng);
-              if (d >= 2) {
-                heading = calculateBearing(userLocation.lat, userLocation.lng, lat, lng);
+            // 1. Ignore low-accuracy GPS spikes (> 35m error)
+            if (accuracy && accuracy > 35) {
+              return;
+            }
+
+            // 2. Deadband Filter: Ignore GPS sensor drift / jitter while standing still!
+            if (lastGpsCoords) {
+              const d = getDistanceMeters(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
+              if (d < MIN_MOVEMENT_THRESHOLD_METERS) {
+                return; // User has not physically moved >= 4 meters; do NOT move camera or trim route!
+              }
+              if (heading === null || isNaN(heading)) {
+                heading = calculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
               }
             }
 
+            lastGpsCoords = [lat, lng];
             setUserPosition([lat, lng], 'Live Walking GPS', heading);
           },
           (err) => {
@@ -1593,10 +1800,123 @@
       }
     }
 
-    // Simulate location at Main Gate
+    // High-Accuracy GPS Acquisition Helper
+    const syncGpsBtn = document.getElementById('btn-sync-gps');
+    const startModal = document.getElementById('start-location-modal');
+    const openStartBtn = document.getElementById('open-start-picker-btn');
+    const closeStartBtn = document.getElementById('close-start-modal');
+
+    function acquireRealGps(onSuccess, onError) {
+      if (!('geolocation' in navigator)) {
+        showAdminToast('Geolocation is not supported by your browser.');
+        if (onError) onError('Geolocation not supported');
+        return;
+      }
+
+      if (syncGpsBtn) syncGpsBtn.classList.add('spinning');
+      setStartLocationLabel('Acquiring GPS...');
+      showAdminToast('Requesting high-accuracy device GPS...');
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (syncGpsBtn) syncGpsBtn.classList.remove('spinning');
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const accuracy = pos.coords.accuracy;
+          const distToCampus = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+
+          if (distToCampus <= 800) {
+            // User is physically on KHIT Campus!
+            lastGpsCoords = [lat, lng];
+            setUserPosition([lat, lng], 'My Live Location');
+            setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
+            map.flyTo([lat, lng], 19);
+            showAdminToast(`GPS Locked on Campus (±${Math.round(accuracy)}m)`);
+            if (isNavigating && selectedPlace) {
+              startGoogleNavigation(selectedPlace);
+            }
+            if (onSuccess) onSuccess([lat, lng]);
+          } else {
+            // User is testing off-campus (at home / hostel)
+            lastGpsCoords = [16.256891, 80.333380];
+            setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+            setStartLocationLabel('Main Gate (Gate 1)');
+            showOffCampusBanner(distToCampus);
+            map.flyTo([16.256891, 80.333380], 18);
+            showAdminToast(`You are ${Math.round(distToCampus/1000)}km from KHIT. Location set to Main Gate.`);
+            if (onSuccess) onSuccess([16.256891, 80.333380]);
+          }
+        },
+        (err) => {
+          if (syncGpsBtn) syncGpsBtn.classList.remove('spinning');
+          console.warn('GPS lookup error:', err);
+          lastGpsCoords = [16.256891, 80.333380];
+          setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+          setStartLocationLabel('Main Gate (Gate 1)');
+          showAdminToast('Could not acquire GPS. Defaulted to Main Gate.');
+          if (onError) onError(err);
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    }
+
+    if (syncGpsBtn) {
+      syncGpsBtn.addEventListener('click', () => {
+        acquireRealGps();
+      });
+    }
+
+    document.getElementById('fab-my-location').addEventListener('click', () => {
+      acquireRealGps();
+    });
+
+    if (openStartBtn) {
+      openStartBtn.addEventListener('click', () => {
+        startModal.style.display = 'flex';
+      });
+    }
+
+    if (closeStartBtn) {
+      closeStartBtn.addEventListener('click', () => {
+        startModal.style.display = 'none';
+      });
+    }
+
+    // Modal Option Click Handlers
+    document.querySelectorAll('.gm-start-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        startModal.style.display = 'none';
+        const type = btn.dataset.type;
+
+        if (type === 'gps') {
+          acquireRealGps();
+        } else if (type === 'qr') {
+          qrModal.style.display = 'flex';
+          startCameraScanner();
+        } else if (type === 'coords') {
+          const rawCoords = btn.dataset.coords.split(',').map(Number);
+          const label = btn.dataset.label;
+          lastGpsCoords = rawCoords;
+          setUserPosition(rawCoords, label);
+          setStartLocationLabel(label);
+          map.flyTo(rawCoords, 19);
+          showAdminToast(`Start location set to ${label}`);
+
+          // Recalculate route if navigating
+          if (isNavigating && selectedPlace) {
+            startGoogleNavigation(selectedPlace);
+          }
+        }
+      });
+    });
+
+    // Simulate location at Main Gate button
     document.getElementById('fab-demo-gate').addEventListener('click', () => {
+      lastGpsCoords = [16.256891, 80.333380];
       setUserPosition([16.256891, 80.333380], 'Main Gate Entrance', 0);
+      setStartLocationLabel('Main Gate Entrance');
       map.flyTo([16.256891, 80.333380], 19);
+      showAdminToast('Location set to Main Gate Entrance');
     });
 
     // =========================================================================
@@ -1889,9 +2209,6 @@
     });
     document.getElementById('sheet-walk-btn').addEventListener('click', () => {
       startGoogleNavigation(selectedPlace);
-      setTimeout(() => {
-        startWalkSimulation();
-      }, 500);
     });
 
     // =========================================================================
@@ -1986,7 +2303,6 @@
               openEditPlaceModal(p);
             } else {
               openPlaceSheet(p);
-              startGoogleNavigation(p);
             }
           }
         });
@@ -2319,15 +2635,61 @@
     // =========================================================================
     // 8. URL PARAMETERS (Auto-Route on QR Scan from Phone Camera)
     // =========================================================================
+    function initUserLocation() {
+      if ('geolocation' in navigator) {
+        setStartLocationLabel('Acquiring Campus GPS...');
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const accuracy = pos.coords.accuracy;
+            const dist = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+
+            if (dist <= 800) {
+              // User is physically on KHIT Campus!
+              lastGpsCoords = [lat, lng];
+              setUserPosition([lat, lng], 'My Live Location');
+              setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
+              map.setView([lat, lng], 19);
+            } else {
+              // User is testing off-campus (at home / hostel)
+              lastGpsCoords = [16.256891, 80.333380];
+              setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+              setStartLocationLabel('Main Gate (Gate 1)');
+              showOffCampusBanner(dist);
+              map.setView(CAMPUS_CENTER, 18);
+            }
+          },
+          (err) => {
+            console.warn('GPS initial lookup:', err.message);
+            lastGpsCoords = [16.256891, 80.333380];
+            setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+            setStartLocationLabel('Main Gate (Gate 1)');
+            map.setView(CAMPUS_CENTER, 18);
+          },
+          { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        );
+      } else {
+        lastGpsCoords = [16.256891, 80.333380];
+        setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+        setStartLocationLabel('Main Gate (Gate 1)');
+        map.setView(CAMPUS_CENTER, 18);
+      }
+    }
+
     function parseUrl() {
       const params = new URLSearchParams(window.location.search);
       const qrParam = params.get('qr') || params.get('start');
       const destParam = params.get('dest');
 
       if (qrParam && qrAnchorDatabase[qrParam]) {
-        setUserPosition(qrAnchorDatabase[qrParam].coords, qrAnchorDatabase[qrParam].name);
+        const anchor = qrAnchorDatabase[qrParam];
+        lastGpsCoords = anchor.coords;
+        setUserPosition(anchor.coords, anchor.name);
+        setStartLocationLabel(anchor.name);
+        map.setView(anchor.coords, 19);
       } else if (!isAdminMode) {
-        setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+        initUserLocation();
       }
 
       if (isAdminMode) {
@@ -2339,7 +2701,7 @@
         const targetPlace = campusPlaces.find(p => p.id === destParam);
         if (targetPlace) {
           setTimeout(() => {
-            startGoogleNavigation(targetPlace);
+            openPlaceSheet(targetPlace);
           }, 600);
         }
       }
