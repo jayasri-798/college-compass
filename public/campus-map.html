@@ -505,6 +505,58 @@
       color: #d93025;
     }
 
+    /* Google Maps Re-center Floating Pill Button */
+    .gm-recenter-btn {
+      position: absolute;
+      bottom: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #1a73e8;
+      border: 1px solid #dadce0;
+      border-radius: 28px;
+      padding: 10px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 2100;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gm-recenter-btn:hover {
+      background: #f8f9fa;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    /* Walk Simulation Button */
+    .gm-nav-walk-sim-btn {
+      padding: 9px 14px;
+      background: #e8f0fe;
+      color: #1a73e8;
+      border: 1px solid #d2e3fc;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .gm-nav-walk-sim-btn:hover {
+      background: #d2e3fc;
+    }
+    .gm-nav-walk-sim-btn.active {
+      background: #1a73e8;
+      color: #ffffff;
+      border-color: #1a73e8;
+      box-shadow: 0 2px 8px rgba(26,115,232,0.35);
+    }
+
     /* ==========================================================================
        5. FLOATING MAP ACTION BUTTONS (Compass, Recenter, Layers)
        ========================================================================== */
@@ -549,6 +601,36 @@
     /* Google Maps Glowing Blue Dot with Vision Beam */
     .gm-user-dot-wrapper {
       position: relative;
+    }
+    .gm-user-heading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      transition: transform 0.2s ease-out;
+    }
+    .gm-user-beam {
+      position: absolute;
+      top: -55px;
+      left: -30px;
+      width: 60px;
+      height: 55px;
+      background: radial-gradient(circle at 50% 100%, rgba(66, 133, 244, 0.45) 0%, rgba(66, 133, 244, 0) 80%);
+      clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+      pointer-events: none;
+    }
+    .gm-user-arrow {
+      position: absolute;
+      top: -15px;
+      left: -6px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 10px solid #ffffff;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
     }
     .gm-user-core-dot {
       width: 16px;
@@ -824,18 +906,30 @@
     </div>
   </div>
 
+  <!-- Floating Google Maps Re-center Pill Button -->
+  <button class="gm-recenter-btn" id="nav-recenter-btn">
+    <i class="fa-solid fa-location-crosshairs"></i>
+    <span>Re-center</span>
+  </button>
+
   <!-- GOOGLE MAPS NAVIGATION MODE: Bottom Sheet Stats -->
   <div class="gm-nav-bottom-sheet" id="nav-bottom-sheet">
-    <div>
+    <div style="flex: 1;">
       <div class="gm-nav-stat-time" id="nav-time-text">2 min</div>
       <div class="gm-nav-stat-sub">
         <span id="nav-meters-text">160 m</span> • 
         <span id="nav-dest-title">Main Office</span>
       </div>
     </div>
-    <button class="gm-nav-close-btn" id="exit-nav-btn" title="Exit Navigation">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="gm-nav-walk-sim-btn" id="nav-walk-sim-btn" title="Simulate Walking Live along Route">
+        <i class="fa-solid fa-person-walking" id="nav-sim-icon"></i>
+        <span id="nav-sim-text">Simulate Walk</span>
+      </button>
+      <button class="gm-nav-close-btn" id="exit-nav-btn" title="Exit Navigation">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
   </div>
 
   <!-- Main Map Canvas -->
@@ -1319,7 +1413,7 @@
     }
 
     // =========================================================================
-    // 4. USER LOCATION & NAVIGATION STATE
+    // 4. USER LOCATION, CAMERA AUTO-FOLLOW & NAVIGATION STATE
     // =========================================================================
     let userLocation = null;
     let userMarker = null;
@@ -1327,25 +1421,117 @@
     let activeRouteUnderlay = null;
     let selectedPlace = null;
     let isNavigating = false;
+    let isCameraFollow = true;
+    let currentUserHeading = 0;
+    let currentRoutePoints = [];
+    let watchGpsId = null;
+    let walkSimInterval = null;
+    let isSimulatingWalk = false;
+    let simSubSteps = [];
+    let simStepIndex = 0;
 
-    function setUserPosition(coords, label = 'My Location') {
+    function calculateBearing(lat1, lon1, lat2, lon2) {
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
+      const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
+                Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
+      let brng = Math.atan2(y, x) * 180 / Math.PI;
+      return (brng + 360) % 360;
+    }
+
+    function updateUserHeading(deg) {
+      currentUserHeading = deg;
+      const el = document.getElementById('user-heading-wrapper');
+      if (el) {
+        el.style.transform = `rotate(${Math.round(deg)}deg)`;
+      }
+    }
+
+    function setUserPosition(coords, label = 'My Location', heading = null) {
       userLocation = L.latLng(coords[0], coords[1]);
 
       if (!userMarker) {
         const dotIcon = L.divIcon({
           className: 'gm-user-dot-wrapper',
-          html: '<div class="gm-user-pulse"></div><div class="gm-user-core-dot"></div>',
+          html: `
+            <div class="gm-user-pulse"></div>
+            <div class="gm-user-heading" id="user-heading-wrapper" style="transform: rotate(${currentUserHeading}deg);">
+              <div class="gm-user-beam"></div>
+              <div class="gm-user-arrow"></div>
+            </div>
+            <div class="gm-user-core-dot"></div>
+          `,
           iconSize: [0, 0]
         });
-        userMarker = L.marker(userLocation, { icon: dotIcon }).addTo(map);
+        userMarker = L.marker(userLocation, { icon: dotIcon, zIndexOffset: 1000 }).addTo(map);
       } else {
         userMarker.setLatLng(userLocation);
+      }
+
+      if (heading !== null && !isNaN(heading)) {
+        updateUserHeading(heading);
+      }
+
+      // GOOGLE MAPS AUTO-FOLLOW CAMERA:
+      // When navigating or watching GPS, continuously pan map camera along with user!
+      if (isNavigating) {
+        if (isCameraFollow) {
+          map.panTo(userLocation, { animate: true, duration: 0.5 });
+        }
+        updateLiveNavigationProgress();
+      } else if (isGpsActive) {
+        map.panTo(userLocation, { animate: true, duration: 0.5 });
       }
 
       checkArrival();
     }
 
-    // Geolocation Live Tracker
+    // Re-center / Follow Controls
+    const recenterBtn = document.getElementById('nav-recenter-btn');
+
+    function enableCameraFollow() {
+      isCameraFollow = true;
+      if (recenterBtn) recenterBtn.style.display = 'none';
+      if (userLocation) {
+        map.flyTo(userLocation, 19, { animate: true, duration: 0.6 });
+      }
+    }
+
+    function disableCameraFollow() {
+      if (!isNavigating) return;
+      isCameraFollow = false;
+      if (recenterBtn) recenterBtn.style.display = 'flex';
+    }
+
+    map.on('dragstart', () => {
+      if (isNavigating) {
+        disableCameraFollow();
+      }
+    });
+
+    if (recenterBtn) {
+      recenterBtn.addEventListener('click', () => {
+        enableCameraFollow();
+      });
+    }
+
+    // Device Compass Heading for Mobile Phones
+    if (window.DeviceOrientationEvent) {
+      const evtName = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+      window.addEventListener(evtName, (event) => {
+        let heading = null;
+        if (event.webkitCompassHeading) {
+          heading = event.webkitCompassHeading;
+        } else if (event.alpha !== null) {
+          heading = 360 - event.alpha;
+        }
+        if (heading !== null && isNavigating && !isSimulatingWalk) {
+          updateUserHeading(heading);
+        }
+      }, true);
+    }
+
+    // Geolocation Live Tracker Button
     let isGpsActive = false;
     document.getElementById('fab-my-location').addEventListener('click', () => {
       if (!isGpsActive) {
@@ -1362,25 +1548,66 @@
     map.on('locationfound', (e) => {
       setUserPosition([e.latlng.lat, e.latlng.lng], 'Live GPS');
       if (!isNavigating) {
-        map.panTo(e.latlng);
+        map.panTo(e.latlng, { animate: true, duration: 0.5 });
       }
     });
 
+    // Real-time GPS Watcher during navigation
+    function startGpsWatch() {
+      if ('geolocation' in navigator) {
+        if (watchGpsId !== null) {
+          navigator.geolocation.clearWatch(watchGpsId);
+        }
+        watchGpsId = navigator.geolocation.watchPosition(
+          (position) => {
+            if (isSimulatingWalk) return;
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            let heading = position.coords.heading;
+
+            if ((heading === null || isNaN(heading)) && userLocation) {
+              const d = getDistanceMeters(userLocation.lat, userLocation.lng, lat, lng);
+              if (d >= 2) {
+                heading = calculateBearing(userLocation.lat, userLocation.lng, lat, lng);
+              }
+            }
+
+            setUserPosition([lat, lng], 'Live Walking GPS', heading);
+          },
+          (err) => {
+            console.warn('GPS watch notice:', err.message);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 1000,
+            timeout: 10000
+          }
+        );
+      }
+    }
+
+    function stopGpsWatch() {
+      if (watchGpsId !== null && 'geolocation' in navigator) {
+        navigator.geolocation.clearWatch(watchGpsId);
+        watchGpsId = null;
+      }
+    }
+
     // Simulate location at Main Gate
     document.getElementById('fab-demo-gate').addEventListener('click', () => {
-      setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+      setUserPosition([16.256891, 80.333380], 'Main Gate Entrance', 0);
       map.flyTo([16.256891, 80.333380], 19);
     });
 
     // =========================================================================
-    // 5. GOOGLE MAPS STYLE NAVIGATION START & ROUTE RENDERING
+    // 5. GOOGLE MAPS STYLE NAVIGATION START, AUTO-FOLLOW & LIVE STATS
     // =========================================================================
     function startGoogleNavigation(place) {
       if (!place) return;
       selectedPlace = place;
 
       if (!userLocation) {
-        setUserPosition([16.256891, 80.333380], 'Main Gate (Default Start)');
+        setUserPosition([16.256891, 80.333380], 'Main Gate (Default Start)', 0);
       }
 
       const startNode = findNearestNode([userLocation.lat, userLocation.lng]);
@@ -1398,6 +1625,7 @@
         }
       }
       routePoints.push(place.coords);
+      currentRoutePoints = routePoints;
 
       // Clean existing lines
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
@@ -1422,8 +1650,6 @@
         lineJoin: 'round'
       }).addTo(map);
 
-      map.fitBounds(activeRoutePolyline.getBounds(), { padding: [80, 80] });
-
       // Enter Google Maps Navigation Mode
       isNavigating = true;
       document.getElementById('top-container').style.display = 'none';
@@ -1441,12 +1667,188 @@
       document.getElementById('nav-top-banner').style.display = 'flex';
       document.getElementById('nav-bottom-sheet').style.display = 'flex';
 
-      checkArrival();
+      // Enable Auto-Follow Camera & Focus on User Dot
+      enableCameraFollow();
+      startGpsWatch();
+
+      // Reset Simulation Button
+      stopWalkSimulation();
+
+      // Calculate initial heading towards first waypoint
+      if (routePoints.length >= 2) {
+        const initBearing = calculateBearing(routePoints[0][0], routePoints[0][1], routePoints[1][0], routePoints[1][1]);
+        updateUserHeading(initBearing);
+      }
+    }
+
+    // Dynamic Live Progress & Maneuver Updates as user moves
+    function updateLiveNavigationProgress() {
+      if (!isNavigating || !userLocation || !selectedPlace || currentRoutePoints.length < 2) return;
+
+      const userLat = userLocation.lat;
+      const userLng = userLocation.lng;
+
+      // Find closest segment in route
+      let minD = Infinity;
+      let closestIdx = 0;
+      for (let i = 0; i < currentRoutePoints.length - 1; i++) {
+        const ptA = currentRoutePoints[i];
+        const ptB = currentRoutePoints[i+1];
+        const d = getDistanceMeters(userLat, userLng, ptB[0], ptB[1]);
+        if (d < minD) {
+          minD = d;
+          closestIdx = i;
+        }
+      }
+
+      // Calculate remaining distance along route
+      let remainingMeters = getDistanceMeters(userLat, userLng, currentRoutePoints[closestIdx + 1][0], currentRoutePoints[closestIdx + 1][1]);
+      for (let j = closestIdx + 1; j < currentRoutePoints.length - 1; j++) {
+        remainingMeters += getDistanceMeters(
+          currentRoutePoints[j][0], currentRoutePoints[j][1],
+          currentRoutePoints[j+1][0], currentRoutePoints[j+1][1]
+        );
+      }
+
+      // Update ETA and Meters
+      const etaMinutes = Math.max(1, Math.round(remainingMeters / 70));
+      const metersEl = document.getElementById('nav-meters-text');
+      const timeEl = document.getElementById('nav-time-text');
+      if (metersEl) metersEl.innerText = `${remainingMeters} m`;
+      if (timeEl) timeEl.innerText = `${etaMinutes} min`;
+
+      // Update Top Green Instruction Banner
+      const distToNext = getDistanceMeters(userLat, userLng, currentRoutePoints[closestIdx + 1][0], currentRoutePoints[closestIdx + 1][1]);
+      const stepDistEl = document.getElementById('nav-step-dist');
+      const stepNameEl = document.getElementById('nav-step-name');
+      const turnIconEl = document.getElementById('nav-turn-icon');
+
+      if (remainingMeters <= 15) {
+        if (stepDistEl) stepDistEl.innerText = `${remainingMeters} m`;
+        if (stepNameEl) stepNameEl.innerText = `Arriving at ${selectedPlace.name}`;
+        if (turnIconEl) turnIconEl.className = 'fa-solid fa-location-dot';
+      } else {
+        if (stepDistEl) stepDistEl.innerText = `In ${Math.max(5, distToNext)} m`;
+
+        if (closestIdx + 2 < currentRoutePoints.length) {
+          const p1 = currentRoutePoints[closestIdx];
+          const p2 = currentRoutePoints[closestIdx + 1];
+          const p3 = currentRoutePoints[closestIdx + 2];
+          const b1 = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
+          const b2 = calculateBearing(p2[0], p2[1], p3[0], p3[1]);
+          let diff = (b2 - b1 + 360) % 360;
+          if (diff > 180) diff -= 360;
+
+          if (diff > 35) {
+            if (stepNameEl) stepNameEl.innerText = `Turn right towards ${selectedPlace.name}`;
+            if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-right';
+          } else if (diff < -35) {
+            if (stepNameEl) stepNameEl.innerText = `Turn left towards ${selectedPlace.name}`;
+            if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-down fa-flip-horizontal';
+          } else {
+            if (stepNameEl) stepNameEl.innerText = `Continue straight on pathway`;
+            if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
+          }
+        } else {
+          if (stepNameEl) stepNameEl.innerText = `Head to entrance of ${selectedPlace.name}`;
+          if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
+        }
+      }
+
+      // Dynamically trim traveled path in Google Maps navigation style
+      if (activeRoutePolyline) {
+        const remainingPoints = [[userLat, userLng], ...currentRoutePoints.slice(closestIdx + 1)];
+        activeRoutePolyline.setLatLngs(remainingPoints);
+        if (activeRouteUnderlay) activeRouteUnderlay.setLatLngs(remainingPoints);
+      }
+    }
+
+    // =========================================================================
+    // WALKING SIMULATION (For Testing Indoors & Seeing Camera Move with User)
+    // =========================================================================
+    function generateSimSteps(points, stepMeters = 1.8) {
+      const steps = [];
+      for (let i = 0; i < points.length - 1; i++) {
+        const p1 = points[i];
+        const p2 = points[i+1];
+        const d = getDistanceMeters(p1[0], p1[1], p2[0], p2[1]);
+        const numSubSteps = Math.max(1, Math.round(d / stepMeters));
+        for (let s = 0; s < numSubSteps; s++) {
+          const frac = s / numSubSteps;
+          const lat = p1[0] + (p2[0] - p1[0]) * frac;
+          const lng = p1[1] + (p2[1] - p1[1]) * frac;
+          const bearing = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
+          steps.push({ coords: [lat, lng], bearing: bearing });
+        }
+      }
+      const last = points[points.length - 1];
+      const prev = points[points.length - 2] || last;
+      steps.push({ coords: last, bearing: calculateBearing(prev[0], prev[1], last[0], last[1]) });
+      return steps;
+    }
+
+    function startWalkSimulation() {
+      if (!currentRoutePoints || currentRoutePoints.length < 2) return;
+      stopWalkSimulation();
+
+      isSimulatingWalk = true;
+      simSubSteps = generateSimSteps(currentRoutePoints, 1.8);
+      simStepIndex = 0;
+
+      const simBtn = document.getElementById('nav-walk-sim-btn');
+      const simText = document.getElementById('nav-sim-text');
+      const simIcon = document.getElementById('nav-sim-icon');
+      if (simBtn) simBtn.classList.add('active');
+      if (simText) simText.innerText = 'Pause Walk';
+      if (simIcon) simIcon.className = 'fa-solid fa-pause';
+
+      enableCameraFollow();
+
+      walkSimInterval = setInterval(() => {
+        if (simStepIndex >= simSubSteps.length) {
+          stopWalkSimulation();
+          return;
+        }
+        const step = simSubSteps[simStepIndex];
+        setUserPosition(step.coords, 'Walking Simulation', step.bearing);
+        simStepIndex++;
+      }, 150);
+    }
+
+    function stopWalkSimulation() {
+      if (walkSimInterval) {
+        clearInterval(walkSimInterval);
+        walkSimInterval = null;
+      }
+      isSimulatingWalk = false;
+      const simBtn = document.getElementById('nav-walk-sim-btn');
+      const simText = document.getElementById('nav-sim-text');
+      const simIcon = document.getElementById('nav-sim-icon');
+      if (simBtn) simBtn.classList.remove('active');
+      if (simText) simText.innerText = 'Simulate Walk';
+      if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
+    }
+
+    function toggleWalkSimulation() {
+      if (isSimulatingWalk) {
+        stopWalkSimulation();
+      } else {
+        startWalkSimulation();
+      }
+    }
+
+    const navWalkSimBtn = document.getElementById('nav-walk-sim-btn');
+    if (navWalkSimBtn) {
+      navWalkSimBtn.addEventListener('click', toggleWalkSimulation);
     }
 
     // Exit Navigation
     document.getElementById('exit-nav-btn').addEventListener('click', () => {
       isNavigating = false;
+      stopWalkSimulation();
+      stopGpsWatch();
+
+      if (recenterBtn) recenterBtn.style.display = 'none';
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       if (activeRouteUnderlay) map.removeLayer(activeRouteUnderlay);
 
@@ -1487,6 +1889,9 @@
     });
     document.getElementById('sheet-walk-btn').addEventListener('click', () => {
       startGoogleNavigation(selectedPlace);
+      setTimeout(() => {
+        startWalkSimulation();
+      }, 500);
     });
 
     // =========================================================================
