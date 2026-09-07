@@ -933,34 +933,39 @@
     // =========================================================================
     // 2. GOOGLE MAPS TILES & LEAFLET CANVAS
     // =========================================================================
-    // Clean CartoDB Voyager map tiles (closest modern look to Google Maps standard theme)
-    const googleStyleStreets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20,
-      subdomains: 'abcd',
-      attribution: '&copy; Google Maps Styled by CartoDB'
+    // 1. Official Google Maps Standard Vector Tiles
+    const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 22,
+      maxNativeZoom: 19, // Prevents "Map data not yet available" by scaling native tiles
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google Maps'
     });
 
-    const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 20,
-      attribution: '&copy; Esri World Imagery'
+    // 2. Official Google Maps High-Res Hybrid Satellite (Imagery + Roads/Labels)
+    const googleSatellite = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      maxZoom: 22,
+      maxNativeZoom: 19, // Prevents ESRI/OSM "Map data not yet available" on high zoom
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google Maps Satellite'
     });
 
     const map = L.map('map', {
       center: CAMPUS_CENTER,
       zoom: DEFAULT_ZOOM,
+      maxZoom: 22,
       zoomControl: false,
-      layers: [googleStyleStreets]
+      layers: [googleStreets]
     });
 
     let currentLayerType = 'streets';
     document.getElementById('fab-layers').addEventListener('click', () => {
       if (currentLayerType === 'streets') {
-        map.removeLayer(googleStyleStreets);
-        map.addLayer(esriSatellite);
+        map.removeLayer(googleStreets);
+        map.addLayer(googleSatellite);
         currentLayerType = 'satellite';
       } else {
-        map.removeLayer(esriSatellite);
-        map.addLayer(googleStyleStreets);
+        map.removeLayer(googleSatellite);
+        map.addLayer(googleStreets);
         currentLayerType = 'streets';
       }
     });

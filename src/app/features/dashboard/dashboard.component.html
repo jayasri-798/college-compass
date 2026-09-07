@@ -17,13 +17,27 @@
       <!-- Navigation Links -->
       <nav class="p-4 space-y-2">
         <a href="#" 
+           (click)="switchTab('map'); $event.preventDefault();"
+           [ngClass]="activeTab() === 'map' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
+           class="flex items-center justify-between px-4 py-3 rounded-xl border transition-all group">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sky-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+            </svg>
+            <span>Campus Map</span>
+          </div>
+          <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 2D GPS
+          </span>
+        </a>
+        <a href="#" 
            (click)="switchTab('rooms'); $event.preventDefault();"
            [ngClass]="activeTab() === 'rooms' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
-          Dashboard Overview
+          Overview
         </a>
         <a href="#" 
            (click)="switchTab('buildings'); $event.preventDefault();"
@@ -41,22 +55,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
           </svg>
-          QR Configurations
-        </a>
-        <a href="#" 
-           (click)="switchTab('map'); $event.preventDefault();"
-           [ngClass]="activeTab() === 'map' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sky-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-          </svg>
-          Interactive Campus Map
+          QR Gates
         </a>
         <a href="/ar-map.html" target="_blank" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent rounded-xl transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
           </svg>
-          AR Live Navigation
+          AR Live Camera
         </a>
         <a href="#" 
            *ngIf="authService.isAdmin()"
@@ -96,7 +101,13 @@
     <!-- Top Navbar Header -->
     <header class="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
       <div class="flex items-center gap-4">
-        <h2 class="text-xl font-bold tracking-tight text-slate-900">Dashboard Console</h2>
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">
+          <span *ngIf="activeTab() === 'map'">Campus Navigation Map</span>
+          <span *ngIf="activeTab() === 'rooms'">Dashboard Overview</span>
+          <span *ngIf="activeTab() === 'buildings'">Buildings Directory</span>
+          <span *ngIf="activeTab() === 'qr'">QR Gate Stations</span>
+          <span *ngIf="activeTab() === 'admin'">Admin Console</span>
+        </h2>
         <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> Live Connection
         </span>
@@ -283,6 +294,17 @@
                 <option value="office">Offices</option>
                 <option value="seminar">Seminar Halls</option>
               </select>
+
+              <!-- Add Room button for admins -->
+              <button 
+                *ngIf="authService.isAdmin()"
+                (click)="openRoomModal()"
+                class="flex items-center gap-1.5 px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Room
+              </button>
             </div>
           </div>
 
@@ -298,6 +320,7 @@
                   <th class="px-6 py-4">Occupancy Status</th>
                   <th class="px-6 py-4">Floor Coordinates (X, Y)</th>
                   <th class="px-6 py-4">Linked QR Gate</th>
+                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
@@ -344,11 +367,18 @@
                       No Gate Linked
                     </span>
                   </td>
+                  <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
+                    <button (click)="deleteRoom(room, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete Room">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
 
                 <!-- No results fallback -->
                 <tr *ngIf="filteredRooms().length === 0">
-                  <td colspan="7" class="text-center py-8 text-slate-500">
+                  <td [attr.colspan]="authService.isAdmin() ? 8 : 7" class="text-center py-8 text-slate-500">
                     No matching campus rooms found for query.
                   </td>
                 </tr>
@@ -358,34 +388,59 @@
         </section>
 
         <!-- BUILDINGS TABLE VIEW PORT -->
-        <section *ngIf="activeTab() === 'buildings'" class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg">
-          <div class="p-6 border-b border-slate-800 flex items-center justify-between gap-4">
+        <section *ngIf="activeTab() === 'buildings'" class="bg-white border border-slate-200 rounded-2xl shadow-lg">
+          <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h4 class="text-lg font-bold text-white">Campus Buildings</h4>
-              <p class="text-slate-400 text-xs mt-1">Manage core structures and physical coordinates of college blocks.</p>
+              <h4 class="text-lg font-bold text-slate-800">Campus Buildings Directory</h4>
+              <p class="text-slate-500 text-xs mt-1">Manage core structures, physical blocks, and global GPS coordinates.</p>
             </div>
+            <button 
+              *ngIf="authService.isAdmin()"
+              (click)="openBuildingModal()" 
+              class="px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow shadow-sky-500/25 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Add Building
+            </button>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40">
+                <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
                   <th class="px-6 py-4">Building Code</th>
                   <th class="px-6 py-4">Building Name</th>
                   <th class="px-6 py-4">Total Floors</th>
                   <th class="px-6 py-4">Global Latitude</th>
                   <th class="px-6 py-4">Global Longitude</th>
+                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-800 text-sm text-slate-300">
-                <tr *ngFor="let building of buildings()" class="hover:bg-slate-800/20 transition-colors">
-                  <td class="px-6 py-4 font-mono font-bold text-white">{{ building.code }}</td>
-                  <td class="px-6 py-4">{{ building.name }}</td>
-                  <td class="px-6 py-4">{{ building.totalFloors }} Floors</td>
-                  <td class="px-6 py-4 font-mono text-xs text-slate-400">{{ building.latitude }}</td>
-                  <td class="px-6 py-4 font-mono text-xs text-slate-400">{{ building.longitude }}</td>
+              <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                <tr *ngFor="let building of buildings()" class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4">
+                    <span class="font-mono font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                      {{ building.code }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 font-semibold text-slate-800">{{ building.name }}</td>
+                  <td class="px-6 py-4">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-600 border border-sky-200">
+                      {{ building.totalFloors }} Floors
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 font-mono text-xs text-slate-500">{{ building.latitude }}</td>
+                  <td class="px-6 py-4 font-mono text-xs text-slate-500">{{ building.longitude }}</td>
+                  <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
+                    <button (click)="deleteBuilding(building.code, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete Building">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
                 <tr *ngIf="buildings().length === 0">
-                  <td colspan="5" class="text-center py-8 text-slate-500">
+                  <td [attr.colspan]="authService.isAdmin() ? 6 : 5" class="text-center py-8 text-slate-400">
                     No buildings found in the database.
                   </td>
                 </tr>
@@ -395,90 +450,109 @@
         </section>
 
         <!-- QR CONFIGURATIONS VIEW PORT -->
-        <section *ngIf="activeTab() === 'qr'" class="bg-slate-900 border border-slate-800 rounded-2xl shadow-lg">
-          <div class="p-6 border-b border-slate-800 flex items-center justify-between gap-4">
-            <div>
-              <h4 class="text-lg font-bold text-white">QR Entry Nodes</h4>
-              <p class="text-slate-400 text-xs mt-1">Configure entry QR codes linked to target navigation rooms.</p>
+        <section *ngIf="activeTab() === 'qr'" class="space-y-6">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg">
+            <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 class="text-lg font-bold text-slate-800">QR Entry Nodes</h4>
+                <p class="text-slate-500 text-xs mt-1">Configure entry QR codes linked to target navigation rooms and gates.</p>
+              </div>
+              <button 
+                *ngIf="authService.isAdmin()"
+                (click)="openQrModal()" 
+                class="px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow shadow-sky-500/25 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add QR Node
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
+                    <th class="px-6 py-4">Node ID</th>
+                    <th class="px-6 py-4">Location Name</th>
+                    <th class="px-6 py-4">Target Room ID</th>
+                    <th class="px-6 py-4">Target Building / Floor</th>
+                    <th class="px-6 py-4">Registered Date</th>
+                    <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                  <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-mono font-bold text-sky-600">{{ qr.id }}</td>
+                    <td class="px-6 py-4 font-semibold text-slate-800">{{ qr.locationName }}</td>
+                    <td class="px-6 py-4 font-mono text-xs text-emerald-600">{{ qr.targetRoomId || 'N/A' }}</td>
+                    <td class="px-6 py-4">
+                      <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
+                        {{ qr.targetBuildingId }} / {{ qr.targetFloorId }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-500">{{ qr.createdAt | date:'short' }}</td>
+                    <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
+                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete QR Node">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="qrCodes().length === 0">
+                    <td [attr.colspan]="authService.isAdmin() ? 6 : 5" class="text-center py-8 text-slate-400">
+                      No QR Entry Nodes configured in database.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase bg-slate-950/40">
-                  <th class="px-6 py-4">Node ID</th>
-                  <th class="px-6 py-4">Location Name</th>
-                  <th class="px-6 py-4">Target Room ID</th>
-                  <th class="px-6 py-4">Target Building / Floor</th>
-                  <th class="px-6 py-4">Registered Date</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800 text-sm text-slate-300">
-                <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-800/20 transition-colors">
-                  <td class="px-6 py-4 font-mono font-bold text-sky-400">{{ qr.id }}</td>
-                  <td class="px-6 py-4 font-semibold text-white">{{ qr.locationName }}</td>
-                  <td class="px-6 py-4 font-mono text-xs text-emerald-400">{{ qr.targetRoomId || 'N/A' }}</td>
-                  <td class="px-6 py-4">
-                    <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                      {{ qr.targetBuildingId }} / {{ qr.targetFloorId }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-xs text-slate-500">{{ qr.createdAt | date:'short' }}</td>
-                </tr>
-                <tr *ngIf="qrCodes().length === 0">
-                  <td colspan="5" class="text-center py-8 text-slate-500">
-                    No QR Entry Nodes configured in database.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
 
-        <!-- PRINTABLE QR CODE CARDS GRID -->
-        <div *ngIf="activeTab() === 'qr'" class="mt-6">
-          <h4 class="text-md font-bold text-white mb-4">Printable QR Station</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div *ngFor="let qr of qrCodes()" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-between text-center relative overflow-hidden group hover:border-sky-500/30 transition-all">
-              <!-- Glow element -->
-              <div class="absolute -inset-px bg-gradient-to-r from-sky-500/0 via-sky-500/10 to-sky-500/0 group-hover:from-sky-500/5 group-hover:to-sky-500/5 rounded-2xl transition-all duration-500 -z-10"></div>
-              
-              <div class="space-y-2">
-                <span class="text-[10px] font-bold text-sky-400 uppercase tracking-widest bg-sky-500/10 px-2 py-0.5 rounded-full border border-sky-500/20">
-                  {{ qr.id }}
-                </span>
-                <h5 class="text-white font-bold text-sm truncate max-w-[200px]">{{ qr.locationName }}</h5>
-                <p class="text-slate-400 text-xs">Target: Room {{ qr.targetRoomId }}</p>
-              </div>
+          <!-- PRINTABLE QR CODE CARDS GRID -->
+          <div class="mt-8">
+            <div class="mb-4">
+              <h4 class="text-base font-bold text-slate-800">Printable QR Station Signs</h4>
+              <p class="text-slate-500 text-xs mt-0.5">Print and mount these QR placards at campus gates to trigger instant navigation.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div *ngFor="let qr of qrCodes()" class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-between text-center shadow-lg hover:shadow-xl hover:border-sky-300 transition-all">
+                <div class="space-y-1.5 w-full">
+                  <span class="text-[10px] font-bold text-sky-600 uppercase tracking-widest bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
+                    {{ qr.id }}
+                  </span>
+                  <h5 class="text-slate-800 font-bold text-sm truncate max-w-[220px] mx-auto mt-2">{{ qr.locationName }}</h5>
+                  <p class="text-slate-500 text-xs">Target: Room {{ qr.targetRoomId || 'Campus Gate' }}</p>
+                </div>
 
-              <!-- QR Image Viewport -->
-              <div class="my-4 p-3 bg-white rounded-xl shadow-inner border border-slate-700/50">
-                <img 
-                  *ngIf="qrCodeDataUrls()[qr.id || ''] as dataUrl" 
-                  [src]="dataUrl" 
-                  alt="QR Preview" 
-                  class="w-32 h-32 object-contain">
-                <div *ngIf="!qrCodeDataUrls()[qr.id || '']" class="w-32 h-32 flex items-center justify-center text-xs text-slate-500">
-                  Generating...
+                <!-- QR Image Viewport -->
+                <div class="my-4 p-3 bg-slate-50 rounded-xl shadow-inner border border-slate-200">
+                  <img 
+                    *ngIf="qrCodeDataUrls()[qr.id || ''] as dataUrl" 
+                    [src]="dataUrl" 
+                    alt="QR Preview" 
+                    class="w-32 h-32 object-contain">
+                  <div *ngIf="!qrCodeDataUrls()[qr.id || '']" class="w-32 h-32 flex items-center justify-center text-xs text-slate-400">
+                    Generating...
+                  </div>
+                </div>
+
+                <!-- Action triggers -->
+                <div class="flex items-center gap-3 w-full">
+                  <button 
+                    (click)="downloadQrCode(qr)"
+                    class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 active:scale-95 text-slate-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                    📥 Download
+                  </button>
+                  <button 
+                    (click)="printQrCode(qr)"
+                    class="flex-1 px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow shadow-sky-500/25">
+                    🖨️ Print Label
+                  </button>
                 </div>
               </div>
-
-              <!-- Action triggers -->
-              <div class="flex items-center gap-3 w-full">
-                <button 
-                  (click)="downloadQrCode(qr)"
-                  class="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 hover:border-slate-700 active:scale-95 text-slate-300 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all">
-                  📥 Download
-                </button>
-                <button 
-                  (click)="printQrCode(qr)"
-                  class="flex-1 px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-slate-900 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow shadow-sky-500/25">
-                  🖨️ Print Label
-                </button>
-              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- ADMIN CONSOLE MANAGEMENT TAB -->
@@ -487,18 +561,194 @@
         <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h4 class="text-lg font-bold text-slate-800">Database Operations Center</h4>
-            <p class="text-slate-500 text-xs mt-1">Perform administrative actions, database seeding, and system initialization.</p>
+            <p class="text-slate-500 text-xs mt-1">Perform administrative actions, database seeding, and campus structure management.</p>
           </div>
-          <button 
-            (click)="seedData()"
-            class="flex items-center gap-1.5 px-4 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-sm font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Seed Sample Database Data
-          </button>
+          <div class="flex items-center gap-3">
+            <span *ngIf="seedingStatus()" class="text-xs font-semibold px-3 py-1.5 bg-sky-50 text-sky-600 border border-sky-200 rounded-xl animate-pulse">
+              {{ seedingStatus() }}
+            </span>
+            <button 
+              (click)="seedData()"
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Seed Sample Database Data
+            </button>
+          </div>
         </div>
-        
+
+        <!-- Grid Panels for CRUD management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- 1. Manage Rooms Panel -->
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              <div>
+                <h5 class="text-md font-bold text-slate-800">Manage Rooms</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete physical college rooms</p>
+              </div>
+              <button (click)="openRoomModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
+                + Add Room
+              </button>
+            </div>
+            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
+                    <th class="px-4 py-3">Room No.</th>
+                    <th class="px-4 py-3">Room Name</th>
+                    <th class="px-4 py-3">Building/Floor</th>
+                    <th class="px-4 py-3 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let room of rooms()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ room.number }}</td>
+                    <td class="px-4 py-3 truncate max-w-[120px]">{{ room.name }}</td>
+                    <td class="px-4 py-3">
+                      <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
+                        {{ room.buildingName || room.buildingId }} / {{ room.floorId }}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="rooms().length === 0">
+                    <td colspan="4" class="text-center py-4 text-slate-400">No rooms configured.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Manage Buildings Panel -->
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              <div>
+                <h5 class="text-md font-bold text-slate-800">Manage Buildings</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete campus blocks</p>
+              </div>
+              <button (click)="openBuildingModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
+                + Add Building
+              </button>
+            </div>
+            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
+                    <th class="px-4 py-3">Code</th>
+                    <th class="px-4 py-3">Building Name</th>
+                    <th class="px-4 py-3 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let building of buildings()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ building.code }}</td>
+                    <td class="px-4 py-3 truncate max-w-[150px]">{{ building.name }}</td>
+                    <td class="px-4 py-3 text-right">
+                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="buildings().length === 0">
+                    <td colspan="3" class="text-center py-4 text-slate-500">No buildings configured.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 3. Manage Floors Panel -->
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              <div>
+                <h5 class="text-md font-bold text-slate-800">Manage Floors</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete building floors</p>
+              </div>
+              <button (click)="openFloorModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
+                + Add Floor
+              </button>
+            </div>
+            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
+                    <th class="px-4 py-3">Floor ID</th>
+                    <th class="px-4 py-3">Floor Name</th>
+                    <th class="px-4 py-3 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let floor of floorsOfMapperBuilding()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ floor.id }}</td>
+                    <td class="px-4 py-3 truncate max-w-[150px]">{{ floor.name }} (Lvl {{ floor.level }})</td>
+                    <td class="px-4 py-3 text-right">
+                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="floorsOfMapperBuilding().length === 0">
+                    <td colspan="3" class="text-center py-4 text-slate-400">No floors configured for selected building.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. Manage QR Entry Gates Panel -->
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+              <div>
+                <h5 class="text-md font-bold text-slate-800">Manage QR Entry Gates</h5>
+                <p class="text-slate-500 text-xs mt-0.5">Add or delete scanner entry points</p>
+              </div>
+              <button (click)="openQrModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
+                + Add QR Node
+              </button>
+            </div>
+            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
+                    <th class="px-4 py-3">Node ID</th>
+                    <th class="px-4 py-3">Location Name</th>
+                    <th class="px-4 py-3">Target Room</th>
+                    <th class="px-4 py-3 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                  <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-mono font-bold text-sky-600">{{ qr.id }}</td>
+                    <td class="px-4 py-3 truncate max-w-[200px] text-slate-800">{{ qr.locationName }}</td>
+                    <td class="px-4 py-3 font-mono text-emerald-600">{{ qr.targetRoomId || 'N/A' }}</td>
+                    <td class="px-4 py-3 text-right">
+                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="qrCodes().length === 0">
+                    <td colspan="4" class="text-center py-4 text-slate-400">No QR gates configured.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SECTION: VISUAL BLUEPRINT & CALIBRATION TOOLS -->
+        <div class="pt-4 border-t border-slate-200">
+          <h4 class="text-base font-bold text-slate-800 mb-1">Visual Blueprint & Coordinate Calibration</h4>
+          <p class="text-slate-500 text-xs mb-4">Interactive CAD tools for building floorplans, waypoint nodes, and satellite road connectors.</p>
+        </div>
+
         <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -722,171 +972,6 @@
               </g>
             </svg>
           </div>
-        </div>
-
-        <!-- Grid Panels for CRUD management -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-          <!-- 1. Manage Rooms Panel -->
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
-              <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Rooms</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete physical college rooms</p>
-              </div>
-              <button (click)="openRoomModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Room
-              </button>
-            </div>
-            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Room No.</th>
-                    <th class="px-4 py-3">Room Name</th>
-                    <th class="px-4 py-3">Building/Floor</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
-                  <tr *ngFor="let room of rooms()" class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ room.number }}</td>
-                    <td class="px-4 py-3 truncate max-w-[120px]">{{ room.name }}</td>
-                    <td class="px-4 py-3">
-                      <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
-                        {{ room.buildingName || room.buildingId }} / {{ room.floorId }}
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                  <tr *ngIf="rooms().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-400">No rooms configured.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 2. Manage Buildings Panel -->
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
-              <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Buildings</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete campus blocks</p>
-              </div>
-              <button (click)="openBuildingModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Building
-              </button>
-            </div>
-            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Code</th>
-                    <th class="px-4 py-3">Building Name</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
-                  <tr *ngFor="let building of buildings()" class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ building.code }}</td>
-                    <td class="px-4 py-3 truncate max-w-[150px]">{{ building.name }}</td>
-                    <td class="px-4 py-3 text-right">
-                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                  <tr *ngIf="buildings().length === 0">
-                    <td colspan="3" class="text-center py-4 text-slate-500">No buildings configured.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 3. Manage Floors Panel -->
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
-              <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Floors</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete building floors</p>
-              </div>
-              <button (click)="openFloorModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Floor
-              </button>
-            </div>
-            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Floor ID</th>
-                    <th class="px-4 py-3">Floor Name</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
-                  <tr *ngFor="let floor of floorsOfMapperBuilding()" class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ floor.id }}</td>
-                    <td class="px-4 py-3 truncate max-w-[150px]">{{ floor.name }} (Lvl {{ floor.level }})</td>
-                    <td class="px-4 py-3 text-right">
-                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                  <tr *ngIf="floorsOfMapperBuilding().length === 0">
-                    <td colspan="3" class="text-center py-4 text-slate-400">No floors configured for selected building.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 4. Manage QR Entry Gates Panel -->
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/20">
-              <div>
-                <h5 class="text-md font-bold text-slate-800">Manage QR Entry Gates</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete scanner entry points</p>
-              </div>
-              <button (click)="openQrModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add QR Node
-              </button>
-            </div>
-            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Node ID</th>
-                    <th class="px-4 py-3">Location Name</th>
-                    <th class="px-4 py-3">Target Room</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
-                  <tr *ngFor="let qr of qrCodes()" class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-sky-600">{{ qr.id }}</td>
-                    <td class="px-4 py-3 truncate max-w-[200px] text-slate-800">{{ qr.locationName }}</td>
-                    <td class="px-4 py-3 font-mono text-emerald-600">{{ qr.targetRoomId || 'N/A' }}</td>
-                    <td class="px-4 py-3 text-right">
-                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                  <tr *ngIf="qrCodes().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-400">No QR gates configured.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
         </div>
       </div>
 
