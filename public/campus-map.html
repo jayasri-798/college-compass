@@ -601,6 +601,107 @@
     .gm-pin-blue { background: #1a73e8; }
     .gm-pin-green { background: #34a853; }
     .gm-pin-yellow { background: #f9ab00; }
+    .gm-pin-purple { background: #9333ea; }
+
+    /* Admin 2D Map Editor UI */
+    .gm-admin-toolbar {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      right: 16px;
+      z-index: 1500;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 10px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border: 1px solid #dadce0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .gm-admin-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #1a73e8;
+      letter-spacing: 0.5px;
+      background: #e8f0fe;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid #d2e3fc;
+    }
+    .gm-admin-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .gm-admin-btn {
+      padding: 7px 14px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #3c4043;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .gm-admin-btn:hover {
+      background: #f8f9fa;
+      border-color: #1a73e8;
+      color: #1a73e8;
+    }
+    .gm-admin-btn.active {
+      background: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(26,115,232,0.3);
+    }
+    .gm-admin-btn-reset:hover {
+      background: #fce8e6;
+      border-color: #d93025;
+      color: #d93025;
+    }
+    .gm-admin-hint {
+      font-size: 11px;
+      color: #5f6368;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .gm-admin-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #202124;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 4000;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      transition: transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .gm-admin-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
 
     /* ==========================================================================
        7. QR CODE SCANNER MODAL
@@ -817,6 +918,137 @@
     <span id="arrival-card-text">You have arrived at Main Office!</span>
   </div>
 
+  <!-- Admin Toast Notification -->
+  <div class="gm-admin-toast" id="admin-toast">
+    <i class="fa-solid fa-circle-check" style="color: #81c995;"></i>
+    <span id="admin-toast-text">Place updated successfully</span>
+  </div>
+
+  <!-- Admin Places Editor Toolbar (Active when mode=admin) -->
+  <div class="gm-admin-toolbar" id="admin-toolbar" style="display: none;">
+    <div class="gm-admin-badge">
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+      <span>ADMIN 2D MAP EDITOR</span>
+    </div>
+    <div class="gm-admin-tools">
+      <button class="gm-admin-btn" id="admin-btn-add">
+        <i class="fa-solid fa-location-dot"></i>
+        <span id="admin-btn-add-text">Click Map to Add Place</span>
+      </button>
+      <button class="gm-admin-btn" id="admin-btn-list">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Places List (<span id="admin-places-count">6</span>)</span>
+      </button>
+      <button class="gm-admin-btn gm-admin-btn-reset" id="admin-btn-reset" title="Restore default KHIT campus places">
+        <i class="fa-solid fa-rotate-left"></i>
+        <span>Reset Defaults</span>
+      </button>
+    </div>
+    <div class="gm-admin-hint">
+      <i class="fa-solid fa-circle-info"></i> Drag any pin to reposition &bull; Click pin to edit
+    </div>
+  </div>
+
+  <!-- Admin Edit Place Modal -->
+  <div class="gm-modal-overlay" id="admin-place-modal" style="display: none;">
+    <div class="gm-modal-card" style="max-width: 480px;">
+      <div class="gm-modal-header">
+        <div style="font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-location-pen" style="color: var(--gm-blue);"></i>
+          <span id="modal-place-title">Edit Campus Place</span>
+        </div>
+        <button class="gm-icon-btn" id="close-admin-place-modal">&times;</button>
+      </div>
+      <form id="admin-place-form" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+        <input type="hidden" id="place-form-id" />
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Place / Landmark Name</label>
+          <input type="text" id="place-form-name" required placeholder="e.g. Mechanical Workshop Block" style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none;" />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Short Code</label>
+            <input type="text" id="place-form-code" required placeholder="e.g. MECH" style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none;" />
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Category</label>
+            <select id="place-form-category" style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none; background: #fff;">
+              <option value="academic">Academic Block</option>
+              <option value="admin">Administrative</option>
+              <option value="amenities">Amenities / Food</option>
+              <option value="gate">Gate / Entrance</option>
+              <option value="sports">Sports / Ground</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Pin Color</label>
+            <select id="place-form-color" style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none; background: #fff;">
+              <option value="gm-pin-blue">Blue (Academic)</option>
+              <option value="gm-pin-red">Red (Admin / Important)</option>
+              <option value="gm-pin-green">Green (Food / Canteen)</option>
+              <option value="gm-pin-yellow">Yellow (Library / Gate)</option>
+              <option value="gm-pin-purple">Purple (Special / Lab)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Icon</label>
+            <select id="place-form-icon" style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none; background: #fff;">
+              <option value="fa-building">Building</option>
+              <option value="fa-laptop-code">Computer / Tech Lab</option>
+              <option value="fa-microchip">Electronics Lab</option>
+              <option value="fa-briefcase">Office / Admin</option>
+              <option value="fa-book-open-reader">Library / Books</option>
+              <option value="fa-utensils">Canteen / Food</option>
+              <option value="fa-door-open">Gate / Entrance</option>
+              <option value="fa-flask">Science Lab</option>
+              <option value="fa-volleyball">Sports Ground</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Latitude</label>
+            <input type="number" step="any" id="place-form-lat" required style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 13px; font-family: monospace; margin-top: 4px; outline: none;" />
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Longitude</label>
+            <input type="number" step="any" id="place-form-lng" required style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 13px; font-family: monospace; margin-top: 4px; outline: none;" />
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #5f6368; text-transform: uppercase;">Description / Departments</label>
+          <textarea id="place-form-desc" rows="2" placeholder="Brief details about floors, labs, departments..." style="width: 100%; padding: 8px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 13px; margin-top: 4px; outline: none; font-family: inherit; resize: none;"></textarea>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 10px; border-top: 1px solid #e8eaed;">
+          <button type="button" id="admin-delete-place-btn" style="padding: 8px 14px; background: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: none;">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+          <div style="display: flex; gap: 8px; margin-left: auto;">
+            <button type="button" id="admin-cancel-place-btn" style="padding: 8px 14px; background: #f1f3f4; color: #3c4043; border: 1px solid #dadce0; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;">Cancel</button>
+            <button type="submit" style="padding: 8px 16px; background: var(--gm-blue); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">Save Place</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Places List Drawer Modal -->
+  <div class="gm-modal-overlay" id="admin-places-drawer" style="display: none;">
+    <div class="gm-modal-card" style="max-width: 520px; max-height: 80vh; display: flex; flex-direction: column;">
+      <div class="gm-modal-header">
+        <div style="font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-map-location-dot" style="color: var(--gm-blue);"></i>
+          <span>Configured Campus Places</span>
+        </div>
+        <button class="gm-icon-btn" id="close-places-drawer">&times;</button>
+      </div>
+      <div id="admin-places-list-container" style="padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // 1. CAMPUS MASTER DATABASE & GOOGLE MAPS GRAPH (KHIT CAMPUS)
@@ -824,7 +1056,7 @@
     const CAMPUS_CENTER = [16.257700, 80.332800];
     const DEFAULT_ZOOM = 18;
 
-    const campusPlaces = [
+    const defaultCampusPlaces = [
       {
         id: 'main-office',
         name: 'Main Office (Administrative Block)',
@@ -892,6 +1124,35 @@
         desc: 'Primary Student Entrance, College Security Office, and Visitor Registration.'
       }
     ];
+
+    const PLACES_STORAGE_KEY = 'khit_campus_places';
+
+    function loadSavedPlaces() {
+      try {
+        const saved = localStorage.getItem(PLACES_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not parse saved campus places:', e);
+      }
+      return JSON.parse(JSON.stringify(defaultCampusPlaces));
+    }
+
+    let campusPlaces = loadSavedPlaces();
+
+    function savePlaces() {
+      try {
+        localStorage.setItem(PLACES_STORAGE_KEY, JSON.stringify(campusPlaces));
+      } catch (e) {
+        console.warn('Could not save campus places:', e);
+      }
+      updatePlacesCountBadge();
+      renderSearchChips();
+    }
 
     // Inner-campus Sidewalk Nodes
     const walkwayNodes = {
@@ -1123,7 +1384,7 @@
       }
 
       const startNode = findNearestNode([userLocation.lat, userLocation.lng]);
-      const endNode = place.nearestNode;
+      const endNode = place.nearestNode || findNearestNode(place.coords);
       const pathNodes = runDijkstra(startNode, endNode);
 
       const routePoints = [[userLocation.lat, userLocation.lng]];
@@ -1228,25 +1489,316 @@
       startGoogleNavigation(selectedPlace);
     });
 
-    // Render Google Maps Style Pins
-    campusPlaces.forEach(place => {
-      const pinIcon = L.divIcon({
-        className: 'gm-pin-wrapper',
-        html: `
-          <div class="gm-map-pin ${place.pinColor}">
-            <i class="fa-solid ${place.icon}"></i>
-          </div>
-        `,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28]
+    // =========================================================================
+    // 6. DYNAMIC PLACE MARKERS & ADMIN 2D MAP CONTROLS
+    // =========================================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminMode = urlParams.get('mode') === 'admin';
+
+    let toastTimer = null;
+    function showAdminToast(msg) {
+      const toast = document.getElementById('admin-toast');
+      const text = document.getElementById('admin-toast-text');
+      if (!toast || !text) return;
+      text.innerText = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function updatePlacesCountBadge() {
+      const badge = document.getElementById('admin-places-count');
+      if (badge) badge.innerText = campusPlaces.length;
+    }
+
+    // Render Google Maps Style Pins (Draggable in Admin mode)
+    let placeMarkers = {};
+
+    function renderPlaceMarkers() {
+      Object.values(placeMarkers).forEach(m => map.removeLayer(m));
+      placeMarkers = {};
+
+      campusPlaces.forEach(place => {
+        const pinIcon = L.divIcon({
+          className: 'gm-pin-wrapper',
+          html: `
+            <div class="gm-map-pin ${place.pinColor || 'gm-pin-blue'}" title="${place.name}">
+              <i class="fa-solid ${place.icon || 'fa-building'}"></i>
+            </div>
+          `,
+          iconSize: [28, 28],
+          iconAnchor: [14, 28]
+        });
+
+        const marker = L.marker(place.coords, {
+          icon: pinIcon,
+          draggable: isAdminMode
+        }).addTo(map);
+
+        if (isAdminMode) {
+          marker.on('dragend', (e) => {
+            const newPos = e.target.getLatLng();
+            place.coords = [parseFloat(newPos.lat.toFixed(6)), parseFloat(newPos.lng.toFixed(6))];
+            place.nearestNode = findNearestNode(place.coords);
+            savePlaces();
+            showAdminToast(`Updated coordinates for "${place.name}"`);
+          });
+
+          marker.on('click', () => {
+            openEditPlaceModal(place);
+          });
+        } else {
+          marker.on('click', () => {
+            map.panTo(place.coords);
+            openPlaceSheet(place);
+          });
+        }
+
+        placeMarkers[place.id] = marker;
       });
 
-      const marker = L.marker(place.coords, { icon: pinIcon }).addTo(map);
-      marker.on('click', () => {
-        map.panTo(place.coords);
-        openPlaceSheet(place);
+      updatePlacesCountBadge();
+    }
+
+    // Dynamic Filter Chips
+    function renderSearchChips() {
+      const chipsRow = document.querySelector('.gm-chips-row');
+      if (!chipsRow) return;
+      chipsRow.innerHTML = campusPlaces.map(p => `
+        <button class="gm-chip" data-dest="${p.id}">
+          <i class="fa-solid ${p.icon || 'fa-building'}"></i>
+          <span>${p.code || p.name.split(' ')[0]}</span>
+        </button>
+      `).join('');
+
+      chipsRow.querySelectorAll('.gm-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const destId = chip.dataset.dest;
+          const p = campusPlaces.find(x => x.id === destId);
+          if (p) {
+            map.flyTo(p.coords, 19);
+            if (isAdminMode) {
+              openEditPlaceModal(p);
+            } else {
+              openPlaceSheet(p);
+              startGoogleNavigation(p);
+            }
+          }
+        });
       });
+    }
+
+    // Admin Places Editor Toolbar & Modals Setup
+    const adminToolbar = document.getElementById('admin-toolbar');
+    const adminAddBtn = document.getElementById('admin-btn-add');
+    const adminAddBtnText = document.getElementById('admin-btn-add-text');
+    const adminListBtn = document.getElementById('admin-btn-list');
+    const adminResetBtn = document.getElementById('admin-btn-reset');
+    const placeModal = document.getElementById('admin-place-modal');
+    const placeForm = document.getElementById('admin-place-form');
+    const deletePlaceBtn = document.getElementById('admin-delete-place-btn');
+    const modalTitle = document.getElementById('modal-place-title');
+    const placesDrawer = document.getElementById('admin-places-drawer');
+    const listContainer = document.getElementById('admin-places-list-container');
+    const closeDrawerBtn = document.getElementById('close-places-drawer');
+
+    let isAddingPlace = false;
+
+    if (isAdminMode) {
+      if (adminToolbar) adminToolbar.style.display = 'flex';
+      const topContainer = document.getElementById('top-container');
+      if (topContainer) topContainer.style.display = 'none';
+
+      if (adminAddBtn) {
+        adminAddBtn.addEventListener('click', () => {
+          isAddingPlace = !isAddingPlace;
+          if (isAddingPlace) {
+            adminAddBtn.classList.add('active');
+            adminAddBtnText.innerText = 'Click on map now...';
+            map.getContainer().style.cursor = 'crosshair';
+            showAdminToast('Click anywhere on the map to place new landmark');
+          } else {
+            adminAddBtn.classList.remove('active');
+            adminAddBtnText.innerText = 'Click Map to Add Place';
+            map.getContainer().style.cursor = '';
+          }
+        });
+      }
+
+      map.on('click', (e) => {
+        if (isAdminMode && isAddingPlace) {
+          isAddingPlace = false;
+          if (adminAddBtn) {
+            adminAddBtn.classList.remove('active');
+            adminAddBtnText.innerText = 'Click Map to Add Place';
+          }
+          map.getContainer().style.cursor = '';
+          const lat = parseFloat(e.latlng.lat.toFixed(6));
+          const lng = parseFloat(e.latlng.lng.toFixed(6));
+          openNewPlaceModal([lat, lng]);
+        }
+      });
+    }
+
+    function openNewPlaceModal(coords) {
+      modalTitle.innerText = 'Add New Campus Place';
+      document.getElementById('place-form-id').value = 'place_' + Date.now();
+      document.getElementById('place-form-name').value = '';
+      document.getElementById('place-form-code').value = '';
+      document.getElementById('place-form-category').value = 'academic';
+      document.getElementById('place-form-color').value = 'gm-pin-blue';
+      document.getElementById('place-form-icon').value = 'fa-building';
+      document.getElementById('place-form-lat').value = coords[0].toFixed(6);
+      document.getElementById('place-form-lng').value = coords[1].toFixed(6);
+      document.getElementById('place-form-desc').value = '';
+      deletePlaceBtn.style.display = 'none';
+      placeModal.style.display = 'flex';
+    }
+
+    function openEditPlaceModal(place) {
+      modalTitle.innerText = 'Edit Campus Place';
+      document.getElementById('place-form-id').value = place.id;
+      document.getElementById('place-form-name').value = place.name;
+      document.getElementById('place-form-code').value = place.code;
+      document.getElementById('place-form-category').value = place.category || 'academic';
+      document.getElementById('place-form-color').value = place.pinColor || 'gm-pin-blue';
+      document.getElementById('place-form-icon').value = place.icon || 'fa-building';
+      document.getElementById('place-form-lat').value = place.coords[0].toFixed(6);
+      document.getElementById('place-form-lng').value = place.coords[1].toFixed(6);
+      document.getElementById('place-form-desc').value = place.desc || '';
+      deletePlaceBtn.style.display = 'inline-flex';
+      placeModal.style.display = 'flex';
+    }
+
+    function closePlaceModal() {
+      placeModal.style.display = 'none';
+    }
+
+    document.getElementById('close-admin-place-modal').addEventListener('click', closePlaceModal);
+    document.getElementById('admin-cancel-place-btn').addEventListener('click', closePlaceModal);
+
+    placeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('place-form-id').value;
+      const lat = parseFloat(document.getElementById('place-form-lat').value);
+      const lng = parseFloat(document.getElementById('place-form-lng').value);
+      const coords = [lat, lng];
+
+      const existingIdx = campusPlaces.findIndex(p => p.id === id);
+      const placeData = {
+        id: id,
+        name: document.getElementById('place-form-name').value.trim(),
+        code: document.getElementById('place-form-code').value.trim().toUpperCase(),
+        category: document.getElementById('place-form-category').value,
+        coords: coords,
+        nearestNode: findNearestNode(coords),
+        pinColor: document.getElementById('place-form-color').value,
+        icon: document.getElementById('place-form-icon').value,
+        desc: document.getElementById('place-form-desc').value.trim()
+      };
+
+      if (existingIdx >= 0) {
+        campusPlaces[existingIdx] = placeData;
+        showAdminToast(`Updated "${placeData.name}"`);
+      } else {
+        campusPlaces.push(placeData);
+        showAdminToast(`Added "${placeData.name}"`);
+      }
+
+      savePlaces();
+      renderPlaceMarkers();
+      closePlaceModal();
     });
+
+    deletePlaceBtn.addEventListener('click', () => {
+      const id = document.getElementById('place-form-id').value;
+      const place = campusPlaces.find(p => p.id === id);
+      if (place && confirm(`Are you sure you want to delete "${place.name}"?`)) {
+        campusPlaces = campusPlaces.filter(p => p.id !== id);
+        savePlaces();
+        renderPlaceMarkers();
+        closePlaceModal();
+        showAdminToast(`Deleted "${place.name}"`);
+      }
+    });
+
+    if (adminListBtn) {
+      adminListBtn.addEventListener('click', () => {
+        renderPlacesListDrawer();
+        placesDrawer.style.display = 'flex';
+      });
+    }
+
+    if (closeDrawerBtn) {
+      closeDrawerBtn.addEventListener('click', () => {
+        placesDrawer.style.display = 'none';
+      });
+    }
+
+    function renderPlacesListDrawer() {
+      if (!listContainer) return;
+      listContainer.innerHTML = campusPlaces.map(p => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 10px; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
+            <div class="gm-map-pin ${p.pinColor}" style="width: 24px; height: 24px; font-size: 10px; flex-shrink: 0;">
+              <i class="fa-solid ${p.icon}"></i>
+            </div>
+            <div style="overflow: hidden;">
+              <div style="font-size: 13px; font-weight: 700; color: #202124; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+              <div style="font-size: 11px; color: #5f6368; font-family: monospace;">[${p.code}] &bull; ${p.coords[0].toFixed(5)}, ${p.coords[1].toFixed(5)}</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; flex-shrink: 0;">
+            <button class="gm-admin-drawer-edit" data-id="${p.id}" style="padding: 6px 10px; background: #e8f0fe; color: #1a73e8; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+            <button class="gm-admin-drawer-del" data-id="${p.id}" style="padding: 6px 10px; background: #fce8e6; color: #d93025; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      listContainer.querySelectorAll('.gm-admin-drawer-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = campusPlaces.find(x => x.id === btn.dataset.id);
+          if (p) {
+            placesDrawer.style.display = 'none';
+            map.flyTo(p.coords, 19);
+            openEditPlaceModal(p);
+          }
+        });
+      });
+
+      listContainer.querySelectorAll('.gm-admin-drawer-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = campusPlaces.find(x => x.id === btn.dataset.id);
+          if (p && confirm(`Delete "${p.name}"?`)) {
+            campusPlaces = campusPlaces.filter(x => x.id !== p.id);
+            savePlaces();
+            renderPlaceMarkers();
+            renderPlacesListDrawer();
+            showAdminToast(`Deleted "${p.name}"`);
+          }
+        });
+      });
+    }
+
+    if (adminResetBtn) {
+      adminResetBtn.addEventListener('click', () => {
+        if (confirm('Reset all campus places to KHIT factory defaults? Any custom added places will be cleared.')) {
+          campusPlaces = JSON.parse(JSON.stringify(defaultCampusPlaces));
+          localStorage.removeItem(PLACES_STORAGE_KEY);
+          savePlaces();
+          renderPlaceMarkers();
+          showAdminToast('Restored default KHIT campus places');
+        }
+      });
+    }
+
+    // Initial render
+    renderPlaceMarkers();
+    renderSearchChips();
 
     // Search Input & Suggestions
     const searchInput = document.getElementById('gm-search-input');
@@ -1298,19 +1850,6 @@
       searchInput.value = '';
       clearBtn.style.display = 'none';
       suggestionsCard.style.display = 'none';
-    });
-
-    // Filter Chips
-    document.querySelectorAll('.gm-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const destId = chip.dataset.dest;
-        const p = campusPlaces.find(x => x.id === destId);
-        if (p) {
-          map.flyTo(p.coords, 19);
-          openPlaceSheet(p);
-          startGoogleNavigation(p);
-        }
-      });
     });
 
     // =========================================================================
@@ -1378,18 +1917,27 @@
     function parseUrl() {
       const params = new URLSearchParams(window.location.search);
       const qrParam = params.get('qr') || params.get('start');
-      const destParam = params.get('dest') || 'main-office';
+      const destParam = params.get('dest');
 
       if (qrParam && qrAnchorDatabase[qrParam]) {
         setUserPosition(qrAnchorDatabase[qrParam].coords, qrAnchorDatabase[qrParam].name);
-      } else {
+      } else if (!isAdminMode) {
         setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
       }
 
-      const targetPlace = campusPlaces.find(p => p.id === destParam) || campusPlaces[0];
-      setTimeout(() => {
-        startGoogleNavigation(targetPlace);
-      }, 600);
+      if (isAdminMode) {
+        map.setView(CAMPUS_CENTER, 18);
+        return;
+      }
+
+      if (destParam) {
+        const targetPlace = campusPlaces.find(p => p.id === destParam);
+        if (targetPlace) {
+          setTimeout(() => {
+            startGoogleNavigation(targetPlace);
+          }, 600);
+        }
+      }
     }
 
     parseUrl();
