@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>College Compass - Smart Campus Navigation</title>
+
+  <!-- Leaflet Map Engine -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #1a73e8;
+      --primary-hover: #1557b0;
+      --primary-soft: rgba(26, 115, 232, 0.12);
+      --surface-dark: #0f172a;
+      --surface-card: rgba(255, 255, 255, 0.96);
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border-color: #e2e8f0;
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      color: var(--text-dark);
+      background-color: #f8fafc;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Top Left Zoom Control */
+    .leaflet-top.leaflet-left {
+      top: 20px;
+      left: 20px;
+    }
+    .leaflet-bar {
+      border: none !important;
+      border-radius: var(--radius-md) !important;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg) !important;
+    }
+    .leaflet-bar a {
+      background-color: #ffffff !important;
+      color: var(--text-dark) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      width: 38px !important;
+      height: 38px !important;
+      line-height: 38px !important;
+      font-size: 16px !important;
+    }
+
+    /* Floating Header Action Bar */
+    .top-action-bar {
+      position: absolute;
+      top: 20px;
+      left: 75px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .top-action-bar > * {
+      pointer-events: auto;
+    }
+
+    /* Quick QR Scan Action Button */
+    .qr-scan-hero-btn {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+    }
+    .qr-scan-hero-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
+    }
+    .qr-scan-hero-btn i {
+      font-size: 16px;
+    }
+
+    /* Navigation Route Banner HUD */
+    .route-banner {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: var(--surface-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border: 2px solid var(--primary);
+      padding: 14px 20px;
+      display: none;
+      align-items: center;
+      gap: 18px;
+      max-width: 90%;
+      animation: slideDown 0.35s ease;
+    }
+    @keyframes slideDown {
+      from { transform: translate(-50%, -20px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    .route-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .route-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .route-step-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .route-stats-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .cancel-route-btn {
+      background: #fee2e2;
+      color: var(--danger);
+      border: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s;
+    }
+    .cancel-route-btn:hover {
+      background: #fecaca;
+    }
+
+    /* Left Sidebar Overlay */
+    .sidebar {
+      position: absolute;
+      top: 75px;
+      left: 20px;
+      width: 360px;
+      max-height: calc(100% - 95px);
+      background: var(--surface-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header {
+      padding: 16px 18px 12px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #fff;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    /* Fast Destination Quick-Pick Bar */
+    .quick-destinations {
+      padding: 12px 16px;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .quick-dest-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .quick-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-pills::-webkit-scrollbar { display: none; }
+    .quick-pill {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .quick-pill:hover, .quick-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Search & Building List */
+    .search-box {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+    }
+    .search-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text-dark);
+    }
+
+    .places-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+      background: #fafafa;
+    }
+    .place-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      background: #fff;
+      border: 1px solid #eef2f6;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .place-item:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+    .place-item.active {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .nav-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    /* Floating Action Buttons */
+    .floating-actions {
+      position: absolute;
+      right: 20px;
+      bottom: 25px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .action-fab {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #fff;
+      color: #334155;
+      border: none;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .action-fab:hover {
+      transform: scale(1.08);
+      color: var(--primary);
+    }
+    .action-fab.active {
+      background: var(--primary);
+      color: #fff;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.4); }
+      to { box-shadow: 0 0 0 9px rgba(26, 115, 232, 0.7); }
+    }
+
+    /* Custom Live User Dot */
+    .custom-user-icon {
+      position: relative;
+    }
+    .user-dot {
+      width: 14px;
+      height: 14px;
+      background: #1a73e8;
+      border: 2.5px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(26, 115, 232, 0.9);
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .pulse-ring {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(26, 115, 232, 0.4);
+      animation: radarRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes radarRing {
+      0% { transform: scale(0.5); opacity: 0.9; }
+      80%, 100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    /* Custom Building Pin */
+    .building-pin {
+      width: 32px;
+      height: 32px;
+      background: var(--surface-dark);
+      border: 2px solid #fff;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .building-pin i {
+      transform: rotate(45deg);
+      color: #fff;
+      font-size: 13px;
+    }
+    .building-pin.admin { background: #6366f1; }
+    .building-pin.academic { background: #1a73e8; }
+    .building-pin.amenities { background: #10b981; }
+    .building-pin.gate { background: #f59e0b; }
+
+    /* QR Code Scanner Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    #qr-reader-container {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    /* Simulation Dropdown for Exam/Demo */
+    .demo-selector-box {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+    }
+    .demo-selector-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .demo-select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    /* Success Arrival Toast */
+    .arrival-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 3000;
+      border: 2px solid var(--success);
+      opacity: 0;
+      transition: all 0.35s ease;
+    }
+    .arrival-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: 50vh;
+        border-radius: 20px 20px 0 0;
+      }
+      .top-action-bar {
+        left: 20px;
+      }
+      .route-banner {
+        top: 75px;
+        width: 92%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Action Bar -->
+  <div class="top-action-bar">
+    <button class="qr-scan-hero-btn" id="open-qr-scanner-btn">
+      <i class="fa-solid fa-qrcode"></i>
+      <span>Scan Campus QR</span>
+    </button>
+    <div></div>
+  </div>
+
+  <!-- Real-time Turn-by-Turn Route Navigation HUD -->
+  <div class="route-banner" id="route-banner">
+    <div class="route-details">
+      <div class="route-title">
+        <i class="fa-solid fa-person-walking" style="color: var(--primary);"></i>
+        <span id="nav-destination-title">Navigating to Main Office</span>
+      </div>
+      <div class="route-step-desc" id="nav-step-instruction">Follow highlighted campus pathway</div>
+      <div class="route-stats-chips">
+        <span><i class="fa-solid fa-route"></i> <span id="nav-distance-text">0 m</span></span>
+        <span>•</span>
+        <span><i class="fa-regular fa-clock"></i> <span id="nav-eta-text">~1 min</span></span>
+      </div>
+    </div>
+    <button class="cancel-route-btn" id="cancel-navigation-btn">
+      <i class="fa-solid fa-xmark"></i> Clear
+    </button>
+  </div>
+
+  <!-- Map Canvas -->
+  <div id="map"></div>
+
+  <!-- Left Sidebar Controls -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-box">
+        <div class="brand-icon"><i class="fa-solid fa-compass"></i></div>
+        <div>
+          <div style="font-size: 15px; font-weight: 800;">College Compass</div>
+          <div style="font-size: 11px; color: #94a3b8;">Kallam Haranadhareddy Institute (KHIT)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Destination Picker (Main Office, Library, etc.) -->
+    <div class="quick-destinations">
+      <div class="quick-dest-label">Quick Destinations</div>
+      <div class="quick-pills">
+        <button class="quick-pill" data-dest="main-office"><i class="fa-solid fa-briefcase"></i> Main Office</button>
+        <button class="quick-pill" data-dest="cse-block"><i class="fa-solid fa-laptop-code"></i> CSE Block 2</button>
+        <button class="quick-pill" data-dest="library"><i class="fa-solid fa-book"></i> Central Library</button>
+        <button class="quick-pill" data-dest="canteen"><i class="fa-solid fa-utensils"></i> Canteen</button>
+        <button class="quick-pill" data-dest="ece-block"><i class="fa-solid fa-microchip"></i> ECE Block 3</button>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8; font-size: 13px;"></i>
+      <input type="text" id="place-search-input" class="search-input" placeholder="Search office, lab, or block..." />
+    </div>
+
+    <!-- Buildings List -->
+    <div class="places-list" id="places-list-container"></div>
+  </aside>
+
+  <!-- Floating Map Controls -->
+  <div class="floating-actions">
+    <button class="action-fab" id="toggle-walkways-btn" title="Toggle Campus Sidewalks Visibility">
+      <i class="fa-solid fa-shoe-prints"></i>
+    </button>
+    <button class="action-fab" id="toggle-satellite-btn" title="Toggle Satellite / Streets">
+      <i class="fa-solid fa-layer-group"></i>
+    </button>
+    <button class="action-fab" id="gps-tracker-btn" title="Toggle Live Geolocation Tracker">
+      <i class="fa-solid fa-location-arrow"></i>
+    </button>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-qrcode"></i>
+          <span>Scan Gate QR Code</span>
+        </div>
+        <button class="close-modal-btn" id="close-qr-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+          Scan any QR placed at the College Gate or Block Entrance to automatically set your starting location with 100% precision.
+        </p>
+
+        <!-- Live Camera Stream Container -->
+        <div id="qr-reader-container"></div>
+
+        <!-- Quick Demo Selector (For Classroom Reviews / Offline Demo) -->
+        <div class="demo-selector-box">
+          <label class="demo-selector-label">Or Simulate Scanning Gate QR (Demo):</label>
+          <select id="demo-qr-select" class="demo-select">
+            <option value="">-- Choose Gate QR Point --</option>
+            <option value="QR_GATE_MAIN">Main Gate Entrance QR (Gate 1)</option>
+            <option value="QR_GATE_MAIN_BLOCK">Main Block Portico Entrance QR</option>
+            <option value="QR_GATE_CSE">CSE Block 2 Entrance QR</option>
+            <option value="QR_GATE_LIBRARY">Library Entrance QR</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reached Destination Arrival Toast -->
+  <div class="arrival-toast" id="arrival-toast">
+    <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 20px;"></i>
+    <span id="arrival-toast-text">You have reached Main Office!</span>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. CAMPUS MASTER COORDINATES & SIDEWALK NETWORK (KHIT CAMPUS)
+    // =========================================================================
+    const CAMPUS_CENTER = [16.257700, 80.332800];
+    const DEFAULT_ZOOM = 18;
+
+    // Campus buildings and destinations
+    const campusPlaces = [
+      {
+        id: 'main-office',
+        name: 'Main Office (Administrative Block)',
+        code: 'ADMIN-OFFICE',
+        category: 'admin',
+        coords: [16.258009, 80.332492],
+        nearestNode: 'node_admin_entrance',
+        icon: 'fa-briefcase',
+        desc: 'Principal Office, Admissions, Student Verification & Administrative Staff.'
+      },
+      {
+        id: 'cse-block',
+        name: 'Block 2 (Computer Science & Engg)',
+        code: 'CSE',
+        category: 'academic',
+        coords: [16.258056, 80.332672],
+        nearestNode: 'node_cse_entrance',
+        icon: 'fa-laptop-code',
+        desc: 'IoT Labs, AI/ML Labs, CSE Department Classrooms.'
+      },
+      {
+        id: 'ece-block',
+        name: 'Block 3 (ECE & EEE Department)',
+        code: 'ECE',
+        category: 'academic',
+        coords: [16.258339, 80.333195],
+        nearestNode: 'node_ece_entrance',
+        icon: 'fa-microchip',
+        desc: 'Electronics & Communication Dept, VLSI Design Lab.'
+      },
+      {
+        id: 'library',
+        name: 'Central Digital Library',
+        code: 'LIB',
+        category: 'academic',
+        coords: [16.257509, 80.333457],
+        nearestNode: 'node_library_entrance',
+        icon: 'fa-book-open-reader',
+        desc: 'Central Library, Research Journals, Digital Reading Sections.'
+      },
+      {
+        id: 'canteen',
+        name: 'Student Cafeteria & Canteen',
+        code: 'CAFE',
+        category: 'amenities',
+        coords: [16.257200, 80.332800],
+        nearestNode: 'node_canteen_entrance',
+        icon: 'fa-utensils',
+        desc: 'Campus Food Court, Snacks, Fresh Beverages.'
+      },
+      {
+        id: 'main-gate',
+        name: 'Main Gate Campus Entrance',
+        code: 'GATE-1',
+        category: 'gate',
+        coords: [16.256891, 80.333380],
+        nearestNode: 'node_gate',
+        icon: 'fa-door-open',
+        desc: 'Primary Student Entrance, Visitor Security & Bus Terminus.'
+      }
+    ];
+
+    // Inner-campus walking road network nodes (Waypoints along sidewalks)
+    const walkwayNodes = {
+      'node_gate': { coords: [16.256891, 80.333380], label: 'Main Gate' },
+      'node_main_avenue': { coords: [16.257150, 80.333220], label: 'Entrance Avenue' },
+      'node_central_junction': { coords: [16.257450, 80.333050], label: 'Central Plaza Junction' },
+      'node_library_turn': { coords: [16.257460, 80.333300], label: 'Library Pathway' },
+      'node_library_entrance': { coords: [16.257509, 80.333457], label: 'Library Portico' },
+      'node_canteen_turn': { coords: [16.257250, 80.332900], label: 'Canteen Walkway' },
+      'node_canteen_entrance': { coords: [16.257200, 80.332800], label: 'Canteen Door' },
+      'node_admin_plaza': { coords: [16.257800, 80.332700], label: 'Admin Block Circle' },
+      'node_admin_entrance': { coords: [16.258009, 80.332492], label: 'Main Office Entrance' },
+      'node_cse_entrance': { coords: [16.258056, 80.332672], label: 'CSE Block 2 Entrance' },
+      'node_ece_turn': { coords: [16.258100, 80.333100], label: 'ECE Block Pathway' },
+      'node_ece_entrance': { coords: [16.258339, 80.333195], label: 'ECE Block 3 Entrance' }
+    };
+
+    // Connected sidewalks / corridors (Bidirectional Graph edges)
+    const walkwayEdges = [
+      ['node_gate', 'node_main_avenue'],
+      ['node_main_avenue', 'node_central_junction'],
+      ['node_central_junction', 'node_library_turn'],
+      ['node_library_turn', 'node_library_entrance'],
+      ['node_central_junction', 'node_canteen_turn'],
+      ['node_canteen_turn', 'node_canteen_entrance'],
+      ['node_central_junction', 'node_admin_plaza'],
+      ['node_admin_plaza', 'node_admin_entrance'],
+      ['node_admin_plaza', 'node_cse_entrance'],
+      ['node_admin_plaza', 'node_ece_turn'],
+      ['node_ece_turn', 'node_ece_entrance']
+    ];
+
+    // QR Code Anchor Database (Matching QR stickers placed across campus)
+    const qrAnchorDatabase = {
+      'QR_GATE_MAIN': {
+        nodeId: 'node_gate',
+        name: 'Main Gate Entrance (Gate 1)',
+        coords: [16.256891, 80.333380]
+      },
+      'QR_GATE_MAIN_BLOCK': {
+        nodeId: 'node_admin_entrance',
+        name: 'Main Block Admin Entrance',
+        coords: [16.258009, 80.332492]
+      },
+      'QR_GATE_CSE': {
+        nodeId: 'node_cse_entrance',
+        name: 'CSE Block 2 Entrance',
+        coords: [16.258056, 80.332672]
+      },
+      'QR_GATE_LIBRARY': {
+        nodeId: 'node_library_entrance',
+        name: 'Central Library Entrance',
+        coords: [16.257509, 80.333457]
+      }
+    };
+
+    // =========================================================================
+    // 2. LEAFLET MAP INITIALIZATION & BASEMAPS
+    // =========================================================================
+    const streetTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 20,
+      attribution: '&copy; OpenStreetMap contributors'
+    });
+
+    const satelliteTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 20,
+      attribution: '&copy; Esri World Imagery'
+    });
+
+    const map = L.map('map', {
+      center: CAMPUS_CENTER,
+      zoom: DEFAULT_ZOOM,
+      zoomControl: false,
+      layers: [satelliteTiles] // Default to satellite for real campus buildings
+    });
+
+    L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    let isSatellite = true;
+    document.getElementById('toggle-satellite-btn').addEventListener('click', () => {
+      if (isSatellite) {
+        map.removeLayer(satelliteTiles);
+        map.addLayer(streetTiles);
+        isSatellite = false;
+      } else {
+        map.removeLayer(streetTiles);
+        map.addLayer(satelliteTiles);
+        isSatellite = true;
+      }
+    });
+
+    // Layer for sidewalk pathway graph
+    const walkwayLayerGroup = L.layerGroup().addTo(map);
+    let showWalkways = true;
+
+    function renderWalkwayGrid() {
+      walkwayLayerGroup.clearLayers();
+      walkwayEdges.forEach(([fromId, toId]) => {
+        const fromPt = walkwayNodes[fromId].coords;
+        const toPt = walkwayNodes[toId].coords;
+        L.polyline([fromPt, toPt], {
+          color: '#38bdf8',
+          weight: 3,
+          opacity: 0.55,
+          dashArray: '4, 6'
+        }).addTo(walkwayLayerGroup);
+      });
+    }
+    renderWalkwayGrid();
+
+    document.getElementById('toggle-walkways-btn').addEventListener('click', () => {
+      if (showWalkways) {
+        map.removeLayer(walkwayLayerGroup);
+        showWalkways = false;
+      } else {
+        map.addLayer(walkwayLayerGroup);
+        showWalkways = true;
+      }
+    });
+
+    // =========================================================================
+    // 3. DIJKSTRA SHORTEST WALKWAY ROUTING ENGINE
+    // =========================================================================
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return Math.round(R * c);
+    }
+
+    function findNearestWalkwayNode(coords) {
+      let nearestKey = null;
+      let minDistance = Infinity;
+      for (const [key, node] of Object.entries(walkwayNodes)) {
+        const dist = getDistanceMeters(coords[0], coords[1], node.coords[0], node.coords[1]);
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearestKey = key;
+        }
+      }
+      return nearestKey;
+    }
+
+    // Build Adjacency List for Dijkstra
+    function buildWalkwayGraph() {
+      const graph = {};
+      Object.keys(walkwayNodes).forEach(id => graph[id] = []);
+      walkwayEdges.forEach(([u, v]) => {
+        const dist = getDistanceMeters(
+          walkwayNodes[u].coords[0], walkwayNodes[u].coords[1],
+          walkwayNodes[v].coords[0], walkwayNodes[v].coords[1]
+        );
+        graph[u].push({ node: v, weight: dist });
+        graph[v].push({ node: u, weight: dist });
+      });
+      return graph;
+    }
+
+    const campusGraph = buildWalkwayGraph();
+
+    function calculateDijkstraPath(startNodeId, targetNodeId) {
+      const distances = {};
+      const previous = {};
+      const visited = new Set();
+      const nodes = Object.keys(walkwayNodes);
+
+      nodes.forEach(n => distances[n] = Infinity);
+      distances[startNodeId] = 0;
+
+      while (visited.size < nodes.length) {
+        let closestNode = null;
+        let smallestDistance = Infinity;
+
+        for (const n of nodes) {
+          if (!visited.has(n) && distances[n] < smallestDistance) {
+            smallestDistance = distances[n];
+            closestNode = n;
+          }
+        }
+
+        if (!closestNode || smallestDistance === Infinity) break;
+        if (closestNode === targetNodeId) break;
+
+        visited.add(closestNode);
+
+        for (const neighbor of campusGraph[closestNode] || []) {
+          if (!visited.has(neighbor.node)) {
+            const alt = distances[closestNode] + neighbor.weight;
+            if (alt < distances[neighbor.node]) {
+              distances[neighbor.node] = alt;
+              previous[neighbor.node] = closestNode;
+            }
+          }
+        }
+      }
+
+      // Reconstruct Path
+      const path = [];
+      let curr = targetNodeId;
+      while (curr) {
+        path.unshift(curr);
+        curr = previous[curr];
+      }
+      return path;
+    }
+
+    // =========================================================================
+    // 4. ACTIVE NAVIGATION & ROUTE DRAWING
+    // =========================================================================
+    let userLocation = null;
+    let userMarker = null;
+    let activeRoutePolyline = null;
+    let activeDestinationPlace = null;
+    let html5QrScanner = null;
+
+    function startNavigationTo(placeId) {
+      const place = campusPlaces.find(p => p.id === placeId);
+      if (!place) return;
+
+      activeDestinationPlace = place;
+
+      // If user hasn't scanned QR or turned on GPS, assume Main Gate as Start for seamless demo
+      if (!userLocation) {
+        setUserPosition([16.256891, 80.333380], 'Main Gate Entrance (QR Anchor)');
+      }
+
+      const startNodeKey = findNearestWalkwayNode([userLocation.lat, userLocation.lng]);
+      const endNodeKey = place.nearestNode;
+
+      // Calculate path on Campus Sidewalk Graph
+      const pathNodeKeys = calculateDijkstraPath(startNodeKey, endNodeKey);
+
+      const latLngPoints = [[userLocation.lat, userLocation.lng]];
+      let totalDistance = 0;
+
+      for (let i = 0; i < pathNodeKeys.length; i++) {
+        const pt = walkwayNodes[pathNodeKeys[i]].coords;
+        latLngPoints.push(pt);
+        if (i > 0) {
+          const prevPt = walkwayNodes[pathNodeKeys[i-1]].coords;
+          totalDistance += getDistanceMeters(prevPt[0], prevPt[1], pt[0], pt[1]);
+        }
+      }
+      latLngPoints.push(place.coords);
+
+      // Remove existing route line
+      if (activeRoutePolyline) {
+        map.removeLayer(activeRoutePolyline);
+      }
+
+      // Draw Glowing Blue Walking Polyline
+      activeRoutePolyline = L.polyline(latLngPoints, {
+        color: '#1a73e8',
+        weight: 6,
+        opacity: 0.9,
+        dashArray: '2, 8',
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+
+      // Smooth camera fit
+      map.fitBounds(activeRoutePolyline.getBounds(), { padding: [70, 70] });
+
+      // Update Navigation HUD Banner
+      const walkingMinutes = Math.max(1, Math.round(totalDistance / 70));
+      document.getElementById('nav-destination-title').innerText = `Navigating to ${place.name}`;
+      document.getElementById('nav-distance-text').innerText = `${totalDistance} meters`;
+      document.getElementById('nav-eta-text').innerText = `~${walkingMinutes} min walk`;
+      document.getElementById('nav-step-instruction').innerText = `Follow highlighted sidewalk from ${walkwayNodes[startNodeKey].label} to ${place.name}`;
+      document.getElementById('route-banner').style.display = 'flex';
+
+      // Check arrival distance immediately
+      checkArrival();
+    }
+
+    function checkArrival() {
+      if (!userLocation || !activeDestinationPlace) return;
+      const dist = getDistanceMeters(
+        userLocation.lat, userLocation.lng,
+        activeDestinationPlace.coords[0], activeDestinationPlace.coords[1]
+      );
+
+      if (dist <= 15) { // Within 15 meters
+        const toast = document.getElementById('arrival-toast');
+        document.getElementById('arrival-toast-text').innerText = `🎉 You have arrived at ${activeDestinationPlace.name}!`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 6000);
+      }
+    }
+
+    document.getElementById('cancel-navigation-btn').addEventListener('click', () => {
+      if (activeRoutePolyline) {
+        map.removeLayer(activeRoutePolyline);
+        activeRoutePolyline = null;
+      }
+      activeDestinationPlace = null;
+      document.getElementById('route-banner').style.display = 'none';
+    });
+
+    // =========================================================================
+    // 5. LIVE USER LOCATION & QR CODE POSITION SETTER
+    // =========================================================================
+    function setUserPosition(coords, label = 'Current Location') {
+      userLocation = L.latLng(coords[0], coords[1]);
+
+      if (!userMarker) {
+        const customDot = L.divIcon({
+          html: '<div class="pulse-ring"></div><div class="user-dot"></div>',
+          className: 'custom-user-icon',
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+        userMarker = L.marker(userLocation, { icon: customDot }).addTo(map);
+      } else {
+        userMarker.setLatLng(userLocation);
+      }
+
+      userMarker.bindTooltip(label, { permanent: false, direction: 'top' });
+      checkArrival();
+    }
+
+    // Geolocation API Toggle Button
+    const gpsBtn = document.getElementById('gps-tracker-btn');
+    let isTracking = false;
+
+    gpsBtn.addEventListener('click', () => {
+      if (!isTracking) {
+        map.locate({ watch: true, enableHighAccuracy: true });
+        gpsBtn.classList.add('active');
+        isTracking = true;
+      } else {
+        map.stopLocate();
+        gpsBtn.classList.remove('active');
+        isTracking = false;
+      }
+    });
+
+    map.on('locationfound', (e) => {
+      setUserPosition([e.latlng.lat, e.latlng.lng], 'Live GPS Position');
+      if (!activeRoutePolyline) {
+        map.setView(e.latlng, DEFAULT_ZOOM);
+      }
+    });
+
+    // =========================================================================
+    // 6. QR CODE SCANNER (LIVE CAMERA & DEMO SIMULATION)
+    // =========================================================================
+    const qrModal = document.getElementById('qr-modal');
+    const openQrBtn = document.getElementById('open-qr-scanner-btn');
+    const closeQrBtn = document.getElementById('close-qr-modal-btn');
+    const demoQrSelect = document.getElementById('demo-qr-select');
+
+    openQrBtn.addEventListener('click', () => {
+      qrModal.style.display = 'flex';
+      startQrCamera();
+    });
+
+    closeQrBtn.addEventListener('click', closeQrScanner);
+
+    function closeQrScanner() {
+      qrModal.style.display = 'none';
+      if (html5QrScanner) {
+        html5QrScanner.stop().catch(() => {}).then(() => {
+          html5QrScanner = null;
+        });
+      }
+    }
+
+    function onQrCodeDetected(scannedCode) {
+      closeQrScanner();
+      console.log("QR Code Scanned:", scannedCode);
+
+      const anchor = qrAnchorDatabase[scannedCode.trim()];
+      if (anchor) {
+        setUserPosition(anchor.coords, anchor.name);
+        map.flyTo(anchor.coords, 19, { duration: 1.2 });
+
+        // Auto-navigate to Main Office if no route is active
+        startNavigationTo('main-office');
+
+        const toast = document.getElementById('arrival-toast');
+        document.getElementById('arrival-toast-text').innerText = `QR Detected: Located at ${anchor.name}! Route to Main Office generated.`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 5000);
+      } else {
+        alert("Scanned QR Code: " + scannedCode + "\nSetting position to Main Gate.");
+        setUserPosition([16.256891, 80.333380], 'Main Gate');
+        startNavigationTo('main-office');
+      }
+    }
+
+    function startQrCamera() {
+      try {
+        if (!html5QrScanner) {
+          html5QrScanner = new Html5Qrcode("qr-reader-container");
+          html5QrScanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText) => onQrCodeDetected(decodedText),
+            () => {}
+          ).catch((err) => {
+            console.warn("Camera access failed or running on non-HTTPS:", err);
+          });
+        }
+      } catch (e) {
+        console.warn("HTML5 QR initialization error:", e);
+      }
+    }
+
+    demoQrSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        onQrCodeDetected(e.target.value);
+        demoQrSelect.value = "";
+      }
+    });
+
+    // =========================================================================
+    // 7. URL PARAMETERS SUPPORT (Auto-Route on QR Scan from Phone Camera)
+    // =========================================================================
+    // Allows users to scan standard QR with phone camera:
+    // e.g. https://college-compass-cc.vercel.app/campus-map.html?qr=QR_GATE_MAIN&dest=main-office
+    function handleUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const qrParam = params.get('qr') || params.get('start');
+      const destParam = params.get('dest') || 'main-office';
+
+      if (qrParam && qrAnchorDatabase[qrParam]) {
+        setUserPosition(qrAnchorDatabase[qrParam].coords, qrAnchorDatabase[qrParam].name);
+      } else {
+        // Default start position at Main Gate
+        setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
+      }
+
+      // Auto trigger route
+      setTimeout(() => {
+        startNavigationTo(destParam);
+      }, 500);
+    }
+
+    // Quick-Pill Destination Buttons
+    document.querySelectorAll('.quick-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.quick-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        startNavigationTo(btn.dataset.dest);
+      });
+    });
+
+    // Render Markers for all Campus Buildings
+    function renderCampusPins() {
+      campusPlaces.forEach(place => {
+        const pinIcon = L.divIcon({
+          className: 'custom-pin-wrapper',
+          html: `
+            <div class="building-pin ${place.category}">
+              <i class="fa-solid ${place.icon}"></i>
+            </div>
+          `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+        });
+
+        const marker = L.marker(place.coords, { icon: pinIcon }).addTo(map);
+        marker.bindPopup(`
+          <div style="padding: 10px; width: 200px;">
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">${place.name}</div>
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">${place.desc}</div>
+            <button onclick="startNavigationTo('${place.id}')" style="width: 100%; padding: 6px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">
+              🚶 Walk Here
+            </button>
+          </div>
+        `);
+      });
+    }
+
+    // Render Building Sidebar List
+    function renderPlacesList(filterText = '') {
+      const container = document.getElementById('places-list-container');
+      container.innerHTML = '';
+
+      const filtered = campusPlaces.filter(p => 
+        p.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        p.code.toLowerCase().includes(filterText.toLowerCase())
+      );
+
+      filtered.forEach(place => {
+        const item = document.createElement('div');
+        item.className = 'place-item';
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 700; font-size: 13px; color: #1e293b;">${place.name}</div>
+            <div style="font-size: 11px; color: #64748b;">${place.code}</div>
+          </div>
+          <button class="nav-btn" title="Walk here">
+            <i class="fa-solid fa-diamond-turn-right"></i>
+          </button>
+        `;
+
+        item.addEventListener('click', () => {
+          map.flyTo(place.coords, 19, { duration: 1 });
+        });
+
+        item.querySelector('.nav-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          startNavigationTo(place.id);
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    document.getElementById('place-search-input').addEventListener('input', (e) => {
+      renderPlacesList(e.target.value);
+    });
+
+    // Initialize
+    renderCampusPins();
+    renderPlacesList();
+    handleUrlParams();
+  </script>
+</body>
+</html>

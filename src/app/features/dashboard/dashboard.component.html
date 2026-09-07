@@ -43,6 +43,15 @@
           </svg>
           QR Configurations
         </a>
+        <a href="#" 
+           (click)="switchTab('map'); $event.preventDefault();"
+           [ngClass]="activeTab() === 'map' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sky-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+          </svg>
+          Interactive Campus Map
+        </a>
         <a href="/ar-map.html" target="_blank" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent rounded-xl transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
@@ -105,6 +114,14 @@
           </svg>
           Seed Sample Data
         </button>
+        <a href="/campus-map.html" target="_blank"
+           class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold rounded-lg shadow shadow-indigo-600/25 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+          </svg>
+          Interactive Map
+        </a>
         <!-- Quick Stats indicator -->
         <span class="text-xs text-slate-500 hidden sm:inline">Last Sync: Just now</span>
       </div>
@@ -179,6 +196,54 @@
             <div class="mt-4 text-xs text-slate-500">
               QR gates deployed for navigation.
             </div>
+          </div>
+        </section>
+
+        <!-- QUICK ACCESS CAMPUS MAP BANNER -->
+        <div *ngIf="activeTab() === 'rooms'" class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-semibold backdrop-blur-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              New Interactive Feature
+            </div>
+            <h3 class="text-xl font-bold">2D Interactive Campus Map with Live Navigation</h3>
+            <p class="text-sky-100 text-sm max-w-2xl">Explore campus buildings, track your live walking position with pulsing GPS radar, and calculate walking routes and ETAs to any department.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button (click)="switchTab('map')" class="px-4 py-2.5 bg-white text-sky-700 hover:bg-sky-50 font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+              </svg>
+              View in Dashboard
+            </button>
+            <a href="/campus-map.html" target="_blank" class="px-4 py-2.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white font-semibold text-sm rounded-xl transition-all flex items-center gap-2">
+              <span>Fullscreen</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE 2D CAMPUS MAP EMBED TAB -->
+        <section *ngIf="activeTab() === 'map'" class="bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden flex flex-col">
+          <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <div>
+              <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Interactive 2D Campus Map
+              </h3>
+              <p class="text-xs text-slate-500">Live GPS tracker, high-accuracy pedestrian straight-line path routing & building search</p>
+            </div>
+            <a href="/campus-map.html" target="_blank" class="flex items-center gap-2 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-xl shadow shadow-sky-500/20 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+              Open Fullscreen Map
+            </a>
+          </div>
+          <div class="w-full" style="height: 720px;">
+            <iframe src="/campus-map.html" class="w-full h-full border-0" allow="geolocation"></iframe>
           </div>
         </section>
 
