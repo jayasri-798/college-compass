@@ -457,6 +457,35 @@
       opacity: 0.95;
     }
 
+    .gm-nav-voice-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .gm-nav-voice-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.05);
+    }
+    .gm-nav-voice-btn:active {
+      transform: scale(0.95);
+    }
+    .gm-nav-voice-btn.muted {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.55);
+    }
+
     /* Bottom Navigation Stats Drawer */
     .gm-nav-bottom-sheet {
       position: absolute;
@@ -1129,6 +1158,9 @@
       <div class="gm-maneuver-distance" id="nav-step-dist">In 40 m</div>
       <div class="gm-maneuver-instruction" id="nav-step-name">Turn left onto Administrative Plaza</div>
     </div>
+    <button class="gm-nav-voice-btn" id="nav-voice-btn" type="button" title="Voice Guidance">
+      <i class="fa-solid fa-volume-high" id="nav-voice-icon"></i>
+    </button>
   </div>
 
   <!-- Floating Google Maps Re-center Pill Button -->
@@ -1710,7 +1742,19 @@
         optLibSub: "Digital Library, Reading Rooms & Book Bank",
         optCanteenTitle: "Cafeteria & Food Court Entrance",
         optCanteenSub: "Student Dining Hall & Canteen Lounge",
-        offcampusBanner: "You are outside KHIT Campus. Starting point set to Main Gate."
+        offcampusBanner: "You are outside KHIT Campus. Starting point set to Main Gate.",
+        voiceStartNav: "Starting route to {dest}. Head towards {dest}.",
+        voiceInMeters: "In {dist} meters, {action}",
+        voiceTurnRight: "turn right towards {dest}",
+        voiceTurnLeft: "turn left towards {dest}",
+        voiceStraight: "continue straight on pathway",
+        voiceArriving: "Arriving at {dest}",
+        voiceArrived: "You have arrived at {dest}!",
+        voiceMuted: "Voice guidance muted",
+        voiceUnmuted: "Voice guidance unmuted",
+        voiceLangChanged: "Language set to English",
+        voiceOnTooltip: "Voice Guidance: Active (Click to Mute)",
+        voiceOffTooltip: "Voice Guidance: Muted (Click to Unmute)"
       },
       te: {
         searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
@@ -1756,7 +1800,19 @@
         optLibSub: "డిజిటల్ లైబ్రరీ, రీడింగ్ రూమ్‌లు & బుక్ బ్యాంక్",
         optCanteenTitle: "క్యాంటీన్ & ఫుడ్ కోర్ట్ ప్రవేశం",
         optCanteenSub: "విద్యార్థి డైనింగ్ హాల్ & క్యాంటీన్ లాంజ్",
-        offcampusBanner: "మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం మెయిన్ గేట్‌గా సెట్ చేయబడింది."
+        offcampusBanner: "మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం మెయిన్ గేట్‌గా సెట్ చేయబడింది.",
+        voiceStartNav: "{dest} వైపు నావిగేషన్ ప్రారంభమైంది. ముందుకు వెళ్ళండి.",
+        voiceInMeters: "{dist} మీటర్లలో, {action}",
+        voiceTurnRight: "{dest} వైపు కుడికి తిరగండి",
+        voiceTurnLeft: "{dest} వైపు ఎడమకి తిరగండి",
+        voiceStraight: "తిన్నగా ముందుకు వెళ్ళండి",
+        voiceArriving: "{dest} చేరుకుంటున్నారు",
+        voiceArrived: "మీరు {dest} వద్దకు చేరుకున్నారు!",
+        voiceMuted: "వాయిస్ గైడెన్స్ మ్యూట్ చేయబడింది",
+        voiceUnmuted: "వాయిస్ గైడెన్స్ ఆన్ చేయబడింది",
+        voiceLangChanged: "భాష తెలుగుగా మార్చబడింది",
+        voiceOnTooltip: "వాయిస్ గైడెన్స్: ఆన్ (మ్యూట్ చేయడానికి నొక్కండి)",
+        voiceOffTooltip: "వాయిస్ గైడెన్స్: మ్యూట్ (ఆన్ చేయడానికి నొక్కండి)"
       }
     };
 
@@ -1768,6 +1824,24 @@
         text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
       }
       return text;
+    }
+
+    function getPlaceDisplayName(place) {
+      if (!place) return '';
+      if (currentMapLang === 'te') {
+        const keyMap = {
+          'main-office': 'mainOffice',
+          'cse-block': 'cseBlock',
+          'ece-block': 'eceBlock',
+          'library': 'library',
+          'canteen': 'canteen',
+          'main-gate': 'mainGate'
+        };
+        if (place.id && keyMap[place.id]) {
+          return mapT(keyMap[place.id]);
+        }
+      }
+      return place.name;
     }
 
     function applyMapLanguage() {
@@ -1874,6 +1948,11 @@
           'మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం <strong>మెయిన్ గేట్</strong> గా సెట్ చేయబడింది.' : 
           'You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.';
       }
+
+      updateVoiceBtnUI();
+      if (isNavigating && selectedPlace) {
+        updateLiveNavigationProgress();
+      }
     }
 
     function toggleMapLanguage() {
@@ -1885,6 +1964,9 @@
         window.dispatchEvent(new CustomEvent('college_compass_lang_changed', { detail: currentMapLang }));
       }
       applyMapLanguage();
+      if (isNavigating && selectedPlace) {
+        speakNavInstruction(mapT('voiceLangChanged'), { force: true, chime: true });
+      }
     }
 
     if (typeof window !== 'undefined') {
@@ -1901,6 +1983,175 @@
         }
       });
     }
+
+    // =========================================================================
+    // VOICE TURN-BY-TURN GUIDANCE (Web Speech API + Web Audio Chime)
+    // =========================================================================
+    let isVoiceEnabled = true;
+    try {
+      const savedVoice = localStorage.getItem('college_compass_voice');
+      if (savedVoice !== null) {
+        isVoiceEnabled = savedVoice === 'true';
+      }
+    } catch (e) {}
+
+    let lastSpokenText = '';
+    let lastSpokenTime = 0;
+    let lastManeuverAnnounced = '';
+    let hasAnnouncedArrival = false;
+    let synthVoices = [];
+
+    function populateVoices() {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        synthVoices = window.speechSynthesis.getVoices() || [];
+      }
+    }
+    populateVoices();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = populateVoices;
+      }
+    }
+
+    function playNavChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+        const now = ctx.currentTime;
+
+        // Two-tone Google Maps navigation chime (D5 587.33Hz -> A5 880Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0.08, now);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.12);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.1);
+        gain2.gain.setValueAtTime(0.1, now + 0.1);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.1);
+        osc2.stop(now + 0.28);
+      } catch (e) {
+        // AudioContext silent fail
+      }
+    }
+
+    function speakNavInstruction(text, options = {}) {
+      if (!isVoiceEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+      if (!text) return;
+
+      const now = Date.now();
+      const minInterval = options.force ? 500 : 3000;
+      if (text === lastSpokenText && (now - lastSpokenTime) < (options.minRepeatInterval || 8000)) {
+        return;
+      }
+      if (!options.force && (now - lastSpokenTime) < minInterval) {
+        return;
+      }
+
+      // Strip emojis and symbols that shouldn't be read out by TTS
+      const cleanText = text
+        .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+        .replace(/[•🎉📍🚶!]/g, '')
+        .trim();
+      if (!cleanText) return;
+
+      try {
+        window.speechSynthesis.cancel();
+
+        if (options.chime !== false) {
+          playNavChime();
+        }
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const isTe = currentMapLang === 'te';
+
+        if (isTe) {
+          utterance.lang = 'te-IN';
+          if (!synthVoices.length) populateVoices();
+          const teVoice = synthVoices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te'));
+          if (teVoice) {
+            utterance.voice = teVoice;
+          }
+          utterance.rate = 0.92;
+        } else {
+          utterance.lang = 'en-IN';
+          if (!synthVoices.length) populateVoices();
+          const enVoice = synthVoices.find(v => v.lang === 'en-IN') || synthVoices.find(v => v.lang.startsWith('en'));
+          if (enVoice) {
+            utterance.voice = enVoice;
+          }
+          utterance.rate = 0.96;
+        }
+
+        utterance.pitch = 1.0;
+        lastSpokenText = text;
+        lastSpokenTime = now;
+
+        setTimeout(() => {
+          try {
+            window.speechSynthesis.speak(utterance);
+          } catch (err) {}
+        }, 120);
+      } catch (err) {
+        console.warn('Voice guidance speech error:', err);
+      }
+    }
+
+    function updateVoiceBtnUI() {
+      const btn = document.getElementById('nav-voice-btn');
+      const icon = document.getElementById('nav-voice-icon');
+      if (!btn || !icon) return;
+      if (isVoiceEnabled) {
+        btn.classList.remove('muted');
+        btn.title = mapT('voiceOnTooltip');
+        icon.className = 'fa-solid fa-volume-high';
+      } else {
+        btn.classList.add('muted');
+        btn.title = mapT('voiceOffTooltip');
+        icon.className = 'fa-solid fa-volume-xmark';
+      }
+    }
+
+    function toggleVoiceGuidance() {
+      isVoiceEnabled = !isVoiceEnabled;
+      try {
+        localStorage.setItem('college_compass_voice', isVoiceEnabled ? 'true' : 'false');
+      } catch (e) {}
+      updateVoiceBtnUI();
+
+      if (isVoiceEnabled) {
+        const msg = mapT('voiceUnmuted');
+        showAdminToast(`🔊 ${msg}`);
+        speakNavInstruction(msg, { force: true, chime: true });
+      } else {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        const msg = mapT('voiceMuted');
+        showAdminToast(`🔇 ${msg}`);
+      }
+    }
+
+    const navVoiceBtn = document.getElementById('nav-voice-btn');
+    if (navVoiceBtn) {
+      navVoiceBtn.addEventListener('click', toggleVoiceGuidance);
+    }
+
 
     function calculateBearing(lat1, lon1, lat2, lon2) {
       const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -2048,7 +2299,7 @@
             if (lastGpsCoords) {
               const d = getDistanceMeters(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
               if (d < MIN_MOVEMENT_THRESHOLD_METERS) {
-                updateWalkStatus('📍 Standing still • Walk forward to navigate');
+                updateWalkStatus(mapT('standingStill'));
                 return; // User has not physically moved >= 3.0 meters; do NOT move camera or trim route!
               }
               if (heading === null || isNaN(heading)) {
@@ -2057,7 +2308,7 @@
             }
 
             lastGpsCoords = [lat, lng];
-            updateWalkStatus('🚶 Walking • Following your steps');
+            updateWalkStatus(mapT('walkingSteps'));
             setUserPosition([lat, lng], 'Live Walking GPS', heading);
           },
           (err) => {
@@ -2251,20 +2502,26 @@
 
       // Enter Google Maps Navigation Mode
       isNavigating = true;
+      hasAnnouncedArrival = false;
+      lastManeuverAnnounced = '';
+      lastSpokenText = '';
+
       document.getElementById('top-container').style.display = 'none';
       document.getElementById('place-sheet').style.display = 'none';
       document.getElementById('fabs-container').style.display = 'none';
 
       // Show Turn-by-Turn Navigation UI
       const etaMinutes = Math.max(1, Math.round(totalMeters / 70));
+      const destName = getPlaceDisplayName(place);
       document.getElementById('nav-step-dist').innerText = `In ${Math.min(40, totalMeters)} m`;
-      document.getElementById('nav-step-name').innerText = `Head towards ${place.name}`;
+      document.getElementById('nav-step-name').innerText = mapT('headTo', { dest: destName });
       document.getElementById('nav-time-text').innerText = `${etaMinutes} min`;
       document.getElementById('nav-meters-text').innerText = `${totalMeters} m`;
-      document.getElementById('nav-dest-title').innerText = place.name;
+      document.getElementById('nav-dest-title').innerText = destName;
 
       document.getElementById('nav-top-banner').style.display = 'flex';
       document.getElementById('nav-bottom-sheet').style.display = 'flex';
+      updateVoiceBtnUI();
 
       // Enable Auto-Follow Camera & Live Walk Tracking Mode
       isLiveWalking = true;
@@ -2272,19 +2529,23 @@
       const simText = document.getElementById('nav-sim-text');
       const simIcon = document.getElementById('nav-sim-icon');
       if (simBtn) simBtn.classList.add('active');
-      if (simText) simText.innerText = 'Live Walk';
+      if (simText) simText.innerText = mapT('liveWalk');
       if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
 
       enableCameraFollow();
       startGpsWatch();
       startMotionWatch();
-      updateWalkStatus('Live Walk: Active • Walk to navigate');
+      updateWalkStatus(mapT('walkStatusActive'));
 
       // Calculate initial heading towards first waypoint
       if (routePoints.length >= 2) {
         const initBearing = calculateBearing(routePoints[0][0], routePoints[0][1], routePoints[1][0], routePoints[1][1]);
         updateUserHeading(initBearing);
       }
+
+      // Voice Guidance: Announce route start
+      const startVoiceMsg = mapT('voiceStartNav', { dest: destName });
+      speakNavInstruction(startVoiceMsg, { force: true, chime: true });
     }
 
     // Dynamic Live Progress & Maneuver Updates as user moves
@@ -2328,13 +2589,19 @@
       const stepDistEl = document.getElementById('nav-step-dist');
       const stepNameEl = document.getElementById('nav-step-name');
       const turnIconEl = document.getElementById('nav-turn-icon');
+      const destName = getPlaceDisplayName(selectedPlace);
 
       if (remainingMeters <= 15) {
         if (stepDistEl) stepDistEl.innerText = `${remainingMeters} m`;
-        if (stepNameEl) stepNameEl.innerText = mapT('arriving', { dest: selectedPlace.name });
+        if (stepNameEl) stepNameEl.innerText = mapT('arriving', { dest: destName });
         if (turnIconEl) turnIconEl.className = 'fa-solid fa-location-dot';
+
+        if (lastManeuverAnnounced !== 'arriving') {
+          lastManeuverAnnounced = 'arriving';
+          speakNavInstruction(mapT('voiceArriving', { dest: destName }), { chime: true });
+        }
       } else {
-        if (stepDistEl) stepDistEl.innerText = `In ${Math.max(5, distToNext)} m`;
+        if (stepDistEl) stepDistEl.innerText = `In ${Math.max(5, Math.round(distToNext))} m`;
 
         if (closestIdx + 2 < currentRoutePoints.length) {
           const p1 = currentRoutePoints[closestIdx];
@@ -2346,17 +2613,57 @@
           if (diff > 180) diff -= 360;
 
           if (diff > 35) {
-            if (stepNameEl) stepNameEl.innerText = mapT('turnRight', { dest: selectedPlace.name });
+            if (stepNameEl) stepNameEl.innerText = mapT('turnRight', { dest: destName });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-right';
+
+            // Voice announcement for approaching or immediate turn
+            const distRound = Math.round(distToNext);
+            if (distRound <= 25 && distRound > 8) {
+              const maneuverKey = `turn-right-${closestIdx}-approach`;
+              if (lastManeuverAnnounced !== maneuverKey) {
+                lastManeuverAnnounced = maneuverKey;
+                const action = mapT('voiceTurnRight', { dest: destName });
+                speakNavInstruction(mapT('voiceInMeters', { dist: distRound, action: action }), { chime: true });
+              }
+            } else if (distRound <= 8) {
+              const maneuverKey = `turn-right-${closestIdx}-now`;
+              if (lastManeuverAnnounced !== maneuverKey) {
+                lastManeuverAnnounced = maneuverKey;
+                speakNavInstruction(mapT('turnRight', { dest: destName }), { chime: true });
+              }
+            }
           } else if (diff < -35) {
-            if (stepNameEl) stepNameEl.innerText = mapT('turnLeft', { dest: selectedPlace.name });
+            if (stepNameEl) stepNameEl.innerText = mapT('turnLeft', { dest: destName });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-down fa-flip-horizontal';
+
+            // Voice announcement for approaching or immediate turn
+            const distRound = Math.round(distToNext);
+            if (distRound <= 25 && distRound > 8) {
+              const maneuverKey = `turn-left-${closestIdx}-approach`;
+              if (lastManeuverAnnounced !== maneuverKey) {
+                lastManeuverAnnounced = maneuverKey;
+                const action = mapT('voiceTurnLeft', { dest: destName });
+                speakNavInstruction(mapT('voiceInMeters', { dist: distRound, action: action }), { chime: true });
+              }
+            } else if (distRound <= 8) {
+              const maneuverKey = `turn-left-${closestIdx}-now`;
+              if (lastManeuverAnnounced !== maneuverKey) {
+                lastManeuverAnnounced = maneuverKey;
+                speakNavInstruction(mapT('turnLeft', { dest: destName }), { chime: true });
+              }
+            }
           } else {
             if (stepNameEl) stepNameEl.innerText = mapT('straight');
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
+
+            const maneuverKey = `straight-${closestIdx}`;
+            if (lastManeuverAnnounced !== maneuverKey && lastManeuverAnnounced.startsWith('turn')) {
+              lastManeuverAnnounced = maneuverKey;
+              speakNavInstruction(mapT('voiceStraight'), { chime: false });
+            }
           }
         } else {
-          if (stepNameEl) stepNameEl.innerText = mapT('headTo', { dest: selectedPlace.name });
+          if (stepNameEl) stepNameEl.innerText = mapT('headTo', { dest: destName });
           if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
         }
       }
@@ -2438,7 +2745,7 @@
       if (mag > 12.8 && (now - lastMotionStepTime) > 380) {
         lastMotionStepTime = now;
         advanceRouteByMeters(0.85); // 1 physical step
-        updateWalkStatus('🚶 Walking • Physical step detected');
+        updateWalkStatus(mapT('stepDetected'));
       }
     }
 
@@ -2464,20 +2771,20 @@
 
       if (isLiveWalking) {
         if (simBtn) simBtn.classList.add('active');
-        if (simText) simText.innerText = 'Live Walk';
+        if (simText) simText.innerText = mapT('liveWalk');
         if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
         enableCameraFollow();
         startGpsWatch();
         startMotionWatch();
-        updateWalkStatus('Live Walk: Active • Walk to navigate');
+        updateWalkStatus(mapT('walkStatusActive'));
         showAdminToast('Live Walk Active: Map navigates only as you physically move!');
       } else {
         if (simBtn) simBtn.classList.remove('active');
-        if (simText) simText.innerText = 'Resume Walk';
+        if (simText) simText.innerText = mapT('resumeWalk');
         if (simIcon) simIcon.className = 'fa-solid fa-play';
         stopGpsWatch();
         stopMotionWatch();
-        updateWalkStatus('Walk paused • Tap Resume to continue');
+        updateWalkStatus(mapT('walkStatusPaused'));
         showAdminToast('Live Walk paused.');
       }
     }
@@ -2513,6 +2820,13 @@
       stopGpsWatch();
       stopMotionWatch();
 
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      hasAnnouncedArrival = false;
+      lastManeuverAnnounced = '';
+      lastSpokenText = '';
+
       if (recenterBtn) recenterBtn.style.display = 'none';
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       if (activeRouteUnderlay) map.removeLayer(activeRouteUnderlay);
@@ -2527,11 +2841,17 @@
     function checkArrival() {
       if (!isNavigating || !userLocation || !selectedPlace) return;
       const d = getDistanceMeters(userLocation.lat, userLocation.lng, selectedPlace.coords[0], selectedPlace.coords[1]);
-      if (d <= 15) {
+      if (d <= 15 && !hasAnnouncedArrival) {
+        hasAnnouncedArrival = true;
+        const destName = getPlaceDisplayName(selectedPlace);
+        const arrivalText = mapT('arrived', { dest: destName });
         const toast = document.getElementById('arrival-card');
-        document.getElementById('arrival-card-text').innerText = mapT('arrived', { dest: selectedPlace.name });
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 6000);
+        if (toast) {
+          document.getElementById('arrival-card-text').innerText = arrivalText;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 6000);
+        }
+        speakNavInstruction(mapT('voiceArrived', { dest: destName }), { force: true, chime: true });
       }
     }
 
