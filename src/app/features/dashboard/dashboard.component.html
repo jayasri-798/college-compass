@@ -173,7 +173,7 @@
       <div *ngIf="loading()" class="h-96 flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
           <div class="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-          <span class="text-slate-400 text-sm font-medium">Fetching College Map Structure...</span>
+          <span class="text-slate-400 text-sm font-medium">{{ langService.t('loading.map_data') }}</span>
         </div>
       </div>
 
@@ -195,7 +195,7 @@
               </div>
             </div>
             <div class="mt-4 text-xs text-slate-500 flex items-center gap-1">
-              <span class="text-sky-600 font-semibold">Active</span> {{ langService.t('stats.registered') }}
+              <span class="text-sky-600 font-semibold">{{ langService.t('stats.active') }}</span> {{ langService.t('stats.registered') }}
             </div>
           </div>
 
@@ -243,20 +243,20 @@
           <div class="space-y-1">
             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-semibold backdrop-blur-sm">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              New Interactive Feature
+              {{ langService.t('banner.badge') }}
             </div>
-            <h3 class="text-xl font-bold">2D Interactive Campus Map with Live Navigation</h3>
-            <p class="text-sky-100 text-sm max-w-2xl">Explore campus buildings, track your live walking position with pulsing GPS radar, and calculate walking routes and ETAs to any department.</p>
+            <h3 class="text-xl font-bold">{{ langService.t('banner.title') }}</h3>
+            <p class="text-sky-100 text-sm max-w-2xl">{{ langService.t('banner.desc') }}</p>
           </div>
           <div class="flex items-center gap-3">
-            <button (click)="switchTab('map')" class="px-4 py-2.5 bg-white text-sky-700 hover:bg-sky-50 font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2">
+            <button (click)="switchTab('map')" class="px-4 py-2.5 bg-white text-sky-700 hover:bg-sky-50 font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
               </svg>
-              View in Dashboard
+              {{ langService.t('btn.view_dashboard') }}
             </button>
             <a href="/campus-map.html?v=20260908_2" target="_blank" class="px-4 py-2.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white font-semibold text-sm rounded-xl transition-all flex items-center gap-2">
-              <span>Fullscreen</span>
+              <span>{{ langService.t('btn.fullscreen') }}</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
               </svg>
@@ -270,15 +270,15 @@
             <div>
               <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Interactive 2D Campus Map
+                {{ langService.t('header.interactive_map') }}
               </h3>
-              <p class="text-xs text-slate-500">Live GPS tracker, high-accuracy pedestrian straight-line path routing & building search</p>
+              <p class="text-xs text-slate-500">{{ langService.t('header.map_sub') }}</p>
             </div>
             <a href="/campus-map.html?v=20260908_2" target="_blank" class="flex items-center gap-2 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-xl shadow shadow-sky-500/20 transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
               </svg>
-              Open Fullscreen Map
+              {{ langService.t('btn.open_fullscreen') }}
             </a>
           </div>
           <div class="w-full" style="height: 720px;">
@@ -292,8 +292,8 @@
           <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
               <div>
-                <h4 class="text-lg font-bold text-slate-800">Campus Rooms Directory</h4>
-                <p class="text-slate-500 text-xs mt-1">Configure layout coordinates and entry-gate linkages.</p>
+                <h4 class="text-lg font-bold text-slate-800">{{ langService.t('rooms.title') }}</h4>
+                <p class="text-slate-500 text-xs mt-1">{{ langService.t('rooms.desc') }}</p>
               </div>
             </div>
             
@@ -304,7 +304,7 @@
                   type="text" 
                   [ngModel]="searchQuery()" 
                   (ngModelChange)="searchQuery.set($event)"
-                  placeholder="Search rooms, buildings..."
+                  [placeholder]="langService.t('label.search_rooms')"
                   class="w-full bg-slate-100 border border-slate-200 focus:border-sky-500 text-sm py-2 pl-9 pr-4 rounded-xl text-slate-800 outline-none transition-all placeholder:text-slate-400">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400 absolute left-3 top-3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
@@ -316,11 +316,11 @@
                 [ngModel]="selectedTypeFilter()" 
                 (ngModelChange)="selectedTypeFilter.set($event)"
                 class="bg-slate-100 border border-slate-200 focus:border-sky-500 text-sm py-2 px-3 rounded-xl text-slate-800 outline-none transition-all">
-                <option value="all">All Room Types</option>
-                <option value="classroom">Classrooms</option>
-                <option value="lab">Laboratories</option>
-                <option value="office">Offices</option>
-                <option value="seminar">Seminar Halls</option>
+                <option value="all">{{ langService.t('filter.all_types') }}</option>
+                <option value="classroom">{{ langService.t('filter.classrooms') }}</option>
+                <option value="lab">{{ langService.t('filter.labs') }}</option>
+                <option value="office">{{ langService.t('filter.offices') }}</option>
+                <option value="seminar">{{ langService.t('filter.seminars') }}</option>
               </select>
 
               <!-- Add Room button for admins -->
@@ -331,7 +331,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Add Room
+                {{ langService.t('btn.add_room') }}
               </button>
             </div>
           </div>
@@ -341,14 +341,14 @@
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
-                  <th class="px-6 py-4">Room No.</th>
-                  <th class="px-6 py-4">Room Name</th>
-                  <th class="px-6 py-4">Building</th>
-                  <th class="px-6 py-4">Room Type</th>
-                  <th class="px-6 py-4">Occupancy Status</th>
-                  <th class="px-6 py-4">Floor Coordinates (X, Y)</th>
-                  <th class="px-6 py-4">Linked QR Gate</th>
-                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
+                  <th class="px-6 py-4">{{ langService.t('label.room_num') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.room_name') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.building') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.type') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.status') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.coords') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('label.linked_qr') }}</th>
+                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">{{ langService.t('label.actions') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
@@ -357,7 +357,7 @@
                   <td class="px-6 py-4">{{ room.name }}</td>
                   <td class="px-6 py-4">
                     <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">
-                      {{ room.buildingName || 'Building N/A' }}
+                      {{ room.buildingName || langService.t('label.building_na') }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
@@ -380,7 +380,7 @@
                       }"
                       class="px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1.5 w-fit">
                       <span [ngClass]="room.isFree !== false ? 'bg-emerald-500' : 'bg-red-500'" class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
-                      {{ room.isFree !== false ? 'Free' : (room.currentSubject ? room.currentSubject : 'Occupied') }}
+                      {{ room.isFree !== false ? langService.t('label.free') : (room.currentSubject ? room.currentSubject : langService.t('label.occupied')) }}
                       <span *ngIf="room.isFree === false && room.occupiedBy" class="text-[10px] text-red-600/80">({{room.occupiedBy}})</span>
                     </span>
                   </td>
@@ -392,11 +392,11 @@
                       {{ room.qrCodeId }}
                     </span>
                     <span *ngIf="!room.qrCodeId" class="text-xs text-slate-400 italic">
-                      No Gate Linked
+                      {{ langService.t('label.no_gate') }}
                     </span>
                   </td>
                   <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
-                    <button (click)="deleteRoom(room, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete Room">
+                    <button (click)="deleteRoom(room, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" [title]="langService.t('label.delete')">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                       </svg>
@@ -407,7 +407,7 @@
                 <!-- No results fallback -->
                 <tr *ngIf="filteredRooms().length === 0">
                   <td [attr.colspan]="authService.isAdmin() ? 8 : 7" class="text-center py-8 text-slate-500">
-                    No matching campus rooms found for query.
+                    {{ langService.t('rooms.empty') }}
                   </td>
                 </tr>
               </tbody>
@@ -419,8 +419,8 @@
         <section *ngIf="activeTab() === 'buildings'" class="bg-white border border-slate-200 rounded-2xl shadow-lg">
           <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h4 class="text-lg font-bold text-slate-800">Campus Buildings Directory</h4>
-              <p class="text-slate-500 text-xs mt-1">Manage core structures, physical blocks, and global GPS coordinates.</p>
+              <h4 class="text-lg font-bold text-slate-800">{{ langService.t('buildings.title') }}</h4>
+              <p class="text-slate-500 text-xs mt-1">{{ langService.t('buildings.desc') }}</p>
             </div>
             <button 
               *ngIf="authService.isAdmin()"
@@ -429,19 +429,19 @@
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Add Building
+              {{ langService.t('btn.add_building') }}
             </button>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
-                  <th class="px-6 py-4">Building Code</th>
-                  <th class="px-6 py-4">Building Name</th>
-                  <th class="px-6 py-4">Total Floors</th>
-                  <th class="px-6 py-4">Global Latitude</th>
-                  <th class="px-6 py-4">Global Longitude</th>
-                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
+                  <th class="px-6 py-4">{{ langService.t('bldg.code') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('bldg.name') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('bldg.floors') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('bldg.lat') }}</th>
+                  <th class="px-6 py-4">{{ langService.t('bldg.lng') }}</th>
+                  <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">{{ langService.t('label.actions') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
@@ -454,13 +454,13 @@
                   <td class="px-6 py-4 font-semibold text-slate-800">{{ building.name }}</td>
                   <td class="px-6 py-4">
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-600 border border-sky-200">
-                      {{ building.totalFloors }} Floors
+                      {{ building.totalFloors }} {{ langService.t('bldg.floors_suffix') }}
                     </span>
                   </td>
                   <td class="px-6 py-4 font-mono text-xs text-slate-500">{{ building.latitude }}</td>
                   <td class="px-6 py-4 font-mono text-xs text-slate-500">{{ building.longitude }}</td>
                   <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
-                    <button (click)="deleteBuilding(building.code, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete Building">
+                    <button (click)="deleteBuilding(building.code, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" [title]="langService.t('label.delete')">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                       </svg>
@@ -469,7 +469,7 @@
                 </tr>
                 <tr *ngIf="buildings().length === 0">
                   <td [attr.colspan]="authService.isAdmin() ? 6 : 5" class="text-center py-8 text-slate-400">
-                    No buildings found in the database.
+                    {{ langService.t('buildings.empty') }}
                   </td>
                 </tr>
               </tbody>
@@ -482,8 +482,8 @@
           <div class="bg-white border border-slate-200 rounded-2xl shadow-lg">
             <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h4 class="text-lg font-bold text-slate-800">QR Entry Nodes</h4>
-                <p class="text-slate-500 text-xs mt-1">Configure entry QR codes linked to target navigation rooms and gates.</p>
+                <h4 class="text-lg font-bold text-slate-800">{{ langService.t('qr.title') }}</h4>
+                <p class="text-slate-500 text-xs mt-1">{{ langService.t('qr.desc') }}</p>
               </div>
               <button 
                 *ngIf="authService.isAdmin()"
@@ -492,19 +492,19 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Add QR Node
+                {{ langService.t('btn.generate_qr') }}
               </button>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
-                    <th class="px-6 py-4">Node ID</th>
-                    <th class="px-6 py-4">Location Name</th>
-                    <th class="px-6 py-4">Target Room ID</th>
-                    <th class="px-6 py-4">Target Building / Floor</th>
-                    <th class="px-6 py-4">Registered Date</th>
-                    <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">Actions</th>
+                    <th class="px-6 py-4">{{ langService.t('qr.node_id') }}</th>
+                    <th class="px-6 py-4">{{ langService.t('qr.loc_name') }}</th>
+                    <th class="px-6 py-4">{{ langService.t('qr.target_room') }}</th>
+                    <th class="px-6 py-4">{{ langService.t('qr.target_bldg') }}</th>
+                    <th class="px-6 py-4">{{ langService.t('qr.date') }}</th>
+                    <th *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">{{ langService.t('label.actions') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
@@ -519,7 +519,7 @@
                     </td>
                     <td class="px-6 py-4 text-xs text-slate-500">{{ qr.createdAt | date:'short' }}</td>
                     <td *ngIf="authService.isAdmin()" class="px-6 py-4 text-right">
-                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Delete QR Node">
+                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all" [title]="langService.t('label.delete')">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                           <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                         </svg>
@@ -528,7 +528,7 @@
                   </tr>
                   <tr *ngIf="qrCodes().length === 0">
                     <td [attr.colspan]="authService.isAdmin() ? 6 : 5" class="text-center py-8 text-slate-400">
-                      No QR Entry Nodes configured in database.
+                      {{ langService.t('qr.empty') }}
                     </td>
                   </tr>
                 </tbody>
@@ -539,8 +539,8 @@
           <!-- PRINTABLE QR CODE CARDS GRID -->
           <div class="mt-8">
             <div class="mb-4">
-              <h4 class="text-base font-bold text-slate-800">Printable QR Station Signs</h4>
-              <p class="text-slate-500 text-xs mt-0.5">Print and mount these QR placards at campus gates to trigger instant navigation.</p>
+              <h4 class="text-base font-bold text-slate-800">{{ langService.t('qr.print_title') }}</h4>
+              <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('qr.print_desc') }}</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div *ngFor="let qr of qrCodes()" class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-between text-center shadow-lg hover:shadow-xl hover:border-sky-300 transition-all">
@@ -549,7 +549,7 @@
                     {{ qr.id }}
                   </span>
                   <h5 class="text-slate-800 font-bold text-sm truncate max-w-[220px] mx-auto mt-2">{{ qr.locationName }}</h5>
-                  <p class="text-slate-500 text-xs">Target: Room {{ qr.targetRoomId || 'Campus Gate' }}</p>
+                  <p class="text-slate-500 text-xs">{{ langService.t('qr.target_prefix') }}: {{ qr.targetRoomId || langService.t('qr.campus_gate') }}</p>
                 </div>
 
                 <!-- QR Image Viewport -->
@@ -560,7 +560,7 @@
                     alt="QR Preview" 
                     class="w-32 h-32 object-contain">
                   <div *ngIf="!qrCodeDataUrls()[qr.id || '']" class="w-32 h-32 flex items-center justify-center text-xs text-slate-400">
-                    Generating...
+                    {{ langService.t('qr.generating') }}
                   </div>
                 </div>
 
@@ -569,12 +569,12 @@
                   <button 
                     (click)="downloadQrCode(qr)"
                     class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 active:scale-95 text-slate-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all">
-                    📥 Download
+                    {{ langService.t('btn.download') }}
                   </button>
                   <button 
                     (click)="printQrCode(qr)"
                     class="flex-1 px-3 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow shadow-sky-500/25">
-                    🖨️ Print Label
+                    {{ langService.t('btn.print') }}
                   </button>
                 </div>
               </div>
@@ -588,8 +588,8 @@
         <!-- Database Utilities Header -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 class="text-lg font-bold text-slate-800">Database Operations Center</h4>
-            <p class="text-slate-500 text-xs mt-1">Perform administrative actions, database seeding, and campus structure management.</p>
+            <h4 class="text-lg font-bold text-slate-800">{{ langService.t('admin.db_title') }}</h4>
+            <p class="text-slate-500 text-xs mt-1">{{ langService.t('admin.db_desc') }}</p>
           </div>
           <div class="flex items-center gap-3">
             <span *ngIf="seedingStatus()" class="text-xs font-semibold px-3 py-1.5 bg-sky-50 text-sky-600 border border-sky-200 rounded-xl animate-pulse">
@@ -601,7 +601,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Seed Sample Database Data
+              {{ langService.t('admin.seed_btn') }}
             </button>
           </div>
         </div>
@@ -613,21 +613,21 @@
           <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Rooms</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete physical college rooms</p>
+                <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.manage_rooms') }}</h5>
+                <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.manage_rooms_desc') }}</p>
               </div>
               <button (click)="openRoomModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Room
+                + {{ langService.t('btn.add_room') }}
               </button>
             </div>
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Room No.</th>
-                    <th class="px-4 py-3">Room Name</th>
-                    <th class="px-4 py-3">Building/Floor</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
+                    <th class="px-4 py-3">{{ langService.t('label.room_num') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('label.room_name') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('label.building') }}/{{ langService.t('label.floor') }}</th>
+                    <th class="px-4 py-3 text-right">{{ langService.t('label.delete') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
@@ -640,13 +640,13 @@
                       </span>
                     </td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteRoom(room, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all" [title]="langService.t('label.delete')">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="rooms().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-400">No rooms configured.</td>
+                    <td colspan="4" class="text-center py-4 text-slate-400">{{ langService.t('admin.no_rooms') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -657,20 +657,20 @@
           <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Buildings</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete campus blocks</p>
+                <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.manage_bldgs') }}</h5>
+                <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.manage_bldgs_desc') }}</p>
               </div>
               <button (click)="openBuildingModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Building
+                + {{ langService.t('btn.add_building') }}
               </button>
             </div>
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Code</th>
-                    <th class="px-4 py-3">Building Name</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
+                    <th class="px-4 py-3">{{ langService.t('bldg.code') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('bldg.name') }}</th>
+                    <th class="px-4 py-3 text-right">{{ langService.t('label.delete') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
@@ -678,13 +678,13 @@
                     <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ building.code }}</td>
                     <td class="px-4 py-3 truncate max-w-[150px]">{{ building.name }}</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteBuilding(building.code, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all" [title]="langService.t('label.delete')">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="buildings().length === 0">
-                    <td colspan="3" class="text-center py-4 text-slate-500">No buildings configured.</td>
+                    <td colspan="3" class="text-center py-4 text-slate-500">{{ langService.t('admin.no_bldgs') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -695,20 +695,20 @@
           <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h5 class="text-md font-bold text-slate-800">Manage Floors</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete building floors</p>
+                <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.manage_floors') }}</h5>
+                <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.manage_floors_desc') }}</p>
               </div>
               <button (click)="openFloorModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add Floor
+                + {{ langService.t('btn.add_floor') }}
               </button>
             </div>
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Floor ID</th>
-                    <th class="px-4 py-3">Floor Name</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
+                    <th class="px-4 py-3">{{ langService.t('modal.floor_id') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('modal.floor_name') }}</th>
+                    <th class="px-4 py-3 text-right">{{ langService.t('label.delete') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
@@ -716,13 +716,13 @@
                     <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ floor.id }}</td>
                     <td class="px-4 py-3 truncate max-w-[150px]">{{ floor.name }} (Lvl {{ floor.level }})</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteFloor(floor.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all" [title]="langService.t('label.delete')">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="floorsOfMapperBuilding().length === 0">
-                    <td colspan="3" class="text-center py-4 text-slate-400">No floors configured for selected building.</td>
+                    <td colspan="3" class="text-center py-4 text-slate-400">{{ langService.t('admin.no_floors') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -733,21 +733,21 @@
           <div class="bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
               <div>
-                <h5 class="text-md font-bold text-slate-800">Manage QR Entry Gates</h5>
-                <p class="text-slate-500 text-xs mt-0.5">Add or delete scanner entry points</p>
+                <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.manage_qr') }}</h5>
+                <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.manage_qr_desc') }}</p>
               </div>
               <button (click)="openQrModal()" class="px-2.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all">
-                + Add QR Node
+                + {{ langService.t('btn.generate_qr') }}
               </button>
             </div>
             <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50 sticky top-0 z-10">
-                    <th class="px-4 py-3">Node ID</th>
-                    <th class="px-4 py-3">Location Name</th>
-                    <th class="px-4 py-3">Target Room</th>
-                    <th class="px-4 py-3 text-right">Delete</th>
+                    <th class="px-4 py-3">{{ langService.t('qr.node_id') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('qr.loc_name') }}</th>
+                    <th class="px-4 py-3">{{ langService.t('qr.target_room') }}</th>
+                    <th class="px-4 py-3 text-right">{{ langService.t('label.delete') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
@@ -756,13 +756,13 @@
                     <td class="px-4 py-3 truncate max-w-[200px] text-slate-800">{{ qr.locationName }}</td>
                     <td class="px-4 py-3 font-mono text-emerald-600">{{ qr.targetRoomId || 'N/A' }}</td>
                     <td class="px-4 py-3 text-right">
-                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all">
+                      <button (click)="deleteQrCode(qr.id, $event)" class="text-slate-500 hover:text-red-500 p-1 rounded hover:bg-red-500/10 transition-all" [title]="langService.t('label.delete')">
                         🗑️
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="qrCodes().length === 0">
-                    <td colspan="4" class="text-center py-4 text-slate-400">No QR gates configured.</td>
+                    <td colspan="4" class="text-center py-4 text-slate-400">{{ langService.t('admin.no_qr_gates') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -773,16 +773,16 @@
 
         <!-- SECTION: VISUAL BLUEPRINT & CALIBRATION TOOLS -->
         <div class="pt-4 border-t border-slate-200">
-          <h4 class="text-base font-bold text-slate-800 mb-1">Visual Blueprint & Coordinate Calibration</h4>
-          <p class="text-slate-500 text-xs mb-4">Interactive CAD tools for building floorplans, waypoint nodes, and satellite road connectors.</p>
+          <h4 class="text-base font-bold text-slate-800 mb-1">{{ langService.t('admin.cad_title') }}</h4>
+          <p class="text-slate-500 text-xs mb-4">{{ langService.t('admin.cad_desc') }}</p>
         </div>
 
         <!-- INTERACTIVE VECTOR FLOOR PLAN BLUEPRINT CANVAS -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h5 class="text-md font-bold text-slate-800">Interactive 2D Floor Plan Mapper</h5>
-              <p class="text-slate-500 text-xs mt-0.5">Filter by building & floor, click anywhere on the plan to place a new room pin instantly.</p>
+              <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.mapper_title') }}</h5>
+              <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.mapper_desc') }}</p>
             </div>
             
             <!-- Filters & Floor Plan Input -->
@@ -795,13 +795,13 @@
               <div>
                 <select [ngModel]="selectedMapperFloorId()" (ngModelChange)="onMapperFloorChange($event)" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none">
                   <option *ngFor="let f of floorsOfMapperBuilding()" [value]="f.id">{{ f.name || f.id }}</option>
-                  <option *ngIf="floorsOfMapperBuilding().length === 0" value="" disabled>No Floors Configured</option>
+                  <option *ngIf="floorsOfMapperBuilding().length === 0" value="" disabled>{{ langService.t('admin.no_floors_opt') }}</option>
                 </select>
               </div>
               <div class="flex items-center gap-1.5">
-                <input type="text" [(ngModel)]="customFloorPlanUrl" placeholder="Paste Floor Plan Image URL..." class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
+                <input type="text" [(ngModel)]="customFloorPlanUrl" [placeholder]="langService.t('admin.placeholder_floorplan')" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
                 <button (click)="saveCustomFloorPlan()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl transition-all">
-                  Save Plan
+                  {{ langService.t('btn.save_plan') }}
                 </button>
               </div>
             </div>
@@ -868,15 +868,15 @@
             
             <!-- Canvas Legend Badge overlay -->
             <div class="absolute bottom-3 left-3 bg-white/90 border border-slate-200 rounded-lg px-2.5 py-1.5 flex items-center gap-4 text-[9px] font-semibold text-slate-600 z-20 backdrop-blur">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-400 rounded-full"></span> Classroom</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-purple-400 rounded-full"></span> Lab</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-400 rounded-full"></span> Office</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-400 rounded-full"></span> Seminar</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-400 rounded-full"></span> {{ langService.t('admin.legend_classroom') }}</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-purple-400 rounded-full"></span> {{ langService.t('admin.legend_lab') }}</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-400 rounded-full"></span> {{ langService.t('admin.legend_office') }}</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-400 rounded-full"></span> {{ langService.t('admin.legend_seminar') }}</span>
             </div>
             
             <!-- Canvas Tips label overlay -->
             <div class="absolute top-3 right-3 bg-white/90 border border-slate-200 rounded-lg px-2 py-1 text-[9px] text-sky-600 font-mono z-20 backdrop-blur">
-              ✨ Click on map to place pin
+              {{ langService.t('admin.tip_click_pin') }}
             </div>
           </div>
         </div>
@@ -885,8 +885,8 @@
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg flex flex-col space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h5 class="text-md font-bold text-slate-800">Campus Road & Waypoint Map Planner</h5>
-              <p class="text-slate-500 text-xs mt-0.5">Visually add waypoint nodes, connect road segments, and set your college satellite background.</p>
+              <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.planner_title') }}</h5>
+              <p class="text-slate-500 text-xs mt-0.5">{{ langService.t('admin.planner_desc') }}</p>
             </div>
             
             <!-- Controls & Mode Selector -->
@@ -897,20 +897,20 @@
                   (click)="plannerMode.set('nodes')"
                   [ngClass]="plannerMode() === 'nodes' ? 'bg-sky-500 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
                   class="px-3 py-1.5 text-xs rounded-lg transition-all">
-                  📍 Place Nodes
+                  {{ langService.t('admin.mode_nodes') }}
                 </button>
                 <button 
                   type="button" 
                   (click)="plannerMode.set('roads')"
                   [ngClass]="plannerMode() === 'roads' ? 'bg-sky-500 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
                   class="px-3 py-1.5 text-xs rounded-lg transition-all">
-                  2. 🛣️ Connect Roads
+                  {{ langService.t('admin.mode_roads') }}
                 </button>
               </div>
               <div class="flex items-center gap-1.5">
-                <input type="text" [(ngModel)]="campusMapUrl" name="campusMapUrl" placeholder="Paste Campus Map URL..." class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
+                <input type="text" [(ngModel)]="campusMapUrl" name="campusMapUrl" [placeholder]="langService.t('admin.placeholder_campusmap')" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 text-xs outline-none w-[200px] placeholder:text-slate-400">
                 <button (click)="saveCampusMapUrl()" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl transition-all">
-                  Save Map Background
+                  {{ langService.t('admin.save_map_bg') }}
                 </button>
               </div>
             </div>
@@ -918,8 +918,8 @@
 
           <!-- Planner Instructions -->
           <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-600">
-            <span *ngIf="plannerMode() === 'nodes'">👉 **Node Placement Mode**: Click anywhere on the satellite map below to place a waypoint. Enter its ID, label, and whether it's a building.</span>
-            <span *ngIf="plannerMode() === 'roads'">👉 **Road Connection Mode**: Click Node A (turns green), then click Node B to draw a road line between them. Click lines/trash to delete.</span>
+            <span *ngIf="plannerMode() === 'nodes'">{{ langService.t('admin.instr_nodes') }}</span>
+            <span *ngIf="plannerMode() === 'roads'">{{ langService.t('admin.instr_roads') }}</span>
           </div>
 
           <div class="relative w-full aspect-[2/1] bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group select-none">
@@ -1007,10 +1007,10 @@
           <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
             <div>
               <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-extrabold rounded-full tracking-wider uppercase">Live 2D Editor</span>
-                <h5 class="text-md font-bold text-slate-800">Interactive 2D Campus Map & Live Places Manager</h5>
+                <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-extrabold rounded-full tracking-wider uppercase">{{ langService.t('admin.live_2d_badge') }}</span>
+                <h5 class="text-md font-bold text-slate-800">{{ langService.t('admin.places_manager_title') }}</h5>
               </div>
-              <p class="text-slate-500 text-xs mt-1">Add campus landmarks, drag-and-drop pins to calibrate exact GPS coordinates, configure icons/colors, and test Dijkstra turn-by-turn routes.</p>
+              <p class="text-slate-500 text-xs mt-1">{{ langService.t('admin.places_manager_desc') }}</p>
             </div>
             <div class="flex items-center gap-2">
               <a href="/campus-map.html?mode=admin&v=20260908_2" target="_blank"
@@ -1018,17 +1018,17 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                 </svg>
-                Open Fullscreen Editor
+                {{ langService.t('btn.open_map_editor') }}
               </a>
             </div>
           </div>
 
           <!-- Quick instructions bar -->
           <div class="px-6 py-2.5 bg-indigo-50/50 border-b border-indigo-100/60 flex flex-wrap items-center gap-4 text-xs text-indigo-900">
-            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> 1. Click "Click Map to Add Place" to drop pins</span>
-            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-amber-500"></span> 2. Drag pins to adjust exact GPS coordinates</span>
-            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> 3. Click any pin to edit details or delete</span>
-            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-sky-500"></span> 4. Changes automatically sync to student navigation</span>
+            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> {{ langService.t('admin.guide_1') }}</span>
+            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-amber-500"></span> {{ langService.t('admin.guide_2') }}</span>
+            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> {{ langService.t('admin.guide_3') }}</span>
+            <span class="flex items-center gap-1 font-semibold"><span class="w-2 h-2 rounded-full bg-sky-500"></span> {{ langService.t('admin.guide_4') }}</span>
           </div>
 
           <!-- Embedded Map Editor Frame -->
@@ -1046,70 +1046,70 @@
   <div *ngIf="showRoomModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-800">Add New Room</h3>
+        <h3 class="text-lg font-bold text-slate-800">{{ langService.t('modal.add_room') }}</h3>
         <button (click)="showRoomModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveRoom(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Number</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.room_num') }}</label>
           <input type="text" [(ngModel)]="roomForm().number" name="number" required placeholder="e.g. 305" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Name</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.room_name') }}</label>
           <input type="text" [(ngModel)]="roomForm().name" name="name" required placeholder="e.g. Cloud Computing Lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building (Block)</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.building_block') }}</label>
           <select [(ngModel)]="roomForm().buildingId" name="buildingId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
             <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor') }}</label>
           <select [(ngModel)]="roomForm().floorId" name="floorId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
             <option *ngFor="let f of getFloorsForSelectedBuilding()" [value]="f">{{ f }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Type</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.type') }}</label>
           <select [(ngModel)]="roomForm().type" name="type" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
-            <option value="classroom">Classroom</option>
-            <option value="lab">Laboratory</option>
-            <option value="office">Office</option>
-            <option value="seminar">Seminar Hall</option>
+            <option value="classroom">{{ langService.t('filter.classrooms') }}</option>
+            <option value="lab">{{ langService.t('filter.labs') }}</option>
+            <option value="office">{{ langService.t('filter.offices') }}</option>
+            <option value="seminar">{{ langService.t('filter.seminars') }}</option>
           </select>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Coordinate X (px)</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.coord_x') }}</label>
             <input type="number" [(ngModel)]="roomForm().x" name="x" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Coordinate Y (px)</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.coord_y') }}</label>
             <input type="number" [(ngModel)]="roomForm().y" name="y" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Linked QR Gate ID (Optional)</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.linked_qr') }}</label>
           <input type="text" [(ngModel)]="roomForm().qrCodeId" name="qrCodeId" placeholder="e.g. qr-cse-lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Current Subject / Class</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.current_subject') }}</label>
             <input type="text" [(ngModel)]="roomForm().currentSubject" name="currentSubject" placeholder="e.g. Compiler Design" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Occupied By</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.occupied_by') }}</label>
             <input type="text" [(ngModel)]="roomForm().occupiedBy" name="occupiedBy" placeholder="e.g. CSE-A 3rd Year" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
         </div>
         <div class="flex items-center gap-2">
           <input type="checkbox" [(ngModel)]="roomForm().isFree" name="isFree" id="isFree" class="w-4 h-4 bg-slate-50 border border-slate-300 focus:border-sky-500 rounded text-sky-600">
-          <label for="isFree" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">Room is currently Free</label>
+          <label for="isFree" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">{{ langService.t('modal.room_is_free') }}</label>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showRoomModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Room</button>
+          <button type="button" (click)="showRoomModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
+          <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_room') }}</button>
         </div>
       </form>
     </div>
@@ -1119,35 +1119,35 @@
   <div *ngIf="showBuildingModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-800">Add Campus Building</h3>
+        <h3 class="text-lg font-bold text-slate-800">{{ langService.t('modal.add_bldg') }}</h3>
         <button (click)="showBuildingModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveBuilding(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building Code</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.bldg_code') }}</label>
           <input type="text" [(ngModel)]="buildingForm().code" name="code" required placeholder="e.g. CSE" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Building Name</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.bldg_name') }}</label>
           <input type="text" [(ngModel)]="buildingForm().name" name="name" required placeholder="e.g. Block A - Computer Science" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Total Floors</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.total_floors') }}</label>
           <input type="number" [(ngModel)]="buildingForm().totalFloors" name="totalFloors" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">GPS Latitude</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.gps_lat') }}</label>
             <input type="number" step="any" [(ngModel)]="buildingForm().latitude" name="latitude" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">GPS Longitude</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.gps_lng') }}</label>
             <input type="number" step="any" [(ngModel)]="buildingForm().longitude" name="longitude" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showBuildingModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Building</button>
+          <button type="button" (click)="showBuildingModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
+          <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_bldg') }}</button>
         </div>
       </form>
     </div>
@@ -1157,35 +1157,35 @@
   <div *ngIf="showQrModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-800">Add QR Entry Node</h3>
+        <h3 class="text-lg font-bold text-slate-800">{{ langService.t('modal.add_qr') }}</h3>
         <button (click)="showQrModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveQrCode(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">QR Code ID</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.qr_code_id') }}</label>
           <input type="text" [(ngModel)]="qrForm().code" name="code" required placeholder="e.g. QR_CSE_LAB_110" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Location Name</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.location_name') }}</label>
           <input type="text" [(ngModel)]="qrForm().locationName" name="locationName" required placeholder="e.g. CSE Wing Gate A" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Room ID</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.target_room_id') }}</label>
           <input type="text" [(ngModel)]="qrForm().targetRoomId" name="targetRoomId" placeholder="e.g. room-301" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Building ID</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.target_bldg_id') }}</label>
             <input type="text" [(ngModel)]="qrForm().targetBuildingId" name="targetBuildingId" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Floor ID</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.target_floor_id') }}</label>
             <input type="text" [(ngModel)]="qrForm().targetFloorId" name="targetFloorId" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
           </div>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showQrModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Node</button>
+          <button type="button" (click)="showQrModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
+          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_node') }}</button>
         </div>
       </form>
     </div>
@@ -1195,29 +1195,29 @@
   <div *ngIf="showFloorModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-800">Add Building Floor</h3>
+        <h3 class="text-lg font-bold text-slate-800">{{ langService.t('modal.add_floor') }}</h3>
         <button (click)="showFloorModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveFloor(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor ID</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor_id') }}</label>
           <input type="text" [(ngModel)]="floorForm().id" name="id" required placeholder="e.g. Floor1, GroundFloor" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Name</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor_name') }}</label>
           <input type="text" [(ngModel)]="floorForm().name" name="name" required placeholder="e.g. First Floor, Ground Floor" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Level (Numeric)</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor_level') }}</label>
           <input type="number" [(ngModel)]="floorForm().level" name="level" required placeholder="e.g. 1, 0, -1" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Plan Image URL (Optional)</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor_plan_url') }}</label>
           <input type="text" [(ngModel)]="floorForm().floorPlanUrl" name="floorPlanUrl" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Floor</button>
+          <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
+          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_floor') }}</button>
         </div>
       </form>
     </div>
@@ -1227,42 +1227,42 @@
   <div *ngIf="showWaypointModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
       <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-800">Add Waypoint Node</h3>
+        <h3 class="text-lg font-bold text-slate-800">{{ langService.t('modal.add_waypoint') }}</h3>
         <button (click)="showWaypointModal.set(false)" class="text-slate-400 hover:text-slate-800">✕</button>
       </div>
       <form (submit)="saveWaypoint(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Node ID (Alphanumeric, Unique)</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.waypoint_id') }}</label>
           <input type="text" [(ngModel)]="waypointForm().id" name="id" required placeholder="e.g. gate, road_mid, Block2" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Display Label</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.waypoint_label') }}</label>
           <input type="text" [(ngModel)]="waypointForm().label" name="label" required placeholder="e.g. Block 2 Junction" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Coordinate X (px)</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.waypoint_x') }}</label>
             <input type="number" [(ngModel)]="waypointForm().x" name="x" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none" readonly>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Coordinate Y (px)</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.waypoint_y') }}</label>
             <input type="number" [(ngModel)]="waypointForm().y" name="y" required class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none" readonly>
           </div>
         </div>
         <div class="flex items-center gap-2">
           <input type="checkbox" [(ngModel)]="waypointForm().isBuilding" name="isBuilding" id="isBuilding" class="w-4 h-4 bg-slate-50 border border-slate-300 focus:border-sky-500 rounded text-sky-600">
-          <label for="isBuilding" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">Maps to a Building Block</label>
+          <label for="isBuilding" class="text-xs font-semibold text-slate-500 uppercase cursor-pointer">{{ langService.t('modal.maps_to_bldg') }}</label>
         </div>
         <div *ngIf="waypointForm().isBuilding">
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Building Block</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.target_bldg') }}</label>
           <select [(ngModel)]="waypointForm().buildingId" name="buildingId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
-            <option value="">-- Select Building --</option>
+            <option value="">{{ langService.t('modal.select_bldg') }}</option>
             <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
           </select>
         </div>
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" (click)="showWaypointModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">Save Node</button>
+          <button type="button" (click)="showWaypointModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
+          <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_node') }}</button>
         </div>
       </form>
     </div>

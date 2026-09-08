@@ -1663,6 +1663,8 @@
     // =========================================================================
     // MULTILINGUAL SUPPORT (ENGLISH & TELUGU)
     // =========================================================================
+    // MULTILINGUAL SUPPORT (ENGLISH & TELUGU)
+    // =========================================================================
     const MAP_I18N = {
       en: {
         searchPlaceholder: "Search KHIT Campus (e.g. Main Office)...",
@@ -1689,7 +1691,26 @@
         arriving: "Arriving at {dest}",
         arrived: "🎉 You have arrived at {dest}!",
         recenter: "Re-center",
-        chooseStart: "Choose Your Starting Location"
+        chooseStart: "Choose Your Starting Location",
+        chooseStartDesc: "Select where you are right now in KHIT campus to set your starting location:",
+        optRealGpsTitle: "Use My Real GPS Location",
+        optRealGpsSub: "Auto-detects high-accuracy phone/device satellite GPS",
+        optQrTitle: "Scan Door / Gate QR Code",
+        optQrSub: "Instantly locks your location with 100% precision",
+        popularEntrances: "Popular Campus Entrances:",
+        optMainGateTitle: "Main Gate Entrance (Gate 1)",
+        optMainGateSub: "Campus Security Office & Visitor Registration",
+        optOfficeTitle: "Main Administrative Block Portico",
+        optOfficeSub: "Principal Office, Admissions & Exam Cell",
+        optCseTitle: "CSE Block 2 Entrance",
+        optCseSub: "Computer Labs, AI/ML Wing & Seminar Halls",
+        optEceTitle: "ECE Block 3 Entrance",
+        optEceSub: "Electronics Labs & Power Systems",
+        optLibTitle: "Central Library Entrance",
+        optLibSub: "Digital Library, Reading Rooms & Book Bank",
+        optCanteenTitle: "Cafeteria & Food Court Entrance",
+        optCanteenSub: "Student Dining Hall & Canteen Lounge",
+        offcampusBanner: "You are outside KHIT Campus. Starting point set to Main Gate."
       },
       te: {
         searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
@@ -1716,7 +1737,26 @@
         arriving: "{dest} చేరుకుంటున్నారు",
         arrived: "🎉 మీరు {dest} వద్దకు చేరుకున్నారు!",
         recenter: "రీ-సెంటర్",
-        chooseStart: "మీ ప్రారంభ స్థానాన్ని ఎంచుకోండి"
+        chooseStart: "మీ ప్రారంభ స్థానాన్ని ఎంచుకోండి",
+        chooseStartDesc: "మీ ప్రారంభ స్థానాన్ని నిర్ణయించడానికి మీరు ప్రస్తుతం KHIT క్యాంపస్‌లో ఎక్కడ ఉన్నారో ఎంచుకోండి:",
+        optRealGpsTitle: "నా రియల్ జీపీఎస్ లొకేషన్ ఉపయోగించండి",
+        optRealGpsSub: "ఫోన్/డివైస్ శాటిలైట్ జీపీఎస్‌ను ఆటో-డిటెక్ట్ చేస్తుంది",
+        optQrTitle: "డోర్ / గేట్ క్యూఆర్ కోడ్ స్కాన్ చేయండి",
+        optQrSub: "100% ఖచ్చితత్వంతో మీ లొకేషన్‌ను తక్షణమే గుర్తిస్తుంది",
+        popularEntrances: "ప్రధాన క్యాంపస్ ప్రవేశ ద్వారాలు:",
+        optMainGateTitle: "మెయిన్ గేట్ ప్రవేశం (గేట్ 1)",
+        optMainGateSub: "క్యాంపస్ సెక్యూరిటీ ఆఫీస్ & విజిటర్ రిజిస్ట్రేషన్",
+        optOfficeTitle: "ప్రధాన పరిపాలనా విభాగం (పోర్టికో)",
+        optOfficeSub: "ప్రిన్సిపాల్ ఆఫీస్, అడ్మిషన్స్ & ఎగ్జామ్ సెల్",
+        optCseTitle: "సీఎస్ఈ బ్లాక్ 2 ప్రవేశం",
+        optCseSub: "కంప్యూటర్ ల్యాబ్‌లు, AI/ML వింగ్ & సెమినార్ హాళ్లు",
+        optEceTitle: "ఈసీఈ బ్లాక్ 3 ప్రవేశం",
+        optEceSub: "ఎలక్ట్రానిక్స్ ల్యాబ్‌లు & పవర్ సిస్టమ్స్",
+        optLibTitle: "సెంట్రల్ లైబ్రరీ ప్రవేశం",
+        optLibSub: "డిజిటల్ లైబ్రరీ, రీడింగ్ రూమ్‌లు & బుక్ బ్యాంక్",
+        optCanteenTitle: "క్యాంటీన్ & ఫుడ్ కోర్ట్ ప్రవేశం",
+        optCanteenSub: "విద్యార్థి డైనింగ్ హాల్ & క్యాంటీన్ లాంజ్",
+        offcampusBanner: "మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం మెయిన్ గేట్‌గా సెట్ చేయబడింది."
       }
     };
 
@@ -1765,9 +1805,75 @@
       const recenterSpan = document.querySelector('#nav-recenter-btn span');
       if (recenterSpan) recenterSpan.innerText = mapT('recenter');
 
-      // Modal title
+      // Modal title & content
       const modalTitle = document.querySelector('#start-location-modal .gm-modal-header span');
       if (modalTitle) modalTitle.innerText = mapT('chooseStart');
+
+      const modalDesc = document.querySelector('#start-location-modal p');
+      if (modalDesc) modalDesc.innerText = mapT('chooseStartDesc');
+
+      const gpsTitle = document.querySelector('.gm-start-option[data-type="gps"] > div > div:first-child');
+      if (gpsTitle) gpsTitle.innerText = mapT('optRealGpsTitle');
+      const gpsSub = document.querySelector('.gm-start-option[data-type="gps"] > div > div:last-child');
+      if (gpsSub) gpsSub.innerText = mapT('optRealGpsSub');
+
+      const qrTitle = document.querySelector('.gm-start-option[data-type="qr"] > div > div:first-child');
+      if (qrTitle) qrTitle.innerText = mapT('optQrTitle');
+      const qrSub = document.querySelector('.gm-start-option[data-type="qr"] > div > div:last-child');
+      if (qrSub) qrSub.innerText = mapT('optQrSub');
+
+      const popularHdr = document.querySelector('#start-location-modal div[style*="text-transform: uppercase"]');
+      if (popularHdr) popularHdr.innerText = mapT('popularEntrances');
+
+      const optMainGate = document.querySelector('.gm-start-option[data-coords="16.256891,80.333380"] > div');
+      if (optMainGate) {
+        const divs = optMainGate.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optMainGateTitle');
+        if (divs[1]) divs[1].innerText = mapT('optMainGateSub');
+      }
+
+      const optOffice = document.querySelector('.gm-start-option[data-coords="16.258009,80.332492"] > div');
+      if (optOffice) {
+        const divs = optOffice.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optOfficeTitle');
+        if (divs[1]) divs[1].innerText = mapT('optOfficeSub');
+      }
+
+      const optCse = document.querySelector('.gm-start-option[data-coords="16.258056,80.332672"] > div');
+      if (optCse) {
+        const divs = optCse.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optCseTitle');
+        if (divs[1]) divs[1].innerText = mapT('optCseSub');
+      }
+
+      const optEce = document.querySelector('.gm-start-option[data-coords="16.258339,80.3333195"] > div');
+      if (optEce) {
+        const divs = optEce.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optEceTitle');
+        if (divs[1]) divs[1].innerText = mapT('optEceSub');
+      }
+
+      const optLib = document.querySelector('.gm-start-option[data-coords="16.257509,80.333457"] > div');
+      if (optLib) {
+        const divs = optLib.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optLibTitle');
+        if (divs[1]) divs[1].innerText = mapT('optLibSub');
+      }
+
+      const optCanteen = document.querySelector('.gm-start-option[data-coords="16.257200,80.332800"] > div');
+      if (optCanteen) {
+        const divs = optCanteen.querySelectorAll('div');
+        if (divs[0]) divs[0].innerText = mapT('optCanteenTitle');
+        if (divs[1]) divs[1].innerText = mapT('optCanteenSub');
+      }
+
+      // Offcampus banner
+      const offcampusSpan = document.querySelector('#offcampus-banner span');
+      if (offcampusSpan) {
+        offcampusSpan.innerHTML = isTe ? 
+          'మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం <strong>మెయిన్ గేట్</strong> గా సెట్ చేయబడింది.' : 
+          'You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.';
+      }
     }
 
     function toggleMapLanguage() {
