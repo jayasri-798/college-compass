@@ -531,7 +531,7 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.25);
     }
 
-    /* Walk Simulation Button */
+    /* Live Walk & Movement Controls */
     .gm-nav-walk-sim-btn {
       padding: 9px 14px;
       background: #e8f0fe;
@@ -551,10 +551,36 @@
       background: #d2e3fc;
     }
     .gm-nav-walk-sim-btn.active {
-      background: #1a73e8;
+      background: #1e8e3e;
       color: #ffffff;
-      border-color: #1a73e8;
-      box-shadow: 0 2px 8px rgba(26,115,232,0.35);
+      border-color: #1e8e3e;
+      box-shadow: 0 2px 8px rgba(30,142,62,0.35);
+    }
+    .gm-nav-walk-sim-btn.active i {
+      animation: gmPulseWalk 1.4s infinite ease-in-out;
+    }
+    @keyframes gmPulseWalk {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+    .gm-nav-step-btn {
+      padding: 9px 12px;
+      background: #f1f3f4;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #3c4043;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .gm-nav-step-btn:hover {
+      background: #e8eaed;
+      color: #202124;
     }
 
     /* Start Location Selector Bar */
@@ -1109,17 +1135,25 @@
 
   <!-- GOOGLE MAPS NAVIGATION MODE: Bottom Sheet Stats -->
   <div class="gm-nav-bottom-sheet" id="nav-bottom-sheet">
-    <div style="flex: 1;">
+    <div style="flex: 1; min-width: 0;">
       <div class="gm-nav-stat-time" id="nav-time-text">2 min</div>
-      <div class="gm-nav-stat-sub">
+      <div class="gm-nav-stat-sub" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
         <span id="nav-meters-text">160 m</span> • 
         <span id="nav-dest-title">Main Office</span>
       </div>
+      <div id="nav-walk-status" style="font-size: 11px; color: #1e8e3e; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-top: 3px;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #1e8e3e; display: inline-block;"></span>
+        <span id="nav-walk-status-text">Live Walk: Active • Walk to navigate</span>
+      </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="gm-nav-walk-sim-btn" id="nav-walk-sim-btn" title="Simulate Walking Live along Route">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <button class="gm-nav-walk-sim-btn active" id="nav-walk-sim-btn" title="Live Walk - Follows your movement as you walk">
         <i class="fa-solid fa-person-walking" id="nav-sim-icon"></i>
-        <span id="nav-sim-text">Simulate Walk</span>
+        <span id="nav-sim-text">Live Walk</span>
+      </button>
+      <button class="gm-nav-step-btn" id="nav-step-btn" title="Step Forward (Test/Manual step)">
+        <i class="fa-solid fa-shoe-prints"></i>
+        <span>+ Step</span>
       </button>
       <button class="gm-nav-close-btn" id="exit-nav-btn" title="Exit Navigation">
         <i class="fa-solid fa-xmark"></i>
@@ -1620,10 +1654,7 @@
     let currentUserHeading = 0;
     let currentRoutePoints = [];
     let watchGpsId = null;
-    let walkSimInterval = null;
-    let isSimulatingWalk = false;
-    let simSubSteps = [];
-    let simStepIndex = 0;
+    let isLiveWalking = true;
 
     function calculateBearing(lat1, lon1, lat2, lon2) {
       const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -1720,14 +1751,14 @@
         } else if (event.alpha !== null) {
           heading = 360 - event.alpha;
         }
-        if (heading !== null && isNavigating && !isSimulatingWalk) {
+        if (heading !== null && isNavigating) {
           updateUserHeading(heading);
         }
       }, true);
     }
 
     // Start Location state & deadband movement filter
-    const MIN_MOVEMENT_THRESHOLD_METERS = 4.0;
+    const MIN_MOVEMENT_THRESHOLD_METERS = 3.0;
     let lastGpsCoords = null;
 
     function setStartLocationLabel(text) {
@@ -1756,7 +1787,7 @@
         }
         watchGpsId = navigator.geolocation.watchPosition(
           (position) => {
-            if (isSimulatingWalk) return;
+            if (!isNavigating || !isLiveWalking) return;
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const accuracy = position.coords.accuracy;
@@ -1771,7 +1802,8 @@
             if (lastGpsCoords) {
               const d = getDistanceMeters(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
               if (d < MIN_MOVEMENT_THRESHOLD_METERS) {
-                return; // User has not physically moved >= 4 meters; do NOT move camera or trim route!
+                updateWalkStatus('📍 Standing still • Walk forward to navigate');
+                return; // User has not physically moved >= 3.0 meters; do NOT move camera or trim route!
               }
               if (heading === null || isNaN(heading)) {
                 heading = calculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
@@ -1779,6 +1811,7 @@
             }
 
             lastGpsCoords = [lat, lng];
+            updateWalkStatus('🚶 Walking • Following your steps');
             setUserPosition([lat, lng], 'Live Walking GPS', heading);
           },
           (err) => {
@@ -1987,12 +2020,19 @@
       document.getElementById('nav-top-banner').style.display = 'flex';
       document.getElementById('nav-bottom-sheet').style.display = 'flex';
 
-      // Enable Auto-Follow Camera & Focus on User Dot
+      // Enable Auto-Follow Camera & Live Walk Tracking Mode
+      isLiveWalking = true;
+      const simBtn = document.getElementById('nav-walk-sim-btn');
+      const simText = document.getElementById('nav-sim-text');
+      const simIcon = document.getElementById('nav-sim-icon');
+      if (simBtn) simBtn.classList.add('active');
+      if (simText) simText.innerText = 'Live Walk';
+      if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
+
       enableCameraFollow();
       startGpsWatch();
-
-      // Reset Simulation Button
-      stopWalkSimulation();
+      startMotionWatch();
+      updateWalkStatus('Live Walk: Active • Walk to navigate');
 
       // Calculate initial heading towards first waypoint
       if (routePoints.length >= 2) {
@@ -2084,89 +2124,148 @@
     }
 
     // =========================================================================
-    // WALKING SIMULATION (For Testing Indoors & Seeing Camera Move with User)
+    // LIVE WALKING NAVIGATION (Strictly Follows Real Movement - No Auto Simulation)
     // =========================================================================
-    function generateSimSteps(points, stepMeters = 1.8) {
-      const steps = [];
-      for (let i = 0; i < points.length - 1; i++) {
-        const p1 = points[i];
-        const p2 = points[i+1];
-        const d = getDistanceMeters(p1[0], p1[1], p2[0], p2[1]);
-        const numSubSteps = Math.max(1, Math.round(d / stepMeters));
-        for (let s = 0; s < numSubSteps; s++) {
-          const frac = s / numSubSteps;
-          const lat = p1[0] + (p2[0] - p1[0]) * frac;
-          const lng = p1[1] + (p2[1] - p1[1]) * frac;
-          const bearing = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
-          steps.push({ coords: [lat, lng], bearing: bearing });
+    let lastMotionStepTime = 0;
+    let motionListenerActive = false;
+
+    function updateWalkStatus(text) {
+      const el = document.getElementById('nav-walk-status-text');
+      if (el) el.innerText = text;
+    }
+
+    function advanceRouteByMeters(meters) {
+      if (!isNavigating || !userLocation || !currentRoutePoints || currentRoutePoints.length < 2) return;
+
+      const userLat = userLocation.lat;
+      const userLng = userLocation.lng;
+
+      // Find closest segment along route
+      let closestIdx = 0;
+      let minD = Infinity;
+      for (let i = 0; i < currentRoutePoints.length - 1; i++) {
+        const d = getDistanceMeters(userLat, userLng, currentRoutePoints[i+1][0], currentRoutePoints[i+1][1]);
+        if (d < minD) {
+          minD = d;
+          closestIdx = i;
         }
       }
-      const last = points[points.length - 1];
-      const prev = points[points.length - 2] || last;
-      steps.push({ coords: last, bearing: calculateBearing(prev[0], prev[1], last[0], last[1]) });
-      return steps;
-    }
 
-    function startWalkSimulation() {
-      if (!currentRoutePoints || currentRoutePoints.length < 2) return;
-      stopWalkSimulation();
+      const p1 = [userLat, userLng];
+      const p2 = currentRoutePoints[closestIdx + 1];
+      const segmentDist = getDistanceMeters(p1[0], p1[1], p2[0], p2[1]);
 
-      isSimulatingWalk = true;
-      simSubSteps = generateSimSteps(currentRoutePoints, 1.8);
-      simStepIndex = 0;
-
-      const simBtn = document.getElementById('nav-walk-sim-btn');
-      const simText = document.getElementById('nav-sim-text');
-      const simIcon = document.getElementById('nav-sim-icon');
-      if (simBtn) simBtn.classList.add('active');
-      if (simText) simText.innerText = 'Pause Walk';
-      if (simIcon) simIcon.className = 'fa-solid fa-pause';
-
-      enableCameraFollow();
-
-      walkSimInterval = setInterval(() => {
-        if (simStepIndex >= simSubSteps.length) {
-          stopWalkSimulation();
-          return;
+      let newLat, newLng, newBearing;
+      if (meters >= segmentDist) {
+        if (closestIdx + 2 < currentRoutePoints.length) {
+          newLat = currentRoutePoints[closestIdx + 2][0];
+          newLng = currentRoutePoints[closestIdx + 2][1];
+          newBearing = calculateBearing(p2[0], p2[1], newLat, newLng);
+        } else {
+          newLat = p2[0];
+          newLng = p2[1];
+          newBearing = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
         }
-        const step = simSubSteps[simStepIndex];
-        setUserPosition(step.coords, 'Walking Simulation', step.bearing);
-        simStepIndex++;
-      }, 150);
-    }
-
-    function stopWalkSimulation() {
-      if (walkSimInterval) {
-        clearInterval(walkSimInterval);
-        walkSimInterval = null;
-      }
-      isSimulatingWalk = false;
-      const simBtn = document.getElementById('nav-walk-sim-btn');
-      const simText = document.getElementById('nav-sim-text');
-      const simIcon = document.getElementById('nav-sim-icon');
-      if (simBtn) simBtn.classList.remove('active');
-      if (simText) simText.innerText = 'Simulate Walk';
-      if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
-    }
-
-    function toggleWalkSimulation() {
-      if (isSimulatingWalk) {
-        stopWalkSimulation();
       } else {
-        startWalkSimulation();
+        const frac = meters / Math.max(0.1, segmentDist);
+        newLat = p1[0] + (p2[0] - p1[0]) * frac;
+        newLng = p1[1] + (p2[1] - p1[1]) * frac;
+        newBearing = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
+      }
+
+      lastGpsCoords = [newLat, newLng];
+      setUserPosition([newLat, newLng], 'Live Walk', newBearing);
+    }
+
+    // Motion / Step detector for physical walking (Phone Accelerometer)
+    function onDeviceMotion(event) {
+      if (!isNavigating || !isLiveWalking) return;
+      const acc = event.accelerationIncludingGravity || event.acceleration;
+      if (!acc) return;
+      const x = acc.x || 0;
+      const y = acc.y || 0;
+      const z = acc.z || 0;
+      const mag = Math.sqrt(x*x + y*y + z*z);
+
+      const now = Date.now();
+      // Detect walking footstep acceleration peak (> 12.8 m/s²)
+      if (mag > 12.8 && (now - lastMotionStepTime) > 380) {
+        lastMotionStepTime = now;
+        advanceRouteByMeters(0.85); // 1 physical step
+        updateWalkStatus('🚶 Walking • Physical step detected');
+      }
+    }
+
+    function startMotionWatch() {
+      if (!motionListenerActive && window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', onDeviceMotion, true);
+        motionListenerActive = true;
+      }
+    }
+
+    function stopMotionWatch() {
+      if (motionListenerActive && window.DeviceMotionEvent) {
+        window.removeEventListener('devicemotion', onDeviceMotion, true);
+        motionListenerActive = false;
+      }
+    }
+
+    function toggleLiveWalking() {
+      isLiveWalking = !isLiveWalking;
+      const simBtn = document.getElementById('nav-walk-sim-btn');
+      const simText = document.getElementById('nav-sim-text');
+      const simIcon = document.getElementById('nav-sim-icon');
+
+      if (isLiveWalking) {
+        if (simBtn) simBtn.classList.add('active');
+        if (simText) simText.innerText = 'Live Walk';
+        if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
+        enableCameraFollow();
+        startGpsWatch();
+        startMotionWatch();
+        updateWalkStatus('Live Walk: Active • Walk to navigate');
+        showAdminToast('Live Walk Active: Map navigates only as you physically move!');
+      } else {
+        if (simBtn) simBtn.classList.remove('active');
+        if (simText) simText.innerText = 'Resume Walk';
+        if (simIcon) simIcon.className = 'fa-solid fa-play';
+        stopGpsWatch();
+        stopMotionWatch();
+        updateWalkStatus('Walk paused • Tap Resume to continue');
+        showAdminToast('Live Walk paused.');
       }
     }
 
     const navWalkSimBtn = document.getElementById('nav-walk-sim-btn');
     if (navWalkSimBtn) {
-      navWalkSimBtn.addEventListener('click', toggleWalkSimulation);
+      navWalkSimBtn.addEventListener('click', toggleLiveWalking);
     }
+
+    // Step button (+ Step for manual testing on desktop or indoor testing)
+    const navStepBtn = document.getElementById('nav-step-btn');
+    if (navStepBtn) {
+      navStepBtn.addEventListener('click', () => {
+        if (!isNavigating) return;
+        advanceRouteByMeters(2.0);
+        updateWalkStatus('🚶 Walking • +2m step taken');
+      });
+    }
+
+    // Keyboard controls for desktop testing: Up Arrow or 'W' advances 1.8m
+    window.addEventListener('keydown', (e) => {
+      if (!isNavigating || !isLiveWalking) return;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        advanceRouteByMeters(1.8);
+        updateWalkStatus('🚶 Walking • Step forward');
+      }
+    });
 
     // Exit Navigation
     document.getElementById('exit-nav-btn').addEventListener('click', () => {
       isNavigating = false;
-      stopWalkSimulation();
+      isLiveWalking = false;
       stopGpsWatch();
+      stopMotionWatch();
 
       if (recenterBtn) recenterBtn.style.display = 'none';
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
