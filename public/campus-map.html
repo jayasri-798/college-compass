@@ -969,6 +969,10 @@
       <i class="fa-solid fa-magnifying-glass gm-search-icon"></i>
       <input type="text" id="gm-search-input" class="gm-search-input" placeholder="Search KHIT Campus (e.g. Main Office)..." autocomplete="off" />
       <div class="gm-search-actions">
+        <button class="gm-lang-toggle-btn" id="map-lang-btn" title="Switch Language / భాషను మార్చండి" style="padding: 5px 9px; background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; font-family: inherit;">
+          <span>🌐</span>
+          <span id="map-lang-label">తెలుగు</span>
+        </button>
         <button class="gm-icon-btn gm-qr-btn" id="open-qr-btn" title="Scan Campus Gate QR">
           <i class="fa-solid fa-qrcode"></i>
         </button>
@@ -1656,6 +1660,142 @@
     let watchGpsId = null;
     let isLiveWalking = true;
 
+    // =========================================================================
+    // MULTILINGUAL SUPPORT (ENGLISH & TELUGU)
+    // =========================================================================
+    const MAP_I18N = {
+      en: {
+        searchPlaceholder: "Search KHIT Campus (e.g. Main Office)...",
+        from: "From:",
+        gpsDetecting: "Acquiring GPS...",
+        mainOffice: "Main Office",
+        cseBlock: "CSE Block 2",
+        library: "Library",
+        canteen: "Canteen",
+        eceBlock: "ECE Block 3",
+        mainGate: "Main Gate",
+        liveWalk: "Live Walk",
+        resumeWalk: "Resume Walk",
+        step: "+ Step",
+        walkStatusActive: "Live Walk: Active • Walk to navigate",
+        walkStatusPaused: "Walk paused • Tap Resume to continue",
+        standingStill: "📍 Standing still • Walk forward to navigate",
+        walkingSteps: "🚶 Walking • Following your steps",
+        stepDetected: "🚶 Walking • Physical step detected",
+        turnRight: "Turn right towards {dest}",
+        turnLeft: "Turn left towards {dest}",
+        straight: "Continue straight on pathway",
+        headTo: "Head towards {dest}",
+        arriving: "Arriving at {dest}",
+        arrived: "🎉 You have arrived at {dest}!",
+        recenter: "Re-center",
+        chooseStart: "Choose Your Starting Location"
+      },
+      te: {
+        searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
+        from: "ప్రారంభం:",
+        gpsDetecting: "జీపీఎస్ కనుగొంటోంది...",
+        mainOffice: "మెయిన్ ఆఫీస్",
+        cseBlock: "సీఎస్ఈ బ్లాక్ 2",
+        library: "లైబ్రరీ",
+        canteen: "క్యాంటీన్",
+        eceBlock: "ఈసీఈ బ్లాక్ 3",
+        mainGate: "మెయిన్ గేట్",
+        liveWalk: "లైవ్ వాక్",
+        resumeWalk: "నడక కొనసాగించు",
+        step: "+ అడుగు",
+        walkStatusActive: "లైవ్ వాక్: యాక్టివ్ • నావిగేట్ చేయడానికి నడవండి",
+        walkStatusPaused: "నడక ఆపబడింది • కొనసాగించడానికి నొక్కండి",
+        standingStill: "📍 అక్కడే ఉన్నారు • రూట్ వెంట నడవండి",
+        walkingSteps: "🚶 నడుస్తున్నారు • అడుగులు ట్రాక్ అవుతున్నాయి",
+        stepDetected: "🚶 నడుస్తున్నారు • అడుగు గుర్తించబడింది",
+        turnRight: "{dest} వైపు కుడికి తిరగండి",
+        turnLeft: "{dest} వైపు ఎడమకి తిరగండి",
+        straight: "తిన్నగా ముందుకు వెళ్ళండి",
+        headTo: "{dest} వైపు వెళ్ళండి",
+        arriving: "{dest} చేరుకుంటున్నారు",
+        arrived: "🎉 మీరు {dest} వద్దకు చేరుకున్నారు!",
+        recenter: "రీ-సెంటర్",
+        chooseStart: "మీ ప్రారంభ స్థానాన్ని ఎంచుకోండి"
+      }
+    };
+
+    let currentMapLang = (typeof localStorage !== 'undefined' && localStorage.getItem('college_compass_lang') === 'te') ? 'te' : 'en';
+
+    function mapT(key, params = {}) {
+      let text = MAP_I18N[currentMapLang]?.[key] || MAP_I18N['en']?.[key] || key;
+      for (const [k, v] of Object.entries(params)) {
+        text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+      }
+      return text;
+    }
+
+    function applyMapLanguage() {
+      const isTe = currentMapLang === 'te';
+      const langBtn = document.getElementById('map-lang-label');
+      if (langBtn) langBtn.innerText = isTe ? 'English' : 'తెలుగు';
+
+      const searchInput = document.getElementById('gm-search-input');
+      if (searchInput) searchInput.placeholder = mapT('searchPlaceholder');
+
+      const fromLabel = document.querySelector('.gm-start-loc-label');
+      if (fromLabel) fromLabel.innerText = mapT('from');
+
+      // Chips
+      const chipOffice = document.querySelector('[data-dest="main-office"] span');
+      if (chipOffice) chipOffice.innerText = mapT('mainOffice');
+      const chipCse = document.querySelector('[data-dest="cse-block"] span');
+      if (chipCse) chipCse.innerText = mapT('cseBlock');
+      const chipLib = document.querySelector('[data-dest="library"] span');
+      if (chipLib) chipLib.innerText = mapT('library');
+      const chipCanteen = document.querySelector('[data-dest="canteen"] span');
+      if (chipCanteen) chipCanteen.innerText = mapT('canteen');
+      const chipEce = document.querySelector('[data-dest="ece-block"] span');
+      if (chipEce) chipEce.innerText = mapT('eceBlock');
+      const chipGate = document.querySelector('[data-dest="main-gate"] span');
+      if (chipGate) chipGate.innerText = mapT('mainGate');
+
+      // Nav sheet buttons
+      const simText = document.getElementById('nav-sim-text');
+      if (simText) {
+        simText.innerText = isLiveWalking ? mapT('liveWalk') : mapT('resumeWalk');
+      }
+      const stepBtnSpan = document.querySelector('#nav-step-btn span');
+      if (stepBtnSpan) stepBtnSpan.innerText = mapT('step');
+      const recenterSpan = document.querySelector('#nav-recenter-btn span');
+      if (recenterSpan) recenterSpan.innerText = mapT('recenter');
+
+      // Modal title
+      const modalTitle = document.querySelector('#start-location-modal .gm-modal-header span');
+      if (modalTitle) modalTitle.innerText = mapT('chooseStart');
+    }
+
+    function toggleMapLanguage() {
+      currentMapLang = (currentMapLang === 'en') ? 'te' : 'en';
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('college_compass_lang', currentMapLang);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('college_compass_lang_changed', { detail: currentMapLang }));
+      }
+      applyMapLanguage();
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'college_compass_lang' && (e.newValue === 'en' || e.newValue === 'te')) {
+          currentMapLang = e.newValue;
+          applyMapLanguage();
+        }
+      });
+      window.addEventListener('college_compass_lang_changed', (e) => {
+        if (e.detail && (e.detail === 'en' || e.detail === 'te')) {
+          currentMapLang = e.detail;
+          applyMapLanguage();
+        }
+      });
+    }
+
     function calculateBearing(lat1, lon1, lat2, lon2) {
       const dLon = (lon2 - lon1) * Math.PI / 180;
       const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
@@ -2085,7 +2225,7 @@
 
       if (remainingMeters <= 15) {
         if (stepDistEl) stepDistEl.innerText = `${remainingMeters} m`;
-        if (stepNameEl) stepNameEl.innerText = `Arriving at ${selectedPlace.name}`;
+        if (stepNameEl) stepNameEl.innerText = mapT('arriving', { dest: selectedPlace.name });
         if (turnIconEl) turnIconEl.className = 'fa-solid fa-location-dot';
       } else {
         if (stepDistEl) stepDistEl.innerText = `In ${Math.max(5, distToNext)} m`;
@@ -2100,17 +2240,17 @@
           if (diff > 180) diff -= 360;
 
           if (diff > 35) {
-            if (stepNameEl) stepNameEl.innerText = `Turn right towards ${selectedPlace.name}`;
+            if (stepNameEl) stepNameEl.innerText = mapT('turnRight', { dest: selectedPlace.name });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-right';
           } else if (diff < -35) {
-            if (stepNameEl) stepNameEl.innerText = `Turn left towards ${selectedPlace.name}`;
+            if (stepNameEl) stepNameEl.innerText = mapT('turnLeft', { dest: selectedPlace.name });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-down fa-flip-horizontal';
           } else {
-            if (stepNameEl) stepNameEl.innerText = `Continue straight on pathway`;
+            if (stepNameEl) stepNameEl.innerText = mapT('straight');
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
           }
         } else {
-          if (stepNameEl) stepNameEl.innerText = `Head to entrance of ${selectedPlace.name}`;
+          if (stepNameEl) stepNameEl.innerText = mapT('headTo', { dest: selectedPlace.name });
           if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-up';
         }
       }
@@ -2283,11 +2423,19 @@
       const d = getDistanceMeters(userLocation.lat, userLocation.lng, selectedPlace.coords[0], selectedPlace.coords[1]);
       if (d <= 15) {
         const toast = document.getElementById('arrival-card');
-        document.getElementById('arrival-card-text').innerText = `🎉 You have arrived at ${selectedPlace.name}!`;
+        document.getElementById('arrival-card-text').innerText = mapT('arrived', { dest: selectedPlace.name });
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 6000);
       }
     }
+
+    // Language switcher toggle button in Search Box
+    const mapLangBtn = document.getElementById('map-lang-btn');
+    if (mapLangBtn) {
+      mapLangBtn.addEventListener('click', toggleMapLanguage);
+    }
+    // Initialize map translations
+    applyMapLanguage();
 
     // =========================================================================
     // 6. PLACE CARDS & SEARCH AUTOCOMPLETE

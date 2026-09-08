@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CampusDataService } from '../../core/services/campus-data.service';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageService } from '../../core/services/language.service';
 import { Building, Floor, Room, QrCode, Waypoint, Road } from '../../core/models/campus.model';
 import * as QRCode from 'qrcode';
 
@@ -16,6 +17,7 @@ import * as QRCode from 'qrcode';
 export class DashboardComponent implements OnInit {
   private campusService = inject(CampusDataService);
   authService = inject(AuthService);
+  langService = inject(LanguageService);
 
   // States using Angular Signals
   buildings = signal<Building[]>([]);
