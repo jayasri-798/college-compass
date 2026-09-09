@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CampusDataService } from '../../core/services/campus-data.service';
@@ -16,6 +17,7 @@ import * as QRCode from 'qrcode';
 })
 export class DashboardComponent implements OnInit {
   private campusService = inject(CampusDataService);
+  private sanitizer = inject(DomSanitizer);
   authService = inject(AuthService);
   langService = inject(LanguageService);
 
@@ -41,6 +43,17 @@ export class DashboardComponent implements OnInit {
   showWaypointModal = signal<boolean>(false);
   waypointForm = signal<any>({ id: '', label: '', x: 0, y: 0, isBuilding: false, buildingId: '' });
   campusMapUrl = signal<string>('campus-map.jpg');
+
+  // AR Planner Live Preview States
+  plannerViewMode = signal<'2d' | 'ar' | 'split'>('2d');
+  selectedArPreviewGate = signal<string>('qr-cse-lab');
+  arPreviewNonce = signal<number>(1);
+
+  arPreviewUrl = computed<SafeResourceUrl>(() => {
+    const gate = this.selectedArPreviewGate() || (this.qrCodes().length > 0 ? (this.qrCodes()[0].id || 'qr-cse-lab') : 'qr-cse-lab');
+    const nonce = this.arPreviewNonce();
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`/ar-map.html?gate=${gate}&preview=true&v=${nonce}`);
+  });
 
   roomsForSelectedMapper = computed(() => {
     const bId = this.selectedMapperBuildingId();
@@ -632,6 +645,23 @@ export class DashboardComponent implements OnInit {
   getWaypointCoords(id: string): { x: number, y: number } | null {
     const node = this.waypointsList().find(w => w.id === id);
     return node ? { x: node.x, y: node.y } : null;
+  }
+
+  setPlannerViewMode(mode: '2d' | 'ar' | 'split') {
+    this.plannerViewMode.set(mode);
+  }
+
+  onArPreviewGateChange(gateId: string) {
+    this.selectedArPreviewGate.set(gateId);
+  }
+
+  reloadArPreview() {
+    this.arPreviewNonce.update(n => n + 1);
+  }
+
+  openArFullscreen() {
+    const gate = this.selectedArPreviewGate() || (this.qrCodes().length > 0 ? (this.qrCodes()[0].id || 'qr-cse-lab') : 'qr-cse-lab');
+    window.open(`/ar-map.html?gate=${gate}&preview=true`, '_blank');
   }
 
   logout() {

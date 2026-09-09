@@ -708,6 +708,107 @@
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
     }
 
+    /* Google Maps Steps & Directions Itinerary Sheet */
+    .gm-steps-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 3200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      animation: gmFadeIn 0.2s ease;
+    }
+    .gm-steps-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      max-height: 75vh;
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: gmSlideUp 0.25s ease-out;
+    }
+    .gm-steps-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #e8eaed;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .gm-steps-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #202124;
+    }
+    .gm-steps-sub {
+      font-size: 13px;
+      color: #5f6368;
+      margin-top: 2px;
+    }
+    .gm-steps-list {
+      padding: 14px 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .gm-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8f9fa;
+      border: 1px solid #f1f3f4;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gm-step-item:hover {
+      background: #e8f0fe;
+      border-color: #d2e3fc;
+      transform: translateX(2px);
+    }
+    .gm-step-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .gm-step-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .gm-step-instruction {
+      font-size: 14px;
+      font-weight: 600;
+      color: #202124;
+    }
+    .gm-step-meta {
+      font-size: 12px;
+      color: #5f6368;
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+    }
+    .gm-nav-step-btn.active {
+      background: #1a73e8;
+      color: #ffffff;
+      border-color: #1a73e8;
+    }
+
 
     /* Start Location Selector Bar */
     .gm-start-selector-bar {
@@ -873,6 +974,29 @@
       border-right: 6px solid transparent;
       border-bottom: 10px solid #ffffff;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+    }
+    /* Google Maps Navigation Vehicle Indicator (3D Driving Chevron Arrow) */
+    .gm-nav-vehicle-arrow {
+      display: none;
+      position: absolute;
+      top: -20px;
+      left: -14px;
+      width: 28px;
+      height: 38px;
+      background: #1a73e8;
+      clip-path: polygon(50% 0%, 100% 88%, 50% 68%, 0% 88%);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.55));
+      border: 2.5px solid #ffffff;
+      z-index: 10;
+    }
+    .gm-user-dot-wrapper.navigating .gm-nav-vehicle-arrow {
+      display: block;
+    }
+    .gm-user-dot-wrapper.navigating .gm-user-pulse,
+    .gm-user-dot-wrapper.navigating .gm-user-beam,
+    .gm-user-dot-wrapper.navigating .gm-user-arrow,
+    .gm-user-dot-wrapper.navigating .gm-user-core-dot {
+      display: none !important;
     }
     .gm-user-core-dot {
       width: 16px;
@@ -1246,18 +1370,38 @@
     </div>
   </div>
 
-  <!-- GOOGLE MAPS NAVIGATION MODE: Top Green Directions Banner -->
-  <div class="gm-nav-top-banner" id="nav-top-banner">
+  <!-- GOOGLE MAPS NAVIGATION MODE: Top Green Directions Banner (Clickable for Steps List) -->
+  <div class="gm-nav-top-banner" id="nav-top-banner" style="cursor: pointer;" title="Click to view all turns & directions">
     <div class="gm-maneuver-icon">
       <i class="fa-solid fa-arrow-turn-up" id="nav-turn-icon"></i>
     </div>
     <div class="gm-maneuver-text">
       <div class="gm-maneuver-distance" id="nav-step-dist">In 40 m</div>
       <div class="gm-maneuver-instruction" id="nav-step-name">Turn left onto Administrative Plaza</div>
+      <div style="font-size: 11px; opacity: 0.88; display: flex; align-items: center; gap: 4px; margin-top: 1px;">
+        <i class="fa-solid fa-list-ul"></i>
+        <span id="nav-step-hint">Tap for all turns & itinerary</span>
+      </div>
     </div>
     <button class="gm-nav-voice-btn" id="nav-voice-btn" type="button" title="Voice Guidance">
       <i class="fa-solid fa-volume-high" id="nav-voice-icon"></i>
     </button>
+  </div>
+
+  <!-- GOOGLE MAPS STEPS & DIRECTIONS MODAL -->
+  <div class="gm-steps-modal" id="nav-steps-modal">
+    <div class="gm-steps-card">
+      <div class="gm-steps-header">
+        <div>
+          <div class="gm-steps-title" id="steps-modal-title">Route Directions</div>
+          <div class="gm-steps-sub" id="steps-modal-sub">Turn-by-turn road itinerary</div>
+        </div>
+        <button class="gm-icon-btn" id="close-steps-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-steps-list" id="nav-steps-container">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
   </div>
 
   <!-- Floating Google Maps Re-center Pill Button -->
@@ -1279,12 +1423,16 @@
         <span id="nav-walk-status-text">Live Walk: Active • Walk to navigate</span>
       </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
-      <button class="gm-nav-walk-sim-btn active" id="nav-walk-sim-btn" title="Live Walk - Follows your movement as you walk">
+    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+      <button class="gm-nav-walk-sim-btn active" id="nav-walk-sim-btn" title="Live GPS - Follows real movement">
         <i class="fa-solid fa-person-walking" id="nav-sim-icon"></i>
         <span id="nav-sim-text">Live Walk</span>
       </button>
-      <button class="gm-nav-step-btn" id="nav-step-btn" title="Step Forward (Test/Manual step)">
+      <button class="gm-nav-step-btn" id="nav-preview-btn" title="Simulate / Auto-Drive along roads">
+        <i class="fa-solid fa-play" id="nav-preview-icon"></i>
+        <span id="nav-preview-text">Preview</span>
+      </button>
+      <button class="gm-nav-step-btn" id="nav-step-btn" title="Step Forward">
         <i class="fa-solid fa-shoe-prints"></i>
         <span>+ Step</span>
       </button>
@@ -1861,7 +2009,13 @@
         pathPinned: "Route path pinned to your map!",
         pathUnpinned: "Route unpinned",
         calcRoadRoute: "Calculating live road route with turns...",
-        enteringCampus: "Entering KHIT Campus Main Gate. Follow pathway to {dest}."
+        enteringCampus: "Entering KHIT Campus Main Gate. Follow pathway to {dest}.",
+        rerouting: "Rerouting to destination...",
+        stepsTitle: "Route Directions",
+        stepsSub: "Turn-by-turn road itinerary",
+        tapForSteps: "Tap for all turns & itinerary",
+        preview: "Preview",
+        pause: "Pause"
       },
       te: {
         searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
@@ -1925,7 +2079,13 @@
         pathPinned: "రూట్ పాత్ మ్యాప్‌కు పిన్ చేయబడింది!",
         pathUnpinned: "రూట్ పిన్ తీసివేయబడింది",
         calcRoadRoute: "లైవ్ రోడ్డు మార్గాన్ని లెక్కిస్తోంది...",
-        enteringCampus: "KHIT క్యాంపస్ మెయిన్ గేట్ చేరుకున్నారు. {dest} వైపు వెళ్ళండి."
+        enteringCampus: "KHIT క్యాంపస్ మెయిన్ గేట్ చేరుకున్నారు. {dest} వైపు వెళ్ళండి.",
+        rerouting: "మళ్ళీ రూట్ లెక్కిస్తోంది...",
+        stepsTitle: "రూట్ మలుపుల వివరాలు",
+        stepsSub: "ప్రతి మలుపు వివరాల జాబితా",
+        tapForSteps: "మలుపుల జాబితా కోసం నొక్కండి",
+        preview: "ప్రివ్యూ",
+        pause: "పాజ్"
       }
     };
 
@@ -1993,6 +2153,16 @@
       if (pinTextEl) {
         pinTextEl.innerText = isRoutePinned ? mapT('pinned') : mapT('pinPath');
       }
+      const previewTextEl = document.getElementById('nav-preview-text');
+      if (previewTextEl) {
+        previewTextEl.innerText = isAutoNavPlaying ? mapT('pause') : mapT('preview');
+      }
+      const stepHintEl = document.getElementById('nav-step-hint');
+      if (stepHintEl) {
+        stepHintEl.innerText = mapT('tapForSteps');
+      }
+      const stepsModalTitle = document.getElementById('steps-modal-title');
+      if (stepsModalTitle && !selectedPlace) stepsModalTitle.innerText = mapT('stepsTitle');
       const recenterSpan = document.querySelector('#nav-recenter-btn span');
       if (recenterSpan) recenterSpan.innerText = mapT('recenter');
 
@@ -2292,12 +2462,13 @@
 
       if (!userMarker) {
         const dotIcon = L.divIcon({
-          className: 'gm-user-dot-wrapper',
+          className: 'gm-user-dot-wrapper' + (isNavigating ? ' navigating' : ''),
           html: `
             <div class="gm-user-pulse"></div>
             <div class="gm-user-heading" id="user-heading-wrapper" style="transform: rotate(${currentUserHeading}deg);">
               <div class="gm-user-beam"></div>
               <div class="gm-user-arrow"></div>
+              <div class="gm-nav-vehicle-arrow"></div>
             </div>
             <div class="gm-user-core-dot"></div>
           `,
@@ -2308,15 +2479,26 @@
         userMarker.setLatLng(userLocation);
       }
 
+      if (userMarker && userMarker.getElement()) {
+        const el = userMarker.getElement();
+        if (isNavigating) {
+          el.classList.add('navigating');
+        } else {
+          el.classList.remove('navigating');
+        }
+      }
+
       if (heading !== null && !isNaN(heading)) {
         updateUserHeading(heading);
       }
 
-      // GOOGLE MAPS AUTO-FOLLOW CAMERA:
-      // When navigating or watching GPS, continuously pan map camera along with user!
+      // GOOGLE MAPS LOOK-AHEAD CAMERA:
+      // Offsets camera ahead in the direction of movement so the road ahead is visible!
       if (isNavigating) {
         if (isCameraFollow) {
-          map.panTo(userLocation, { animate: true, duration: 0.5 });
+          const isOffCampus = selectedPlace && userLocation && getDistanceMeters(userLocation.lat, userLocation.lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]) > 450;
+          const targetPt = getLookAheadPoint(userLocation.lat, userLocation.lng, currentUserHeading, isOffCampus ? 45 : 18);
+          map.panTo(targetPt, { animate: true, duration: 0.45 });
         }
         updateLiveNavigationProgress();
       } else if (isGpsActive) {
@@ -2326,6 +2508,18 @@
       checkArrival();
     }
 
+    // Google Maps Navigation Perspective: Projects look-ahead point ahead of vehicle/pedestrian
+    function getLookAheadPoint(lat, lng, headingDeg, offsetMeters = 30) {
+      if (headingDeg === null || isNaN(headingDeg)) return [lat, lng];
+      const R = 6371e3;
+      const rad = headingDeg * Math.PI / 180;
+      const latRad = lat * Math.PI / 180;
+      const lngRad = lng * Math.PI / 180;
+      const dLat = (offsetMeters * Math.cos(rad)) / R;
+      const dLng = (offsetMeters * Math.sin(rad)) / (R * Math.cos(latRad));
+      return [(latRad + dLat) * 180 / Math.PI, (lngRad + dLng) * 180 / Math.PI];
+    }
+
     // Re-center / Follow Controls
     const recenterBtn = document.getElementById('nav-recenter-btn');
 
@@ -2333,7 +2527,10 @@
       isCameraFollow = true;
       if (recenterBtn) recenterBtn.style.display = 'none';
       if (userLocation) {
-        map.flyTo(userLocation, 19, { animate: true, duration: 0.6 });
+        const isOffCampus = selectedPlace && getDistanceMeters(userLocation.lat, userLocation.lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]) > 450;
+        const targetZoom = isOffCampus ? 17 : 19;
+        const targetPt = getLookAheadPoint(userLocation.lat, userLocation.lng, currentUserHeading, isOffCampus ? 45 : 20);
+        map.flyTo(targetPt, targetZoom, { animate: true, duration: 0.6 });
       }
     }
 
@@ -2344,6 +2541,12 @@
     }
 
     map.on('dragstart', () => {
+      if (isNavigating) {
+        disableCameraFollow();
+      }
+    });
+
+    map.on('zoomstart', () => {
       if (isNavigating) {
         disableCameraFollow();
       }
@@ -2407,8 +2610,8 @@
             const accuracy = position.coords.accuracy;
             let heading = position.coords.heading;
 
-            // 1. Ignore low-accuracy GPS spikes (> 35m error)
-            if (accuracy && accuracy > 35) {
+            // 1. Ignore low-accuracy GPS spikes (> 85m error)
+            if (accuracy && accuracy > 85) {
               return;
             }
 
@@ -2575,6 +2778,11 @@
     let currentRouteSteps = [];     // Maneuver steps: [{ coords, modifier, type, name, distance, instruction }]
     let routeMarkersGroup = null;   // Layer group for start pin, turn waypoint pins, dest pin
     let isRoutePinned = false;      // User pinned route toggle
+    let isOffRouteRerouting = false;// Auto-reroute debounce flag
+    let lastRerouteTime = 0;        // Timestamp of last reroute calculation
+    let autoPreviewTimer = null;    // Timer for Auto-Drive route simulation
+    let isAutoNavPlaying = false;   // Auto-Drive route simulation active
+    let previewStepIndex = 0;       // Current waypoint index during simulation
 
     // Asynchronously fetch real road routing from public OSRM / OSM road network
     async function fetchRoadRoute(startCoords, destCoords) {
@@ -2888,6 +3096,11 @@
       hasAnnouncedArrival = false;
       lastManeuverAnnounced = '';
       lastSpokenText = '';
+      isOffRouteRerouting = false;
+
+      if (userMarker && userMarker.getElement()) {
+        userMarker.getElement().classList.add('navigating');
+      }
 
       document.getElementById('top-container').style.display = 'none';
       document.getElementById('place-sheet').style.display = 'none';
@@ -2946,7 +3159,6 @@
       if (simText) simText.innerText = mapT('liveWalk');
       if (simIcon) simIcon.className = 'fa-solid fa-person-walking';
 
-      enableCameraFollow();
       startGpsWatch();
       startMotionWatch();
       updateWalkStatus(mapT('walkStatusActive'));
@@ -2956,6 +3168,13 @@
         const initBearing = calculateBearing(routePoints[0][0], routePoints[0][1], routePoints[1][0], routePoints[1][1]);
         updateUserHeading(initBearing);
       }
+
+      // Smoothly transition camera into 3D navigation perspective
+      setTimeout(() => {
+        if (isNavigating) {
+          enableCameraFollow();
+        }
+      }, 1000);
 
       // Voice Guidance: Announce route start
       const startVoiceMsg = mapT('voiceStartNav', { dest: destName });
@@ -2981,6 +3200,22 @@
           minD = d;
           closestIdx = i;
         }
+      }
+
+      // Automatic Off-Route Rerouting: if user has deviated > 65m from route
+      if (minD > 65 && !isOffRouteRerouting && !isAutoNavPlaying && (Date.now() - lastRerouteTime > 12000)) {
+        isOffRouteRerouting = true;
+        lastRerouteTime = Date.now();
+        showAdminToast(mapT('rerouting'));
+        speakNavInstruction(mapT('rerouting'), { force: true, chime: true });
+
+        setTimeout(async () => {
+          if (isNavigating && selectedPlace && userLocation) {
+            await startGoogleNavigation(selectedPlace);
+          }
+          isOffRouteRerouting = false;
+        }, 1000);
+        return;
       }
 
       // Calculate remaining distance along route
@@ -3279,8 +3514,14 @@
     document.getElementById('exit-nav-btn').addEventListener('click', () => {
       isNavigating = false;
       isLiveWalking = false;
+      stopAutoNavPreview();
+      closeStepsModal();
       stopGpsWatch();
       stopMotionWatch();
+
+      if (userMarker && userMarker.getElement()) {
+        userMarker.getElement().classList.remove('navigating');
+      }
 
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -3308,6 +3549,221 @@
       document.getElementById('top-container').style.display = 'flex';
       document.getElementById('fabs-container').style.display = 'flex';
     });
+
+    // =========================================================================
+    // GOOGLE MAPS TURN-BY-TURN STEPS & DIRECTIONS MODAL
+    // =========================================================================
+    function openStepsModal() {
+      const modal = document.getElementById('nav-steps-modal');
+      const container = document.getElementById('nav-steps-container');
+      const titleEl = document.getElementById('steps-modal-title');
+      const subEl = document.getElementById('steps-modal-sub');
+      if (!modal || !container) return;
+
+      const destName = selectedPlace ? getPlaceDisplayName(selectedPlace) : 'Destination';
+      if (titleEl) titleEl.innerText = mapT('stepsTitle');
+      if (subEl) subEl.innerText = mapT('stepsSub');
+
+      container.innerHTML = '';
+
+      if (currentRouteSteps && currentRouteSteps.length > 0) {
+        currentRouteSteps.forEach((st) => {
+          const stepItem = document.createElement('div');
+          stepItem.className = 'gm-step-item';
+          const iconCls = getTurnIconClass(st.modifier, st.type);
+          const instr = getTurnInstructionText(st, destName);
+          const distStr = st.distance > 1000 ? `${(st.distance/1000).toFixed(1)} km` : `${st.distance} m`;
+
+          stepItem.innerHTML = `
+            <div class="gm-step-icon-wrap">
+              <i class="${iconCls}"></i>
+            </div>
+            <div class="gm-step-content">
+              <div class="gm-step-instruction">${instr}</div>
+              <div class="gm-step-meta" style="color:#5f6368; font-size:12px; margin-top:2px;">
+                <span>${distStr}</span>${st.name ? ` • ${st.name}` : ''}
+              </div>
+            </div>
+          `;
+
+          stepItem.addEventListener('click', () => {
+            closeStepsModal();
+            if (st.coords) {
+              map.flyTo(st.coords, Math.max(map.getZoom(), 18), { animate: true, duration: 0.6 });
+            }
+          });
+          container.appendChild(stepItem);
+        });
+      } else if (currentRoutePoints && currentRoutePoints.length >= 2) {
+        const startItem = document.createElement('div');
+        startItem.className = 'gm-step-item';
+        startItem.innerHTML = `
+          <div class="gm-step-icon-wrap" style="background:#34a853;"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="gm-step-content">
+            <div class="gm-step-instruction">${mapT('headTo', { dest: destName })}</div>
+            <div class="gm-step-meta" style="color:#5f6368; font-size:12px;">Start</div>
+          </div>
+        `;
+        startItem.addEventListener('click', () => {
+          closeStepsModal();
+          map.flyTo(currentRoutePoints[0], 19, { animate: true });
+        });
+        container.appendChild(startItem);
+
+        for (let i = 0; i < currentRoutePoints.length - 2; i++) {
+          const p1 = currentRoutePoints[i];
+          const p2 = currentRoutePoints[i+1];
+          const p3 = currentRoutePoints[i+2];
+          const b1 = calculateBearing(p1[0], p1[1], p2[0], p2[1]);
+          const b2 = calculateBearing(p2[0], p2[1], p3[0], p3[1]);
+          let diff = (b2 - b1 + 360) % 360;
+          if (diff > 180) diff -= 360;
+
+          if (Math.abs(diff) > 30) {
+            const legDist = Math.round(getDistanceMeters(p1[0], p1[1], p2[0], p2[1]));
+            const isRight = diff > 0;
+            const stepItem = document.createElement('div');
+            stepItem.className = 'gm-step-item';
+            stepItem.innerHTML = `
+              <div class="gm-step-icon-wrap">
+                <i class="fa-solid ${isRight ? 'fa-arrow-turn-right' : 'fa-arrow-turn-down fa-flip-horizontal'}"></i>
+              </div>
+              <div class="gm-step-content">
+                <div class="gm-step-instruction">${isRight ? mapT('turnRight', { dest: destName }) : mapT('turnLeft', { dest: destName })}</div>
+                <div class="gm-step-meta" style="color:#5f6368; font-size:12px;">In ${legDist} m</div>
+              </div>
+            `;
+            stepItem.addEventListener('click', () => {
+              closeStepsModal();
+              map.flyTo(p2, 19, { animate: true });
+            });
+            container.appendChild(stepItem);
+          }
+        }
+
+        const endItem = document.createElement('div');
+        endItem.className = 'gm-step-item';
+        endItem.innerHTML = `
+          <div class="gm-step-icon-wrap" style="background:#ea4335;"><i class="fa-solid fa-flag-checkered"></i></div>
+          <div class="gm-step-content">
+            <div class="gm-step-instruction">${mapT('arrived', { dest: destName })}</div>
+            <div class="gm-step-meta" style="color:#5f6368; font-size:12px;">Destination</div>
+          </div>
+        `;
+        endItem.addEventListener('click', () => {
+          closeStepsModal();
+          map.flyTo(currentRoutePoints[currentRoutePoints.length - 1], 19, { animate: true });
+        });
+        container.appendChild(endItem);
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeStepsModal() {
+      const modal = document.getElementById('nav-steps-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Top banner click opens steps modal
+    const navTopBanner = document.getElementById('nav-top-banner');
+    if (navTopBanner) {
+      navTopBanner.addEventListener('click', (e) => {
+        if (e.target.closest('#nav-voice-btn')) return;
+        openStepsModal();
+      });
+    }
+
+    const closeStepsModalBtn = document.getElementById('close-steps-modal-btn');
+    if (closeStepsModalBtn) {
+      closeStepsModalBtn.addEventListener('click', closeStepsModal);
+    }
+
+    const navStepsModal = document.getElementById('nav-steps-modal');
+    if (navStepsModal) {
+      navStepsModal.addEventListener('click', (e) => {
+        if (e.target === navStepsModal) closeStepsModal();
+      });
+    }
+
+    // =========================================================================
+    // AUTO-DRIVE ROUTE SIMULATION (Preview Mode)
+    // =========================================================================
+    function toggleAutoNavPreview() {
+      if (isAutoNavPlaying) {
+        stopAutoNavPreview();
+      } else {
+        startAutoNavPreview();
+      }
+    }
+
+    function startAutoNavPreview() {
+      if (!isNavigating || !currentRoutePoints || currentRoutePoints.length < 2) {
+        showAdminToast('Please start navigation first');
+        return;
+      }
+
+      isAutoNavPlaying = true;
+      previewStepIndex = 0;
+
+      const previewBtn = document.getElementById('nav-preview-btn');
+      const previewText = document.getElementById('nav-preview-text');
+      const previewIcon = document.getElementById('nav-preview-icon');
+      if (previewBtn) previewBtn.classList.add('active');
+      if (previewText) previewText.innerText = mapT('pause');
+      if (previewIcon) previewIcon.className = 'fa-solid fa-pause';
+
+      updateWalkStatus('🚗 Auto-Drive Preview • Simulating route');
+      showAdminToast('Auto-Drive Preview: Simulating turn-by-turn navigation along road!');
+
+      const startPt = currentRoutePoints[0];
+      const bearing = calculateBearing(startPt[0], startPt[1], currentRoutePoints[1][0], currentRoutePoints[1][1]);
+      setUserPosition(startPt, 'Preview Start', bearing);
+
+      if (autoPreviewTimer) clearInterval(autoPreviewTimer);
+      autoPreviewTimer = setInterval(() => {
+        if (!isNavigating || !isAutoNavPlaying || previewStepIndex >= currentRoutePoints.length - 1) {
+          stopAutoNavPreview();
+          if (previewStepIndex >= currentRoutePoints.length - 1) {
+            checkArrival();
+          }
+          return;
+        }
+
+        previewStepIndex++;
+        const curPt = currentRoutePoints[previewStepIndex];
+        const nextPt = (previewStepIndex + 1 < currentRoutePoints.length) 
+          ? currentRoutePoints[previewStepIndex + 1] 
+          : curPt;
+        const curBearing = calculateBearing(curPt[0], curPt[1], nextPt[0], nextPt[1]);
+
+        setUserPosition(curPt, 'Preview Moving', curBearing);
+      }, 650);
+    }
+
+    function stopAutoNavPreview() {
+      isAutoNavPlaying = false;
+      if (autoPreviewTimer) {
+        clearInterval(autoPreviewTimer);
+        autoPreviewTimer = null;
+      }
+
+      const previewBtn = document.getElementById('nav-preview-btn');
+      const previewText = document.getElementById('nav-preview-text');
+      const previewIcon = document.getElementById('nav-preview-icon');
+      if (previewBtn) previewBtn.classList.remove('active');
+      if (previewText) previewText.innerText = mapT('preview');
+      if (previewIcon) previewIcon.className = 'fa-solid fa-play';
+
+      if (isNavigating) {
+        updateWalkStatus(mapT('walkStatusActive'));
+      }
+    }
+
+    const navPreviewBtn = document.getElementById('nav-preview-btn');
+    if (navPreviewBtn) {
+      navPreviewBtn.addEventListener('click', toggleAutoNavPreview);
+    }
 
     function checkArrival() {
       if (!isNavigating || !userLocation || !selectedPlace) return;
@@ -3796,12 +4252,12 @@
               setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
               map.setView([lat, lng], 19);
             } else {
-              // User is testing off-campus (at home / hostel)
-              lastGpsCoords = [16.256891, 80.333380];
-              setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
-              setStartLocationLabel('Main Gate (Gate 1)');
+              // User is off-campus (at home / hostel)
+              lastGpsCoords = [lat, lng];
+              setUserPosition([lat, lng], 'My Live Location');
+              setStartLocationLabel(`Live GPS (${(dist/1000).toFixed(1)} km to KHIT)`);
               showOffCampusBanner(dist);
-              map.setView(CAMPUS_CENTER, 18);
+              map.setView([lat, lng], 15);
             }
           },
           (err) => {

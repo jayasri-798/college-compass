@@ -207,7 +207,7 @@
         arjs="sourceType: webcam; videoBitsPerSecond: 12800000; debugUIEnabled: false;" 
         vr-mode-ui="enabled: false">
         
-        <a-camera gps-camera rotation-reader></a-camera>
+        <a-camera id="main-camera" gps-camera rotation-reader look-controls="enabled: true"></a-camera>
         <a-entity id="ar-navigation-anchor"></a-entity>
         
     </a-scene>
@@ -346,9 +346,25 @@
         const minimapStart = document.getElementById("minimap-start");
         const minimapEnd = document.getElementById("minimap-end");
 
-        // Parse query parameter ?gate=
+        // Parse query parameter ?gate= and ?preview=
         const urlParams = new URLSearchParams(window.location.search);
-        const gateId = urlParams.get('gate');
+        let gateId = urlParams.get('gate');
+        const isPreview = urlParams.get('preview') === 'true' || window.self !== window.top;
+
+        if (isPreview) {
+            const backLink = document.querySelector('.header-panel a');
+            if (backLink) {
+                backLink.setAttribute('target', '_top');
+            }
+            const headerTitle = document.querySelector('.header-panel h1');
+            if (headerTitle && !document.getElementById('sim-badge')) {
+                const badge = document.createElement('span');
+                badge.id = 'sim-badge';
+                badge.style.cssText = 'background: #0ea5e9; color: white; padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 700; margin-left: 8px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.5px;';
+                badge.innerText = 'Live Simulator';
+                headerTitle.appendChild(badge);
+            }
+        }
 
         let scannedGate = null;
         let startRoom = null;
@@ -357,6 +373,19 @@
 
         async function initMap() {
             await loadDatabaseWaypointsAndGraph();
+
+            if (!gateId) {
+                try {
+                    const qrSnap = await getDocs(collection(db, "qr_codes"));
+                    if (!qrSnap.empty) {
+                        gateId = qrSnap.docs[0].id;
+                    } else {
+                        gateId = 'qr-cse-lab';
+                    }
+                } catch(e) {
+                    gateId = 'qr-cse-lab';
+                }
+            }
 
             if (!gateId) {
                 statusText.innerHTML = "⚠️ Scan a Gate QR Code first to initialize AR map.";
