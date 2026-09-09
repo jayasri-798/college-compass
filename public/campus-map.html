@@ -928,6 +928,57 @@
       100% { transform: rotate(360deg); }
     }
 
+    .gm-route-plan-action-btn {
+      height: 34px;
+      padding: 0 12px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(26,115,232,0.3);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .gm-route-plan-action-btn:hover {
+      background: #1557b0;
+      transform: translateY(-1px);
+    }
+    .gm-top-ar-action-btn {
+      height: 34px;
+      padding: 0 11px;
+      background: #f8f9fa;
+      color: #1a73e8;
+      border: 1px solid #dadce0;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .gm-top-ar-action-btn:hover {
+      background: #e8f0fe;
+      border-color: #bad3fb;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 540px) {
+      .gm-start-selector-bar {
+        flex-wrap: wrap;
+      }
+    }
+
     /* Off-campus Alert Banner */
     .gm-offcampus-banner {
       position: absolute;
@@ -1294,6 +1345,14 @@
       <button class="gm-start-gps-btn" id="btn-sync-gps" title="Re-detect Live GPS">
         <i class="fa-solid fa-location-arrow"></i>
       </button>
+      <button class="gm-route-plan-action-btn" id="open-route-planner-btn" title="Create / Plan Campus Route">
+        <i class="fa-solid fa-route"></i>
+        <span id="btn-plan-route-label">Route</span>
+      </button>
+      <button class="gm-top-ar-action-btn" id="top-ar-btn" title="Open Campus Live AR Camera Navigation">
+        <i class="fa-solid fa-camera"></i>
+        <span>AR Map</span>
+      </button>
     </div>
 
     <!-- Category Filter Chips Row -->
@@ -1499,6 +1558,10 @@
         <i class="fa-solid fa-map-pin" id="nav-pin-icon"></i>
         <span id="nav-pin-text">Pin Path</span>
       </button>
+      <button class="gm-nav-action-pill" id="nav-ar-btn" title="Switch to 3D Augmented Reality Camera Navigation" style="background: #e8f0fe; color: #1a73e8; border: 1px solid #bad3fb;">
+        <i class="fa-solid fa-camera"></i>
+        <span id="nav-ar-text">AR View</span>
+      </button>
     </div>
   </div>
 
@@ -1515,6 +1578,9 @@
     </button>
     <button class="gm-fab" id="fab-my-location" title="Current Location">
       <i class="fa-solid fa-location-arrow"></i>
+    </button>
+    <button class="gm-fab gm-fab-ar" id="fab-ar-map" title="Live AR Camera Navigation" style="background: #1a73e8; color: #fff; box-shadow: 0 4px 12px rgba(26,115,232,0.4);">
+      <i class="fa-solid fa-camera"></i>
     </button>
   </div>
 
@@ -1536,11 +1602,15 @@
     <div class="gm-sheet-actions">
       <button class="gm-btn-primary" id="sheet-start-nav-btn">
         <i class="fa-solid fa-diamond-turn-right"></i>
-        <span>Directions</span>
+        <span id="sheet-dir-text">Directions</span>
       </button>
       <button class="gm-btn-secondary" id="sheet-walk-btn">
         <i class="fa-solid fa-person-walking"></i>
-        <span>Start Walk</span>
+        <span id="sheet-walk-text">Start Walk</span>
+      </button>
+      <button class="gm-btn-secondary" id="sheet-ar-nav-btn" title="Navigate using Live AR Camera View" style="background: #e8f0fe; color: #1a73e8; border: 1px solid #bad3fb;">
+        <i class="fa-solid fa-camera"></i>
+        <span id="sheet-ar-text">AR View</span>
       </button>
     </div>
   </div>
@@ -1710,6 +1780,121 @@
       </div>
       <div id="admin-places-list-container" style="padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px;">
       </div>
+    </div>
+  </div>
+
+  <!-- Campus Route Planner Modal -->
+  <div class="gm-modal-overlay" id="campus-route-planner-modal" style="display: none;">
+    <div class="gm-modal-card" style="max-width: 480px;">
+      <div class="gm-modal-header" style="background: linear-gradient(135deg, #1a73e8, #1557b0); color: #fff;">
+        <div style="font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-route" style="color: #fff;"></i>
+          <span id="route-planner-header-title">Plan Campus Route</span>
+        </div>
+        <button class="gm-icon-btn" id="close-route-planner-modal" style="color: #fff; background: rgba(255,255,255,0.15);">&times;</button>
+      </div>
+      <div class="gm-modal-body" style="padding: 18px 20px;">
+        <p style="font-size: 12px; color: #5f6368; margin-bottom: 14px;" id="route-planner-sub-desc">
+          Choose your start and destination points on campus to build a turn-by-turn road route or launch in 3D AR camera view.
+        </p>
+
+        <!-- Route Endpoints Selection Container -->
+        <div style="background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 14px; padding: 12px 14px; position: relative;">
+          <!-- Origin Row -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div style="width: 24px; display: flex; flex-direction: column; align-items: center;">
+              <i class="fa-solid fa-circle-dot" style="color: #1a73e8; font-size: 14px;"></i>
+              <div style="width: 2px; height: 22px; border-left: 2px dashed #dadce0; margin-top: 2px;"></div>
+            </div>
+            <div style="flex: 1;">
+              <label style="font-size: 11px; font-weight: 700; color: #5f6368; display: block; margin-bottom: 3px;" id="lbl-route-start">FROM (STARTING POINT):</label>
+              <select id="route-planner-start" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #dadce0; font-family: inherit; font-size: 13px; font-weight: 600; background: #fff; color: #202124;">
+                <option value="gps">📍 Live GPS / Current Location</option>
+                <option value="main-gate" selected>🚪 Main Gate (Gate 1)</option>
+                <option value="main-office">🏛️ Main Office (Admin Block)</option>
+                <option value="cse-block">💻 CSE Block 2</option>
+                <option value="library">📚 Central Digital Library</option>
+                <option value="canteen">☕ Cafeteria & Food Court</option>
+                <option value="ece-block">⚡ ECE Block 3</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Swap Points Button -->
+          <button id="btn-swap-route-points" title="Swap Origin and Destination" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: #fff; border: 1px solid #dadce0; color: #1a73e8; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 2; transition: all 0.2s;">
+            <i class="fa-solid fa-arrow-down-up-across-line" style="font-size: 13px;"></i>
+          </button>
+
+          <!-- Destination Row -->
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 24px; display: flex; justify-content: center;">
+              <i class="fa-solid fa-location-dot" style="color: #ea4335; font-size: 16px;"></i>
+            </div>
+            <div style="flex: 1; padding-right: 32px;">
+              <label style="font-size: 11px; font-weight: 700; color: #5f6368; display: block; margin-bottom: 3px;" id="lbl-route-dest">TO (DESTINATION):</label>
+              <select id="route-planner-dest" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #dadce0; font-family: inherit; font-size: 13px; font-weight: 600; background: #fff; color: #202124;">
+                <option value="cse-block" selected>💻 CSE Block 2</option>
+                <option value="main-office">🏛️ Main Office (Admin Block)</option>
+                <option value="library">📚 Central Digital Library</option>
+                <option value="canteen">☕ Cafeteria & Food Court</option>
+                <option value="ece-block">⚡ ECE Block 3</option>
+                <option value="main-gate">🚪 Main Gate (Gate 1)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route Metrics Summary Card -->
+        <div id="route-planner-summary" style="margin-top: 14px; padding: 12px 14px; background: #e8f0fe; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #1a73e8; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+              <i class="fa-solid fa-person-walking"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #1a73e8;" id="route-summary-time">~2 min walk</div>
+              <div style="font-size: 12px; color: #5f6368;" id="route-summary-dist">185 meters &bull; Via Campus Walkway</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; font-weight: 700; background: #ceead6; color: #0d652d; padding: 4px 8px; border-radius: 6px;">
+            Paved Road
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+          <button id="btn-start-route-2d" style="flex: 1; padding: 12px; background: #1a73e8; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; box-shadow: 0 2px 6px rgba(26,115,232,0.3); transition: all 0.2s;">
+            <i class="fa-solid fa-diamond-turn-right"></i>
+            <span id="btn-route-start-2d-text">Start 2D Navigation</span>
+          </button>
+          <button id="btn-start-route-ar" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #188038, #137333); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; box-shadow: 0 2px 6px rgba(24,128,56,0.3); transition: all 0.2s;">
+            <i class="fa-solid fa-camera"></i>
+            <span id="btn-route-start-ar-text">Launch in AR Map</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live AR Camera Navigation Modal -->
+  <div class="gm-modal-overlay" id="ar-view-modal" style="display: none; padding: 0; background: #000;">
+    <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
+      <!-- AR Top Bar -->
+      <div style="position: absolute; top: 12px; left: 14px; right: 14px; z-index: 20; display: flex; align-items: center; justify-content: space-between; pointer-events: auto;">
+        <div style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 20px; color: #fff; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.15);">
+          <i class="fa-solid fa-camera" style="color: #60a5fa;"></i>
+          <span style="font-size: 13px; font-weight: 700;" id="ar-modal-header-title">KHIT Campus Live AR</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="btn-ar-open-newtab" title="Open AR Fullscreen in New Window" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-up-right-from-square"></i>
+          </button>
+          <button id="close-ar-modal" title="Exit AR View" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(234,67,53,0.9); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+      <!-- AR Iframe Container -->
+      <iframe id="ar-view-frame" src="" style="width: 100%; height: 100%; border: none; background: #000;" allow="camera; geolocation; accelerometer; gyroscope; magnetometer;"></iframe>
     </div>
   </div>
 
@@ -2071,7 +2256,17 @@
         stepsSub: "Turn-by-turn road itinerary",
         tapForSteps: "Tap for all turns & itinerary",
         preview: "Preview",
-        pause: "Pause"
+        pause: "Pause",
+        planRoute: "Directions",
+        viewAr: "View in AR",
+        arNav: "AR View",
+        arMap: "AR Map",
+        routePlannerTitle: "Campus Route Planner",
+        routePlannerSub: "Create a route between any two campus locations and navigate in 2D or Live AR:",
+        startPointLabel: "START POINT (A)",
+        destPointLabel: "DESTINATION (B)",
+        startNav2D: "2D Navigation",
+        startNavAR: "AR 3D Map"
       },
       te: {
         searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
@@ -2141,7 +2336,17 @@
         stepsSub: "ప్రతి మలుపు వివరాల జాబితా",
         tapForSteps: "మలుపుల జాబితా కోసం నొక్కండి",
         preview: "ప్రివ్యూ",
-        pause: "పాజ్"
+        pause: "పాజ్",
+        planRoute: "రూట్ ప్లానర్",
+        viewAr: "AR లో చూడండి",
+        arNav: "AR వ్యూ",
+        arMap: "AR మ్యాప్",
+        routePlannerTitle: "క్యాంపస్ రూట్ ప్లానర్",
+        routePlannerSub: "క్యాంపస్‌లోని ఏవైనా రెండు ప్రదేశాల మధ్య మార్గాన్ని రూపొందించండి:",
+        startPointLabel: "ప్రారంభ స్థానం (A)",
+        destPointLabel: "గమ్యస్థానం (B)",
+        startNav2D: "2D నావిగేషన్",
+        startNavAR: "AR 3D మ్యాప్"
       }
     };
 
@@ -2291,6 +2496,26 @@
           'మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం <strong>మెయిన్ గేట్</strong> గా సెట్ చేయబడింది.' : 
           'You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.';
       }
+
+      // Route planner & AR action elements
+      const planRouteSpan = document.getElementById('btn-plan-route-label');
+      if (planRouteSpan) planRouteSpan.innerText = mapT('planRoute');
+      const sheetArText = document.getElementById('sheet-ar-text');
+      if (sheetArText) sheetArText.innerText = mapT('viewAr');
+      const navArText = document.getElementById('nav-ar-text');
+      if (navArText) navArText.innerText = mapT('arNav');
+      const rpHeader = document.getElementById('route-planner-header-title');
+      if (rpHeader) rpHeader.innerText = mapT('routePlannerTitle');
+      const rpSub = document.getElementById('route-planner-sub-desc');
+      if (rpSub) rpSub.innerText = mapT('routePlannerSub');
+      const lblStart = document.getElementById('lbl-route-start');
+      if (lblStart) lblStart.innerText = mapT('startPointLabel');
+      const lblDest = document.getElementById('lbl-route-dest');
+      if (lblDest) lblDest.innerText = mapT('destPointLabel');
+      const btn2dText = document.getElementById('btn-route-start-2d-text');
+      if (btn2dText) btn2dText.innerText = mapT('startNav2D');
+      const btnArText = document.getElementById('btn-route-start-ar-text');
+      if (btnArText) btnArText.innerText = mapT('startNavAR');
 
       updateVoiceBtnUI();
       if (isNavigating && selectedPlace) {
@@ -3866,6 +4091,267 @@
     document.getElementById('sheet-walk-btn').addEventListener('click', () => {
       startGoogleNavigation(selectedPlace);
     });
+
+    // =========================================================================
+    // CAMPUS ROUTE PLANNER & AR MAP INTEGRATION
+    // =========================================================================
+    function populateRoutePlannerDropdowns() {
+      const startSelect = document.getElementById('route-planner-start');
+      const destSelect = document.getElementById('route-planner-dest');
+      if (!startSelect || !destSelect) return;
+
+      const currentStart = startSelect.value;
+      const currentDest = destSelect.value;
+
+      startSelect.innerHTML = `<option value="gps">📍 ${currentMapLang === 'te' ? 'లైవ్ GPS / ప్రస్తుత స్థానం' : 'Live GPS / Current Location'}</option>`;
+      destSelect.innerHTML = '';
+
+      campusPlaces.forEach(p => {
+        const dName = getPlaceDisplayName(p);
+        const optStart = document.createElement('option');
+        optStart.value = p.id;
+        optStart.innerText = dName;
+        startSelect.appendChild(optStart);
+
+        const optDest = document.createElement('option');
+        optDest.value = p.id;
+        optDest.innerText = dName;
+        destSelect.appendChild(optDest);
+      });
+
+      if (currentStart && Array.from(startSelect.options).some(o => o.value === currentStart)) {
+        startSelect.value = currentStart;
+      } else {
+        startSelect.value = userLocation ? 'gps' : (campusPlaces[0] ? campusPlaces[0].id : 'main-gate');
+      }
+
+      if (currentDest && Array.from(destSelect.options).some(o => o.value === currentDest)) {
+        destSelect.value = currentDest;
+      } else if (destSelect.options.length > 1) {
+        destSelect.selectedIndex = 1;
+      }
+    }
+
+    function openCampusRoutePlanner(startId, destId) {
+      const modal = document.getElementById('campus-route-planner-modal');
+      const startSelect = document.getElementById('route-planner-start');
+      const destSelect = document.getElementById('route-planner-dest');
+      if (!modal) return;
+
+      populateRoutePlannerDropdowns();
+
+      if (startId && startSelect) {
+        startSelect.value = startId;
+      } else if (startSelect) {
+        startSelect.value = userLocation ? 'gps' : 'main-gate';
+      }
+
+      if (destId && destSelect) {
+        destSelect.value = destId;
+      } else if (selectedPlace && destSelect) {
+        destSelect.value = selectedPlace.id;
+      }
+
+      updateRoutePlannerPreview();
+      modal.style.display = 'flex';
+    }
+
+    function closeCampusRoutePlanner() {
+      const modal = document.getElementById('campus-route-planner-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function updateRoutePlannerPreview() {
+      const startSelect = document.getElementById('route-planner-start');
+      const destSelect = document.getElementById('route-planner-dest');
+      const timeEl = document.getElementById('route-summary-time');
+      const distEl = document.getElementById('route-summary-dist');
+      if (!startSelect || !destSelect || !timeEl || !distEl) return;
+
+      const startVal = startSelect.value;
+      const destVal = destSelect.value;
+
+      let startCoords = null;
+      if (startVal === 'gps') {
+        startCoords = userLocation ? [userLocation.lat, userLocation.lng] : [16.256891, 80.333380];
+      } else {
+        const p = campusPlaces.find(cp => cp.id === startVal);
+        if (p) startCoords = p.coords;
+        else if (walkwayNodes['node_gate']) startCoords = walkwayNodes['node_gate'].coords;
+      }
+
+      const destPlace = campusPlaces.find(cp => cp.id === destVal);
+      const destCoords = destPlace ? destPlace.coords : [16.258056, 80.332672];
+
+      if (startCoords && destCoords) {
+        const directDist = Math.round(getDistanceMeters(startCoords[0], startCoords[1], destCoords[0], destCoords[1]));
+        const pathDist = Math.max(25, Math.round(directDist * 1.22));
+        const mins = Math.max(1, Math.round(pathDist / 75));
+        timeEl.innerText = currentMapLang === 'te' ? `~${mins} నిమిషాల నడక` : `~${mins} min walk`;
+        distEl.innerText = `${pathDist} ${currentMapLang === 'te' ? 'మీటర్లు • క్యాంపస్ వాక్‌వే' : 'meters • Via Campus Walkway'}`;
+      }
+    }
+
+    function openArNavigation(destId, startId) {
+      const targetDest = destId || (selectedPlace ? selectedPlace.id : 'cse-block');
+      let targetStart = startId;
+      if (!targetStart) {
+        const startSelect = document.getElementById('route-planner-start');
+        if (startSelect && startSelect.value && startSelect.value !== 'gps') {
+          targetStart = startSelect.value;
+        } else {
+          targetStart = 'gate';
+        }
+      }
+
+      const arUrl = `/ar-map.html?dest=${encodeURIComponent(targetDest)}&start=${encodeURIComponent(targetStart)}&preview=true`;
+      
+      const arModal = document.getElementById('ar-view-modal');
+      const arFrame = document.getElementById('ar-view-frame');
+      const arTitle = document.getElementById('ar-modal-header-title');
+
+      if (arModal && arFrame) {
+        arFrame.src = arUrl;
+        const dPlace = campusPlaces.find(p => p.id === targetDest);
+        if (arTitle) {
+          arTitle.innerText = `KHIT AR: ${dPlace ? getPlaceDisplayName(dPlace) : targetDest.toUpperCase()}`;
+        }
+        arModal.style.display = 'flex';
+      } else {
+        window.open(arUrl, '_blank');
+      }
+    }
+
+    // Attach Route Planner & AR Event Listeners
+    const openRoutePlannerBtn = document.getElementById('open-route-planner-btn');
+    if (openRoutePlannerBtn) {
+      openRoutePlannerBtn.addEventListener('click', () => openCampusRoutePlanner());
+    }
+
+    const closeRoutePlannerBtn = document.getElementById('close-route-planner-modal');
+    if (closeRoutePlannerBtn) {
+      closeRoutePlannerBtn.addEventListener('click', closeCampusRoutePlanner);
+    }
+
+    const campusRouteModal = document.getElementById('campus-route-planner-modal');
+    if (campusRouteModal) {
+      campusRouteModal.addEventListener('click', (e) => {
+        if (e.target === campusRouteModal) closeCampusRoutePlanner();
+      });
+    }
+
+    const routePlannerStart = document.getElementById('route-planner-start');
+    const routePlannerDest = document.getElementById('route-planner-dest');
+    if (routePlannerStart) routePlannerStart.addEventListener('change', updateRoutePlannerPreview);
+    if (routePlannerDest) routePlannerDest.addEventListener('change', updateRoutePlannerPreview);
+
+    const btnSwapRoute = document.getElementById('btn-swap-route-points');
+    if (btnSwapRoute) {
+      btnSwapRoute.addEventListener('click', () => {
+        if (!routePlannerStart || !routePlannerDest) return;
+        const oldStart = routePlannerStart.value;
+        const oldDest = routePlannerDest.value;
+
+        btnSwapRoute.style.transform = 'translateY(-50%) rotate(180deg)';
+        setTimeout(() => {
+          btnSwapRoute.style.transform = 'translateY(-50%) rotate(0deg)';
+        }, 220);
+
+        if (oldStart === 'gps') {
+          routePlannerDest.value = 'main-gate';
+        } else if (Array.from(routePlannerDest.options).some(o => o.value === oldStart)) {
+          routePlannerDest.value = oldStart;
+        }
+        if (Array.from(routePlannerStart.options).some(o => o.value === oldDest)) {
+          routePlannerStart.value = oldDest;
+        }
+        updateRoutePlannerPreview();
+      });
+    }
+
+    const btnStart2D = document.getElementById('btn-start-route-2d');
+    if (btnStart2D) {
+      btnStart2D.addEventListener('click', async () => {
+        if (!routePlannerDest) return;
+        const destId = routePlannerDest.value;
+        const destPlace = campusPlaces.find(p => p.id === destId);
+        if (!destPlace) return;
+
+        const startId = routePlannerStart ? routePlannerStart.value : 'gps';
+        if (startId === 'gps') {
+          if (!userLocation) {
+            setUserPosition([16.256891, 80.333380], 'Main Gate (GPS Start)', 0);
+          }
+        } else {
+          const originPlace = campusPlaces.find(p => p.id === startId);
+          if (originPlace) {
+            setUserPosition(originPlace.coords, originPlace.name, 0);
+            setStartLocationLabel(originPlace.name);
+          }
+        }
+
+        closeCampusRoutePlanner();
+        await startGoogleNavigation(destPlace);
+      });
+    }
+
+    const btnStartAR = document.getElementById('btn-start-route-ar');
+    if (btnStartAR) {
+      btnStartAR.addEventListener('click', () => {
+        const destId = routePlannerDest ? routePlannerDest.value : 'cse-block';
+        const startId = (routePlannerStart && routePlannerStart.value !== 'gps') ? routePlannerStart.value : 'gate';
+        closeCampusRoutePlanner();
+        openArNavigation(destId, startId);
+      });
+    }
+
+    const sheetArBtn = document.getElementById('sheet-ar-nav-btn');
+    if (sheetArBtn) {
+      sheetArBtn.addEventListener('click', () => {
+        const destId = selectedPlace ? selectedPlace.id : 'main-office';
+        openArNavigation(destId);
+      });
+    }
+
+    const navArBtn = document.getElementById('nav-ar-btn');
+    if (navArBtn) {
+      navArBtn.addEventListener('click', () => {
+        const destId = selectedPlace ? selectedPlace.id : 'cse-block';
+        openArNavigation(destId);
+      });
+    }
+
+    const topArBtn = document.getElementById('top-ar-btn');
+    if (topArBtn) {
+      topArBtn.addEventListener('click', () => openArNavigation());
+    }
+
+    const fabArBtn = document.getElementById('fab-ar-map');
+    if (fabArBtn) {
+      fabArBtn.addEventListener('click', () => openArNavigation());
+    }
+
+    const closeArModalBtn = document.getElementById('close-ar-modal');
+    if (closeArModalBtn) {
+      closeArModalBtn.addEventListener('click', () => {
+        const arModal = document.getElementById('ar-view-modal');
+        const arFrame = document.getElementById('ar-view-frame');
+        if (arModal) arModal.style.display = 'none';
+        if (arFrame) arFrame.src = '';
+      });
+    }
+
+    const btnArNewTab = document.getElementById('btn-ar-open-newtab');
+    if (btnArNewTab) {
+      btnArNewTab.addEventListener('click', () => {
+        const arFrame = document.getElementById('ar-view-frame');
+        if (arFrame && arFrame.src) {
+          window.open(arFrame.src.replace('&preview=true', ''), '_blank');
+        } else {
+          window.open('/ar-map.html', '_blank');
+        }
+      });
+    }
 
     // =========================================================================
     // 6. DYNAMIC PLACE MARKERS & ADMIN 2D MAP CONTROLS
