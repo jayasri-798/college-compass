@@ -612,6 +612,103 @@
       color: #202124;
     }
 
+    /* Pin Route Button & Waypoint Pins */
+    .gm-nav-pin-btn {
+      padding: 9px 12px;
+      background: #f1f3f4;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #3c4043;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .gm-nav-pin-btn:hover {
+      background: #e8eaed;
+      color: #202124;
+    }
+    .gm-nav-pin-btn.pinned {
+      background: #fef7e0;
+      border-color: #f9ab00;
+      color: #b06000;
+      box-shadow: 0 2px 6px rgba(249, 171, 0, 0.3);
+    }
+    .gm-nav-pin-btn.pinned i {
+      color: #f29900;
+    }
+
+    .gm-turn-waypoint {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #1a73e8;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a73e8;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .gm-turn-waypoint:hover {
+      transform: scale(1.25);
+      z-index: 1000;
+      border-color: #1557b0;
+    }
+    .gm-start-pin-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: auto;
+    }
+    .gm-start-pin-badge {
+      background: #1e8e3e;
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      margin-bottom: 2px;
+    }
+    .gm-start-pin-icon {
+      color: #1e8e3e;
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+    }
+    .gm-dest-pin-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: auto;
+    }
+    .gm-dest-pin-badge {
+      background: #ea4335;
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      margin-bottom: 2px;
+    }
+    .gm-dest-pin-icon {
+      color: #ea4335;
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+    }
+
+
     /* Start Location Selector Bar */
     .gm-start-selector-bar {
       display: flex;
@@ -1191,6 +1288,10 @@
         <i class="fa-solid fa-shoe-prints"></i>
         <span>+ Step</span>
       </button>
+      <button class="gm-nav-step-btn gm-nav-pin-btn" id="nav-pin-route-btn" title="Pin Route (Keep path saved on map)">
+        <i class="fa-solid fa-map-pin" id="nav-pin-icon"></i>
+        <span id="nav-pin-text">Pin Path</span>
+      </button>
       <button class="gm-nav-close-btn" id="exit-nav-btn" title="Exit Navigation">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -1754,7 +1855,13 @@
         voiceUnmuted: "Voice guidance unmuted",
         voiceLangChanged: "Language set to English",
         voiceOnTooltip: "Voice Guidance: Active (Click to Mute)",
-        voiceOffTooltip: "Voice Guidance: Muted (Click to Unmute)"
+        voiceOffTooltip: "Voice Guidance: Muted (Click to Unmute)",
+        pinPath: "Pin Path",
+        pinned: "Pinned",
+        pathPinned: "Route path pinned to your map!",
+        pathUnpinned: "Route unpinned",
+        calcRoadRoute: "Calculating live road route with turns...",
+        enteringCampus: "Entering KHIT Campus Main Gate. Follow pathway to {dest}."
       },
       te: {
         searchPlaceholder: "క్యాంపస్‌లో వెతకండి (ఉదా: మెయిన్ ఆఫీస్)...",
@@ -1812,7 +1919,13 @@
         voiceUnmuted: "వాయిస్ గైడెన్స్ ఆన్ చేయబడింది",
         voiceLangChanged: "భాష తెలుగుగా మార్చబడింది",
         voiceOnTooltip: "వాయిస్ గైడెన్స్: ఆన్ (మ్యూట్ చేయడానికి నొక్కండి)",
-        voiceOffTooltip: "వాయిస్ గైడెన్స్: మ్యూట్ (ఆన్ చేయడానికి నొక్కండి)"
+        voiceOffTooltip: "వాయిస్ గైడెన్స్: మ్యూట్ (ఆన్ చేయడానికి నొక్కండి)",
+        pinPath: "పాత్ పిన్ చేయండి",
+        pinned: "పిన్ చేయబడింది",
+        pathPinned: "రూట్ పాత్ మ్యాప్‌కు పిన్ చేయబడింది!",
+        pathUnpinned: "రూట్ పిన్ తీసివేయబడింది",
+        calcRoadRoute: "లైవ్ రోడ్డు మార్గాన్ని లెక్కిస్తోంది...",
+        enteringCampus: "KHIT క్యాంపస్ మెయిన్ గేట్ చేరుకున్నారు. {dest} వైపు వెళ్ళండి."
       }
     };
 
@@ -1876,6 +1989,10 @@
       }
       const stepBtnSpan = document.querySelector('#nav-step-btn span');
       if (stepBtnSpan) stepBtnSpan.innerText = mapT('step');
+      const pinTextEl = document.getElementById('nav-pin-text');
+      if (pinTextEl) {
+        pinTextEl.innerText = isRoutePinned ? mapT('pinned') : mapT('pinPath');
+      }
       const recenterSpan = document.querySelector('#nav-recenter-btn span');
       if (recenterSpan) recenterSpan.innerText = mapT('recenter');
 
@@ -2367,14 +2484,17 @@
             }
             if (onSuccess) onSuccess([lat, lng]);
           } else {
-            // User is testing off-campus (at home / hostel)
-            lastGpsCoords = [16.256891, 80.333380];
-            setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
-            setStartLocationLabel('Main Gate (Gate 1)');
+            // Off-campus (at home / hostel): use actual GPS coordinates
+            lastGpsCoords = [lat, lng];
+            setUserPosition([lat, lng], 'My Live Location');
+            setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
             showOffCampusBanner(distToCampus);
-            map.flyTo([16.256891, 80.333380], 18);
-            showAdminToast(`You are ${Math.round(distToCampus/1000)}km from KHIT. Location set to Main Gate.`);
-            if (onSuccess) onSuccess([16.256891, 80.333380]);
+            map.flyTo([lat, lng], 16);
+            showAdminToast(`GPS Locked (${Math.round(distToCampus/1000)} km from KHIT). Route will follow real roads.`);
+            if (isNavigating && selectedPlace) {
+              startGoogleNavigation(selectedPlace);
+            }
+            if (onSuccess) onSuccess([lat, lng]);
           }
         },
         (err) => {
@@ -2450,9 +2570,179 @@
     });
 
     // =========================================================================
-    // 5. GOOGLE MAPS STYLE NAVIGATION START, AUTO-FOLLOW & LIVE STATS
+    // 5. GOOGLE MAPS STYLE ROAD & CAMPUS NAVIGATION ENGINE
     // =========================================================================
-    function startGoogleNavigation(place) {
+    let currentRouteSteps = [];     // Maneuver steps: [{ coords, modifier, type, name, distance, instruction }]
+    let routeMarkersGroup = null;   // Layer group for start pin, turn waypoint pins, dest pin
+    let isRoutePinned = false;      // User pinned route toggle
+
+    // Asynchronously fetch real road routing from public OSRM / OSM road network
+    async function fetchRoadRoute(startCoords, destCoords) {
+      const startLng = startCoords[1];
+      const startLat = startCoords[0];
+      const destLng = destCoords[1];
+      const destLat = destCoords[0];
+
+      const endpoints = [
+        `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${destLng},${destLat}?overview=full&geometries=geojson&steps=true`,
+        `https://routing.openstreetmap.de/routed-car/route/v1/driving/${startLng},${startLat};${destLng},${destLat}?overview=full&geometries=geojson&steps=true`
+      ];
+
+      for (const url of endpoints) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const res = await fetch(url, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data && data.code === 'Ok' && data.routes && data.routes.length > 0) {
+            return data.routes[0];
+          }
+        } catch (e) {
+          console.warn('Road routing request attempt failed, trying fallback:', e);
+        }
+      }
+      return null;
+    }
+
+    function getTurnIconClass(modifier, type) {
+      if (type === 'arrive') return 'fa-solid fa-location-dot';
+      const m = (modifier || '').toLowerCase();
+      if (m.includes('right')) {
+        if (m.includes('slight')) return 'fa-solid fa-arrow-turn-up';
+        return 'fa-solid fa-arrow-turn-right';
+      }
+      if (m.includes('left')) {
+        if (m.includes('slight')) return 'fa-solid fa-arrow-turn-up fa-flip-horizontal';
+        return 'fa-solid fa-arrow-turn-down fa-flip-horizontal';
+      }
+      if (m.includes('roundabout')) return 'fa-solid fa-arrows-rotate';
+      if (m.includes('uturn')) return 'fa-solid fa-rotate-left';
+      return 'fa-solid fa-arrow-up';
+    }
+
+    function getTurnInstructionText(step, destName) {
+      const isTe = currentMapLang === 'te';
+      const mod = (step.modifier || '').toLowerCase();
+      const road = step.name ? ` "${step.name}"` : '';
+
+      if (step.isGateTransition) {
+        return mapT('enteringCampus', { dest: destName });
+      }
+      if (step.type === 'arrive') {
+        return mapT('arriving', { dest: destName });
+      }
+
+      if (mod.includes('right')) {
+        if (mod.includes('slight')) {
+          return isTe ? `${road ? road + ' లోకి ' : ''}స్వల్పంగా కుడివైపునకు తిరగండి` : `Slight right${road ? ' onto ' + road : ''}`;
+        }
+        return isTe ? `${road ? road + ' లోకి ' : ''}కుడివైపునకు తిరగండి` : `Turn right${road ? ' onto ' + road : ''}`;
+      } else if (mod.includes('left')) {
+        if (mod.includes('slight')) {
+          return isTe ? `${road ? road + ' లోకి ' : ''}స్వల్పంగా ఎడమవైపునకు తిరగండి` : `Slight left${road ? ' onto ' + road : ''}`;
+        }
+        return isTe ? `${road ? road + ' లోకి ' : ''}ఎడమవైపునకు తిరగండి` : `Turn left${road ? ' onto ' + road : ''}`;
+      } else if (mod.includes('roundabout')) {
+        return isTe ? `రౌండ్‌అబౌట్ వద్ద${road ? road + ' వైపు ' : ' '}వెళ్ళండి` : `At roundabout, continue${road ? ' towards ' + road : ''}`;
+      } else if (mod.includes('uturn')) {
+        return isTe ? `యూ-టర్న్ తీసుకోండి` : `Make a U-turn`;
+      }
+      return isTe ? `తిన్నగా ముందుకు వెళ్ళండి` : `Continue straight${road ? ' on ' + road : ''}`;
+    }
+
+    function renderRoutePins(startPt, destPt, destName, steps) {
+      if (!routeMarkersGroup) {
+        routeMarkersGroup = L.layerGroup().addTo(map);
+      } else {
+        routeMarkersGroup.clearLayers();
+      }
+
+      // 1. Start Marker (Live User Origin)
+      const startIcon = L.divIcon({
+        className: 'gm-start-pin-wrapper',
+        html: `
+          <div class="gm-start-pin-marker">
+            <div class="gm-start-pin-badge">${currentMapLang === 'te' ? 'ప్రారంభం' : 'Start'}</div>
+            <i class="fa-solid fa-location-dot gm-start-pin-icon"></i>
+          </div>
+        `,
+        iconSize: [60, 48],
+        iconAnchor: [30, 46]
+      });
+      L.marker(startPt, { icon: startIcon, zIndexOffset: 850 }).addTo(routeMarkersGroup)
+        .bindPopup(`<b>${currentMapLang === 'te' ? 'ప్రారంభ స్థానం' : 'Starting Location'}</b>`);
+
+      // 2. Intermediate Road Turn Pins
+      if (steps && steps.length > 0) {
+        let pinCount = 0;
+        steps.forEach((step, idx) => {
+          if (step.modifier && step.modifier !== 'straight' && step.type !== 'depart' && step.distance > 30 && pinCount < 10) {
+            pinCount++;
+            const iconClass = getTurnIconClass(step.modifier, step.type);
+            const turnText = getTurnInstructionText(step, destName);
+            const turnIcon = L.divIcon({
+              className: 'gm-waypoint-pin-wrapper',
+              html: `<div class="gm-turn-waypoint" title="${turnText}"><i class="${iconClass}"></i></div>`,
+              iconSize: [26, 26],
+              iconAnchor: [13, 13]
+            });
+            const marker = L.marker(step.coords, { icon: turnIcon, zIndexOffset: 800 }).addTo(routeMarkersGroup);
+            marker.bindPopup(`<b>${turnText}</b>${step.name ? '<br><span style="color:#5f6368;font-size:12px;">' + step.name + '</span>' : ''}`);
+          }
+        });
+      }
+
+      // 3. Destination Pin
+      const destIcon = L.divIcon({
+        className: 'gm-dest-pin-wrapper',
+        html: `
+          <div class="gm-dest-pin-marker">
+            <div class="gm-dest-pin-badge">${destName}</div>
+            <i class="fa-solid fa-location-dot gm-dest-pin-icon"></i>
+          </div>
+        `,
+        iconSize: [80, 48],
+        iconAnchor: [40, 46]
+      });
+      L.marker(destPt, { icon: destIcon, zIndexOffset: 950 }).addTo(routeMarkersGroup)
+        .bindPopup(`<b>${destName}</b>`);
+    }
+
+    // Toggle Pin / Save Current Route on Map
+    function togglePinCurrentRoute() {
+      isRoutePinned = !isRoutePinned;
+      const navPinBtn = document.getElementById('nav-pin-route-btn');
+      const navPinText = document.getElementById('nav-pin-text');
+      const navPinIcon = document.getElementById('nav-pin-icon');
+
+      if (isRoutePinned) {
+        if (navPinBtn) navPinBtn.classList.add('pinned');
+        if (navPinText) navPinText.innerText = currentMapLang === 'te' ? 'పిన్ చేయబడింది' : 'Pinned';
+        if (navPinIcon) navPinIcon.className = 'fa-solid fa-thumbtack';
+        showAdminToast(mapT('pathPinned'));
+        try {
+          if (selectedPlace && userLocation) {
+            localStorage.setItem('cc_pinned_route', JSON.stringify({
+              destId: selectedPlace.id,
+              destName: selectedPlace.name,
+              destCoords: selectedPlace.coords,
+              userCoords: [userLocation.lat, userLocation.lng],
+              pinnedTime: Date.now()
+            }));
+          }
+        } catch (e) {}
+      } else {
+        if (navPinBtn) navPinBtn.classList.remove('pinned');
+        if (navPinText) navPinText.innerText = currentMapLang === 'te' ? 'పాత్ పిన్ చేయండి' : 'Pin Path';
+        if (navPinIcon) navPinIcon.className = 'fa-solid fa-map-pin';
+        showAdminToast(mapT('pathUnpinned'));
+        try { localStorage.removeItem('cc_pinned_route'); } catch (e) {}
+      }
+    }
+
+    async function startGoogleNavigation(place) {
       if (!place) return;
       selectedPlace = place;
 
@@ -2460,45 +2750,138 @@
         setUserPosition([16.256891, 80.333380], 'Main Gate (Default Start)', 0);
       }
 
-      const startNode = findNearestNode([userLocation.lat, userLocation.lng]);
-      const endNode = place.nearestNode || findNearestNode(place.coords);
-      const pathNodes = runDijkstra(startNode, endNode);
+      const userLat = userLocation.lat;
+      const userLng = userLocation.lng;
+      const distToCampus = getDistanceMeters(userLat, userLng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+      const destName = getPlaceDisplayName(place);
 
-      const routePoints = [[userLocation.lat, userLocation.lng]];
+      let routePoints = [];
+      let navSteps = [];
       let totalMeters = 0;
+      let totalSeconds = 0;
 
-      for (let i = 0; i < pathNodes.length; i++) {
-        const pt = walkwayNodes[pathNodes[i]].coords;
-        routePoints.push(pt);
-        if (i > 0) {
-          totalMeters += getDistanceMeters(walkwayNodes[pathNodes[i-1]].coords[0], walkwayNodes[pathNodes[i-1]].coords[1], pt[0], pt[1]);
+      // Check if user is starting from off-campus (>450m from KHIT)
+      if (distToCampus > 450) {
+        showAdminToast(mapT('calcRoadRoute'));
+        const gateCoords = walkwayNodes['node_gate'].coords; // KHIT Main Gate [16.256891, 80.333380]
+
+        // 1. Fetch live turn-by-turn road route along real streets to KHIT Main Gate
+        const roadRoute = await fetchRoadRoute([userLat, userLng], gateCoords);
+
+        if (roadRoute && roadRoute.geometry && roadRoute.geometry.coordinates) {
+          // OSRM coordinates are [lng, lat] -> convert to [lat, lng]
+          const roadPts = roadRoute.geometry.coordinates.map(pt => [pt[1], pt[0]]);
+          routePoints.push(...roadPts);
+          totalMeters += Math.round(roadRoute.distance);
+          totalSeconds += Math.round(roadRoute.duration);
+
+          // Extract real road turn steps
+          if (roadRoute.legs && roadRoute.legs[0] && roadRoute.legs[0].steps) {
+            roadRoute.legs[0].steps.forEach(step => {
+              if (step.distance > 5 || step.maneuver.type !== 'depart') {
+                navSteps.push({
+                  coords: [step.maneuver.location[1], step.maneuver.location[0]],
+                  type: step.maneuver.type,
+                  modifier: step.maneuver.modifier || 'straight',
+                  name: step.name || '',
+                  distance: Math.round(step.distance),
+                  isRoad: true
+                });
+              }
+            });
+          }
+        } else {
+          // Graceful fallback if offline
+          routePoints.push([userLat, userLng]);
+          routePoints.push(gateCoords);
+          totalMeters += getDistanceMeters(userLat, userLng, gateCoords[0], gateCoords[1]);
+          totalSeconds += Math.round(totalMeters / 8.3); // ~30 km/h driving
         }
+
+        // 2. Add Gate-to-Destination campus walkway path
+        navSteps.push({
+          coords: gateCoords,
+          type: 'arrive',
+          modifier: 'straight',
+          name: 'KHIT Campus Main Gate',
+          distance: 20,
+          isGateTransition: true
+        });
+
+        const startNode = 'node_gate';
+        const endNode = place.nearestNode || findNearestNode(place.coords);
+        const campusPathNodes = runDijkstra(startNode, endNode);
+
+        for (let i = 0; i < campusPathNodes.length; i++) {
+          const pt = walkwayNodes[campusPathNodes[i]].coords;
+          routePoints.push(pt);
+          if (i > 0) {
+            const prevPt = walkwayNodes[campusPathNodes[i-1]].coords;
+            const legDist = getDistanceMeters(prevPt[0], prevPt[1], pt[0], pt[1]);
+            totalMeters += legDist;
+            totalSeconds += Math.round(legDist / 1.1);
+          }
+        }
+        routePoints.push(place.coords);
+      } else {
+        // User is already physically inside KHIT campus
+        const startNode = findNearestNode([userLat, userLng]);
+        const endNode = place.nearestNode || findNearestNode(place.coords);
+        const pathNodes = runDijkstra(startNode, endNode);
+
+        routePoints.push([userLat, userLng]);
+        for (let i = 0; i < pathNodes.length; i++) {
+          const pt = walkwayNodes[pathNodes[i]].coords;
+          routePoints.push(pt);
+          if (i > 0) {
+            const prevPt = walkwayNodes[pathNodes[i-1]].coords;
+            const legDist = getDistanceMeters(prevPt[0], prevPt[1], pt[0], pt[1]);
+            totalMeters += legDist;
+          }
+        }
+        routePoints.push(place.coords);
+        totalSeconds = Math.round(totalMeters / 1.1);
       }
-      routePoints.push(place.coords);
+
       currentRoutePoints = routePoints;
+      currentRouteSteps = navSteps;
 
       // Clean existing lines
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       if (activeRouteUnderlay) map.removeLayer(activeRouteUnderlay);
 
-      // Google Maps Route Underlay (Dark border glow)
+      // Google Maps Route Underlay (Dark blue border glow)
       activeRouteUnderlay = L.polyline(routePoints, {
         color: '#1557b0',
         weight: 10,
-        opacity: 0.8,
+        opacity: 0.85,
         lineCap: 'round',
         lineJoin: 'round'
       }).addTo(map);
 
-      // Google Maps Walking Line (Dashed dots)
+      // Google Maps Route Line (Vibrant Navigation Blue)
       activeRoutePolyline = L.polyline(routePoints, {
         color: '#4285f4',
         weight: 6,
         opacity: 1,
-        dashArray: '1, 10',
         lineCap: 'round',
         lineJoin: 'round'
       }).addTo(map);
+
+      // Render pins: Start pin, Road turn pins, and Destination pin
+      renderRoutePins(
+        [userLat, userLng],
+        place.coords,
+        destName,
+        navSteps
+      );
+
+      // Zoom map to show the entire road and campus route smoothly
+      if (routePoints.length >= 2) {
+        try {
+          map.fitBounds(activeRoutePolyline.getBounds(), { padding: [60, 60], maxZoom: 18 });
+        } catch (e) {}
+      }
 
       // Enter Google Maps Navigation Mode
       isNavigating = true;
@@ -2511,17 +2894,48 @@
       document.getElementById('fabs-container').style.display = 'none';
 
       // Show Turn-by-Turn Navigation UI
-      const etaMinutes = Math.max(1, Math.round(totalMeters / 70));
-      const destName = getPlaceDisplayName(place);
-      document.getElementById('nav-step-dist').innerText = `In ${Math.min(40, totalMeters)} m`;
-      document.getElementById('nav-step-name').innerText = mapT('headTo', { dest: destName });
-      document.getElementById('nav-time-text').innerText = `${etaMinutes} min`;
-      document.getElementById('nav-meters-text').innerText = `${totalMeters} m`;
-      document.getElementById('nav-dest-title').innerText = destName;
+      const etaMinutes = Math.max(1, Math.round(totalSeconds / 60));
+      const firstInstruction = navSteps.length > 0 
+        ? getTurnInstructionText(navSteps[0], destName) 
+        : mapT('headTo', { dest: destName });
+      const firstDist = navSteps.length > 0 ? navSteps[0].distance : Math.min(40, totalMeters);
+      const firstIconClass = navSteps.length > 0 
+        ? getTurnIconClass(navSteps[0].modifier, navSteps[0].type) 
+        : 'fa-solid fa-arrow-turn-up';
+
+      const distEl = document.getElementById('nav-step-dist');
+      const nameEl = document.getElementById('nav-step-name');
+      const turnIconEl = document.getElementById('nav-turn-icon');
+      if (distEl) distEl.innerText = `In ${firstDist} m`;
+      if (nameEl) nameEl.innerText = firstInstruction;
+      if (turnIconEl) turnIconEl.className = firstIconClass;
+
+      const timeEl = document.getElementById('nav-time-text');
+      const metersEl = document.getElementById('nav-meters-text');
+      const destTitleEl = document.getElementById('nav-dest-title');
+      if (timeEl) timeEl.innerText = `${etaMinutes} min`;
+      if (metersEl) metersEl.innerText = totalMeters > 1000 ? `${(totalMeters/1000).toFixed(1)} km` : `${totalMeters} m`;
+      if (destTitleEl) destTitleEl.innerText = destName;
 
       document.getElementById('nav-top-banner').style.display = 'flex';
       document.getElementById('nav-bottom-sheet').style.display = 'flex';
       updateVoiceBtnUI();
+
+      // Reset / sync Pin button state
+      const navPinBtn = document.getElementById('nav-pin-route-btn');
+      const navPinText = document.getElementById('nav-pin-text');
+      const navPinIcon = document.getElementById('nav-pin-icon');
+      if (navPinBtn) {
+        if (isRoutePinned) {
+          navPinBtn.classList.add('pinned');
+          if (navPinText) navPinText.innerText = currentMapLang === 'te' ? 'పిన్ చేయబడింది' : 'Pinned';
+          if (navPinIcon) navPinIcon.className = 'fa-solid fa-thumbtack';
+        } else {
+          navPinBtn.classList.remove('pinned');
+          if (navPinText) navPinText.innerText = currentMapLang === 'te' ? 'పాత్ పిన్ చేయండి' : 'Pin Path';
+          if (navPinIcon) navPinIcon.className = 'fa-solid fa-map-pin';
+        }
+      }
 
       // Enable Auto-Follow Camera & Live Walk Tracking Mode
       isLiveWalking = true;
@@ -2548,14 +2962,15 @@
       speakNavInstruction(startVoiceMsg, { force: true, chime: true });
     }
 
-    // Dynamic Live Progress & Maneuver Updates as user moves
+    // Dynamic Live Progress & Maneuver Updates as user moves along roads or campus
     function updateLiveNavigationProgress() {
       if (!isNavigating || !userLocation || !selectedPlace || currentRoutePoints.length < 2) return;
 
       const userLat = userLocation.lat;
       const userLng = userLocation.lng;
+      const destName = getPlaceDisplayName(selectedPlace);
 
-      // Find closest segment in route
+      // Find closest segment in full route
       let minD = Infinity;
       let closestIdx = 0;
       for (let i = 0; i < currentRoutePoints.length - 1; i++) {
@@ -2578,19 +2993,17 @@
       }
 
       // Update ETA and Meters
-      const etaMinutes = Math.max(1, Math.round(remainingMeters / 70));
+      const etaMinutes = Math.max(1, Math.round(remainingMeters / 120)); // realistic average speed
       const metersEl = document.getElementById('nav-meters-text');
       const timeEl = document.getElementById('nav-time-text');
-      if (metersEl) metersEl.innerText = `${remainingMeters} m`;
+      if (metersEl) metersEl.innerText = remainingMeters > 1000 ? `${(remainingMeters/1000).toFixed(1)} km` : `${remainingMeters} m`;
       if (timeEl) timeEl.innerText = `${etaMinutes} min`;
 
-      // Update Top Green Instruction Banner
-      const distToNext = getDistanceMeters(userLat, userLng, currentRoutePoints[closestIdx + 1][0], currentRoutePoints[closestIdx + 1][1]);
       const stepDistEl = document.getElementById('nav-step-dist');
       const stepNameEl = document.getElementById('nav-step-name');
       const turnIconEl = document.getElementById('nav-turn-icon');
-      const destName = getPlaceDisplayName(selectedPlace);
 
+      // Check arrival at final destination
       if (remainingMeters <= 15) {
         if (stepDistEl) stepDistEl.innerText = `${remainingMeters} m`;
         if (stepNameEl) stepNameEl.innerText = mapT('arriving', { dest: destName });
@@ -2600,7 +3013,52 @@
           lastManeuverAnnounced = 'arriving';
           speakNavInstruction(mapT('voiceArriving', { dest: destName }), { chime: true });
         }
+        checkArrival();
+        return;
+      }
+
+      // Priority 1: If we have explicit road maneuver steps (from OSRM)
+      let activeStep = null;
+      let distToActiveStep = Infinity;
+
+      if (currentRouteSteps && currentRouteSteps.length > 0) {
+        for (let s = 0; s < currentRouteSteps.length; s++) {
+          const step = currentRouteSteps[s];
+          const d = getDistanceMeters(userLat, userLng, step.coords[0], step.coords[1]);
+          // Find next step ahead of user
+          if (d < distToActiveStep && (d > 6 || s === currentRouteSteps.length - 1)) {
+            distToActiveStep = d;
+            activeStep = step;
+            break;
+          }
+        }
+      }
+
+      if (activeStep && distToActiveStep < 5000) {
+        const roundedDist = Math.max(5, Math.round(distToActiveStep));
+        const instruction = getTurnInstructionText(activeStep, destName);
+        const iconClass = getTurnIconClass(activeStep.modifier, activeStep.type);
+
+        if (stepDistEl) stepDistEl.innerText = `In ${roundedDist} m`;
+        if (stepNameEl) stepNameEl.innerText = instruction;
+        if (turnIconEl) turnIconEl.className = iconClass;
+
+        // Voice announcement for upcoming road turn
+        const maneuverKey = `step-${activeStep.type}-${activeStep.modifier}-${Math.floor(roundedDist / 40)}`;
+        if (roundedDist <= 35 && roundedDist > 10) {
+          if (lastManeuverAnnounced !== maneuverKey + '-approaching') {
+            lastManeuverAnnounced = maneuverKey + '-approaching';
+            speakNavInstruction(mapT('voiceInMeters', { dist: roundedDist, action: instruction }), { chime: true });
+          }
+        } else if (roundedDist <= 10) {
+          if (lastManeuverAnnounced !== maneuverKey + '-turnnow') {
+            lastManeuverAnnounced = maneuverKey + '-turnnow';
+            speakNavInstruction(instruction, { chime: true });
+          }
+        }
       } else {
+        // Priority 2: Campus walkway geometry-based turns
+        const distToNext = getDistanceMeters(userLat, userLng, currentRoutePoints[closestIdx + 1][0], currentRoutePoints[closestIdx + 1][1]);
         if (stepDistEl) stepDistEl.innerText = `In ${Math.max(5, Math.round(distToNext))} m`;
 
         if (closestIdx + 2 < currentRoutePoints.length) {
@@ -2616,7 +3074,6 @@
             if (stepNameEl) stepNameEl.innerText = mapT('turnRight', { dest: destName });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-right';
 
-            // Voice announcement for approaching or immediate turn
             const distRound = Math.round(distToNext);
             if (distRound <= 25 && distRound > 8) {
               const maneuverKey = `turn-right-${closestIdx}-approach`;
@@ -2636,7 +3093,6 @@
             if (stepNameEl) stepNameEl.innerText = mapT('turnLeft', { dest: destName });
             if (turnIconEl) turnIconEl.className = 'fa-solid fa-arrow-turn-down fa-flip-horizontal';
 
-            // Voice announcement for approaching or immediate turn
             const distRound = Math.round(distToNext);
             if (distRound <= 25 && distRound > 8) {
               const maneuverKey = `turn-left-${closestIdx}-approach`;
@@ -2813,6 +3269,12 @@
       }
     });
 
+    // Pin Path Button Listener
+    const navPinRouteBtn = document.getElementById('nav-pin-route-btn');
+    if (navPinRouteBtn) {
+      navPinRouteBtn.addEventListener('click', togglePinCurrentRoute);
+    }
+
     // Exit Navigation
     document.getElementById('exit-nav-btn').addEventListener('click', () => {
       isNavigating = false;
@@ -2828,8 +3290,17 @@
       lastSpokenText = '';
 
       if (recenterBtn) recenterBtn.style.display = 'none';
-      if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
-      if (activeRouteUnderlay) map.removeLayer(activeRouteUnderlay);
+
+      // If user did not pin this route, clean up the polyline and waypoint pins
+      if (!isRoutePinned) {
+        if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
+        if (activeRouteUnderlay) map.removeLayer(activeRouteUnderlay);
+        if (routeMarkersGroup) routeMarkersGroup.clearLayers();
+      } else {
+        showAdminToast(currentMapLang === 'te' 
+          ? 'రూట్ పిన్ చేయబడి ఉంది. అవసరమైనప్పుడు చూసుకోవచ్చు.' 
+          : 'Route path remains pinned on your map.');
+      }
 
       document.getElementById('nav-top-banner').style.display = 'none';
       document.getElementById('nav-bottom-sheet').style.display = 'none';
