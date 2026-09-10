@@ -219,14 +219,33 @@ export class DashboardComponent implements OnInit {
     const type = this.selectedTypeFilter();
     
     return this.rooms().filter(room => {
-      const matchesSearch = 
-        room.name.toLowerCase().includes(query) || 
-        room.number.includes(query) || 
-        (room.buildingName && room.buildingName.toLowerCase().includes(query));
-      
       const matchesType = type === 'all' || room.type === type;
-      
-      return matchesSearch && matchesType;
+      if (!matchesType) return false;
+      if (!query) return true;
+
+      const name = (room.name || '').toLowerCase();
+      const translatedName = this.langService.translateRoomName(room.name).toLowerCase();
+      const num = (room.number || '').toString().toLowerCase();
+      const formattedNum = this.langService.formatRoomNumber(room.number).toLowerCase();
+      const bldg = (room.buildingName || '').toLowerCase();
+      const translatedBldg = this.langService.translateBuildingName(room.buildingName).toLowerCase();
+      const roomType = (room.type || '').toLowerCase();
+      const translatedType = this.langService.translateRoomType(room.type).toLowerCase();
+      const subject = (room.currentSubject || '').toLowerCase();
+      const translatedSubject = this.langService.translateSubject(room.currentSubject).toLowerCase();
+
+      return (
+        name.includes(query) ||
+        translatedName.includes(query) ||
+        num.includes(query) ||
+        formattedNum.includes(query) ||
+        bldg.includes(query) ||
+        translatedBldg.includes(query) ||
+        roomType.includes(query) ||
+        translatedType.includes(query) ||
+        subject.includes(query) ||
+        translatedSubject.includes(query)
+      );
     });
   });
 

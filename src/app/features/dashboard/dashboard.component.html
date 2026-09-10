@@ -353,11 +353,11 @@
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
                 <tr *ngFor="let room of filteredRooms()" class="hover:bg-slate-50 transition-colors">
-                  <td class="px-6 py-4 font-mono font-bold text-slate-800">{{ room.number }}</td>
-                  <td class="px-6 py-4">{{ room.name }}</td>
+                  <td class="px-6 py-4 font-mono font-bold text-slate-800">{{ langService.formatRoomNumber(room.number) }}</td>
+                  <td class="px-6 py-4 font-medium text-slate-800">{{ langService.translateRoomName(room.name) }}</td>
                   <td class="px-6 py-4">
                     <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">
-                      {{ room.buildingName || langService.t('label.building_na') }}
+                      {{ langService.translateBuildingName(room.buildingName) }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
@@ -369,7 +369,7 @@
                         'bg-rose-50 text-rose-600 border-rose-200': room.type === 'seminar'
                       }"
                       class="px-2.5 py-0.5 rounded-full text-xs font-semibold border">
-                      {{ room.type | titlecase }}
+                      {{ langService.translateRoomType(room.type) }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
@@ -380,16 +380,16 @@
                       }"
                       class="px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1.5 w-fit">
                       <span [ngClass]="room.isFree !== false ? 'bg-emerald-500' : 'bg-red-500'" class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
-                      {{ room.isFree !== false ? langService.t('label.free') : (room.currentSubject ? room.currentSubject : langService.t('label.occupied')) }}
-                      <span *ngIf="room.isFree === false && room.occupiedBy" class="text-[10px] text-red-600/80">({{room.occupiedBy}})</span>
+                      {{ room.isFree !== false ? langService.t('label.free') : (room.currentSubject ? langService.translateSubject(room.currentSubject) : langService.t('label.occupied')) }}
+                      <span *ngIf="room.isFree === false && room.occupiedBy" class="text-[10px] text-red-600/80">({{ langService.translateOccupiedBy(room.occupiedBy) }})</span>
                     </span>
                   </td>
                   <td class="px-6 py-4 font-mono text-xs text-slate-500">
-                    X: {{ room.x }}px, Y: {{ room.y }}px
+                    {{ langService.formatCoords(room.x, room.y) }}
                   </td>
                   <td class="px-6 py-4">
-                    <span *ngIf="room.qrCodeId" class="text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded">
-                      {{ room.qrCodeId }}
+                    <span *ngIf="room.qrCodeId" class="text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded font-medium">
+                      {{ langService.translateQrCode(room.qrCodeId) }}
                     </span>
                     <span *ngIf="!room.qrCodeId" class="text-xs text-slate-400 italic">
                       {{ langService.t('label.no_gate') }}
@@ -632,11 +632,11 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
                   <tr *ngFor="let room of rooms()" class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ room.number }}</td>
-                    <td class="px-4 py-3 truncate max-w-[120px]">{{ room.name }}</td>
+                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ langService.formatRoomNumber(room.number) }}</td>
+                    <td class="px-4 py-3 truncate max-w-[120px]">{{ langService.translateRoomName(room.name) }}</td>
                     <td class="px-4 py-3">
                       <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
-                        {{ room.buildingName || room.buildingId }} / {{ room.floorId }}
+                        {{ langService.translateBuildingName(room.buildingName || room.buildingId) }} / {{ langService.translateFloor(room.floorId) }}
                       </span>
                     </td>
                     <td class="px-4 py-3 text-right">
@@ -931,22 +931,22 @@
       <form (submit)="saveRoom(); $event.preventDefault();" class="p-6 space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.room_num') }}</label>
-          <input type="text" [(ngModel)]="roomForm().number" name="number" required placeholder="e.g. 305" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+          <input type="text" [(ngModel)]="roomForm().number" name="number" required [placeholder]="langService.isTelugu() ? 'ఉదా. 305' : 'e.g. 305'" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.room_name') }}</label>
-          <input type="text" [(ngModel)]="roomForm().name" name="name" required placeholder="e.g. Cloud Computing Lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+          <input type="text" [(ngModel)]="roomForm().name" name="name" required [placeholder]="langService.isTelugu() ? 'ఉదా. క్లౌడ్ కంప్యూటింగ్ ల్యాబ్' : 'e.g. Cloud Computing Lab'" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.building_block') }}</label>
           <select [(ngModel)]="roomForm().buildingId" name="buildingId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
-            <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ b.name }} ({{ b.code }})</option>
+            <option *ngFor="let b of buildings()" [value]="b.id || b.code">{{ langService.translateBuildingName(b.name) }} ({{ b.code }})</option>
           </select>
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.floor') }}</label>
           <select [(ngModel)]="roomForm().floorId" name="floorId" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
-            <option *ngFor="let f of getFloorsForSelectedBuilding()" [value]="f">{{ f }}</option>
+            <option *ngFor="let f of getFloorsForSelectedBuilding()" [value]="f">{{ langService.translateFloor(f) }}</option>
           </select>
         </div>
         <div>
@@ -970,16 +970,16 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.linked_qr') }}</label>
-          <input type="text" [(ngModel)]="roomForm().qrCodeId" name="qrCodeId" placeholder="e.g. qr-cse-lab" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+          <input type="text" [(ngModel)]="roomForm().qrCodeId" name="qrCodeId" [placeholder]="langService.isTelugu() ? 'ఉదా. qr-cse-lab' : 'e.g. qr-cse-lab'" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.current_subject') }}</label>
-            <input type="text" [(ngModel)]="roomForm().currentSubject" name="currentSubject" placeholder="e.g. Compiler Design" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+            <input type="text" [(ngModel)]="roomForm().currentSubject" name="currentSubject" [placeholder]="langService.isTelugu() ? 'ఉదా. కంపైలర్ డిజైన్' : 'e.g. Compiler Design'" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('modal.occupied_by') }}</label>
-            <input type="text" [(ngModel)]="roomForm().occupiedBy" name="occupiedBy" placeholder="e.g. CSE-A 3rd Year" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+            <input type="text" [(ngModel)]="roomForm().occupiedBy" name="occupiedBy" [placeholder]="langService.isTelugu() ? 'ఉదా. సి.ఎస్.ఇ-ఎ 3వ సంవత్సరం' : 'e.g. CSE-A 3rd Year'" class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
           </div>
         </div>
         <div class="flex items-center gap-2">

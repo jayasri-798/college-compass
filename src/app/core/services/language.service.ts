@@ -533,4 +533,322 @@ export class LanguageService {
   isTelugu(): boolean {
     return this.currentLang() === 'te';
   }
+
+  // ===================== TELUGU DOMAIN DICTIONARIES =====================
+
+  private readonly roomTranslations: Record<string, string> = {
+    'IoT Research Lab': 'ఐఓటి రీసెర్చ్ ల్యాబ్',
+    'CSE HOD Cabin': 'సి.ఎస్.ఇ హెచ్.ఒ.డి క్యాబిన్',
+    'Mobile Computing Classroom': 'మొబైల్ కంప్యూటింగ్ తరగతి గది',
+    'CSE Central Seminar Hall': 'సి.ఎస్.ఇ సెంట్రల్ సెమినార్ హాల్',
+    'Embedded Systems Lab': 'ఎంబెడెడ్ సిస్టమ్స్ ల్యాబ్',
+    'Advanced Coding Lab': 'అడ్వాన్స్‌డ్ కోడింగ్ ల్యాబ్',
+    'Classroom 202': 'తరగతి గది 202',
+    'HOD Computer Science Office': 'కంప్యూటర్ సైన్స్ హెచ్.ఒ.డి కార్యాలయం',
+    'Department Seminar Hall': 'డిపార్ట్‌మెంట్ సెమినార్ హాల్',
+    'VLSI Design Lab': 'వి.ఎల్.ఎస్.ఐ డిజైన్ ల్యాబ్',
+    'Compiler Design Lab': 'కంపైలర్ డిజైన్ ల్యాబ్',
+    'Cloud Computing Lab': 'క్లౌడ్ కంప్యూటింగ్ ల్యాబ్',
+    'Entrance Corridor': 'ప్రవేశ కారిడార్',
+    'Central Library': 'సెంట్రల్ లైబ్రరీ',
+    'Library': 'లైబ్రరీ',
+    'Main Gate Entrance': 'ప్రధాన ద్వార ప్రవేశం',
+    'Physics Lab': 'ఫిజిక్స్ ల్యాబ్',
+    'Chemistry Lab': 'కెమిస్ట్రీ ల్యాబ్',
+    'Electronics Lab': 'ఎలక్ట్రానిక్స్ ల్యాబ్',
+    'Staff Room': 'స్టాఫ్ రూమ్',
+    'Principal Office': 'ప్రిన్సిపాల్ కార్యాలయం',
+    'Conference Room': 'కాన్ఫరెన్స్ రూమ్ (సమావేశ గది)',
+    'Auditorium': 'ఆడిటోరియం',
+    'Robotics Lab': 'రోబోటిక్స్ ల్యాబ్',
+    'Artificial Intelligence Lab': 'ఆర్టిఫిషియల్ ఇంటెలిజెన్స్ ల్యాబ్',
+    'Data Science Lab': 'డేటా సైన్స్ ల్యాబ్',
+    'Cyber Security Lab': 'సైబర్ సెక్యూరిటీ ల్యాబ్',
+    'Mechanical Lab': 'మెకానికల్ ల్యాబ్',
+    'Civil Lab': 'సివిల్ ల్యాబ్',
+    'English Communication Lab': 'ఇంగ్లీష్ కమ్యూనికేషన్ ల్యాబ్',
+    'Server Room': 'సర్వర్ రూమ్',
+    'Exam Cell': 'పరీక్షల విభాగం (ఎగ్జామ్ సెల్)',
+    'Placement Cell': 'ప్లేస్‌మెంట్ సెల్',
+    'Girls Waiting Room': 'బాలికల విశ్రాంతి గది',
+    'Boys Waiting Room': 'బాలుర విశ్రాంతి గది',
+    'Sports Room': 'క్రీడా విభాగం (స్పోర్ట్స్ రూమ్)',
+    'Cafeteria': 'కెఫెటేరియా',
+    'Canteen': 'క్యాంటీన్'
+  };
+
+  private readonly buildingTranslations: Record<string, string> = {
+    'Main Block - Administrative & Tech': 'ప్రధాన బ్లాక్ - పరిపాలన & టెక్నాలజీ',
+    'Main Block - Admin': 'ప్రధాన బ్లాక్ - పరిపాలన',
+    'Main Block': 'ప్రధాన భవనం (మెయిన్ బ్లాక్)',
+    'Block 2 (Computer Science)': 'బ్లాక్ 2 (కంప్యూటర్ సైన్స్)',
+    'Block 2 (CSE)': 'బ్లాక్ 2 (సి.ఎస్.ఇ)',
+    'Block 2': 'బ్లాక్ 2',
+    'Block 3 (ECE & EEE)': 'బ్లాక్ 3 (ఇ.సి.ఇ & ఇ.ఇ.ఇ)',
+    'Block 3 (ECE)': 'బ్లాక్ 3 (ఇ.సి.ఇ)',
+    'Block 3': 'బ్లాక్ 3',
+    'Block A - Computer Science': 'బ్లాక్ ఎ - కంప్యూటర్ సైన్స్',
+    'Block A - Computer Engineering': 'బ్లాక్ ఎ - కంప్యూటర్ ఇంజనీరింగ్',
+    'Block A': 'బ్లాక్ ఎ',
+    'Block B - Electronics Engineering': 'బ్లాక్ బి - ఎలక్ట్రానిక్స్ ఇంజనీరింగ్',
+    'Block B - Electronics': 'బ్లాక్ బి - ఎలక్ట్రానిక్స్',
+    'Block B': 'బ్లాక్ బి',
+    'Central Library': 'సెంట్రల్ లైబ్రరీ',
+    'Library': 'లైబ్రరీ',
+    'Main Gate Entrance': 'ప్రధాన ద్వారం',
+    'Main Gate': 'ప్రధాన ద్వారం',
+    'KHIT Ground': 'కె.హెచ్.ఐ.టి గ్రౌండ్',
+    'Basketball Court': 'బాస్కెట్‌బాల్ కోర్ట్'
+  };
+
+  private readonly roomTypeTranslations: Record<string, string> = {
+    'classroom': 'తరగతి గది',
+    'lab': 'ప్రయోగశాల (ల్యాబ్)',
+    'office': 'కార్యాలయం (ఆఫీస్)',
+    'seminar': 'సెమినార్ హాల్'
+  };
+
+  private readonly subjectTranslations: Record<string, string> = {
+    'Compiler Design': 'కంపైలర్ డిజైన్',
+    'Mobile Computing': 'మొబైల్ కంప్యూటింగ్',
+    'Cloud Computing': 'క్లౌడ్ కంప్యూటింగ్',
+    'Machine Learning': 'మెషిన్ లెర్నింగ్',
+    'Data Structures': 'డేటా స్ట్రక్చర్స్',
+    'Database Management': 'డేటాబేస్ మేనేజ్‌మెంట్',
+    'Computer Networks': 'కంప్యూటర్ నెట్‌వర్క్స్',
+    'Operating Systems': 'ఆపరేటింగ్ సిస్టమ్స్',
+    'Software Engineering': 'సాఫ్ట్‌వేర్ ఇంజనీరింగ్',
+    'Web Development': 'వెబ్ డెవలప్‌మెంట్',
+    'Cyber Security': 'సైబర్ సెక్యూరిటీ',
+    'VLSI Design': 'వి.ఎల్.ఎస్.ఐ డిజైన్',
+    'IoT Systems': 'ఐఓటి సిస్టమ్స్',
+    'Artificial Intelligence': 'ఆర్టిఫిషియల్ ఇంటెలిజెన్స్',
+    'Mathematics': 'గణితం',
+    'Physics': 'ఫిజిక్స్',
+    'Chemistry': 'కెమిస్ట్రీ',
+    'English': 'ఇంగ్లీష్'
+  };
+
+  private readonly floorTranslations: Record<string, string> = {
+    'Floor 1': 'మొదటి అంతస్తు',
+    'Floor 2': 'రెండవ అంతస్తు',
+    'Floor 3': 'మూడవ అంతస్తు',
+    'Floor 4': 'నాల్గవ అంతస్తు',
+    'Floor 5': 'ఐదవ అంతస్తు',
+    'Floor1': 'మొదటి అంతస్తు',
+    'Floor2': 'రెండవ అంతస్తు',
+    'Floor3': 'మూడవ అంతస్తు',
+    'Floor4': 'నాల్గవ అంతస్తు',
+    'Floor5': 'ఐదవ అంతస్తు',
+    'Ground Floor': 'గ్రౌండ్ ఫ్లోర్',
+    'First Floor': 'మొదటి అంతస్తు',
+    'Second Floor': 'రెండవ అంతస్తు',
+    'Third Floor': 'మూడవ అంతస్తు',
+    'Fourth Floor': 'నాల్గవ అంతస్తు',
+    'Fifth Floor': 'ఐదవ అంతస్తు'
+  };
+
+  private readonly qrCodeTranslations: Record<string, string> = {
+    'qr-cse-lab': 'సి.ఎస్.ఇ ల్యాబ్ గేట్',
+    'qr-faculty-cs': 'ఫ్యాకల్టీ సి.ఎస్ గేట్',
+    'qr-iot-class': 'ఐఓటి క్లాస్ గేట్',
+    'qr-gate-a': 'గేట్-ఎ (బ్లాక్ ఎ)',
+    'qr-gate-b': 'గేట్-బి (బ్లాక్ బి)',
+    'qr-gate-c': 'గేట్-సి (బ్లాక్ సి)'
+  };
+
+  private readonly wordReplacements: [RegExp, string][] = [
+    [/\b3rd\s*Year\b/gi, '3వ సంవత్సరం'],
+    [/\b2nd\s*Year\b/gi, '2వ సంవత్సరం'],
+    [/\b1st\s*Year\b/gi, '1వ సంవత్సరం'],
+    [/\b4th\s*Year\b/gi, '4వ సంవత్సరం'],
+    [/\bFinal\s*Year\b/gi, 'చివరి సంవత్సరం'],
+    [/\bcompiler\b/gi, 'కంపైలర్'],
+    [/\bdesign\b/gi, 'డిజైన్'],
+    [/\blaboratory\b/gi, 'ప్రయోగశాల'],
+    [/\blabs?\b/gi, 'ల్యాబ్'],
+    [/\bclassrooms?\b/gi, 'తరగతి గది'],
+    [/\bclasses\b/gi, 'తరగతులు'],
+    [/\bclass\b/gi, 'క్లాస్'],
+    [/\bcabins?\b/gi, 'క్యాబిన్'],
+    [/\boffices?\b/gi, 'కార్యాలయం'],
+    [/\bhalls?\b/gi, 'హాల్'],
+    [/\bseminars?\b/gi, 'సెమినార్'],
+    [/\bcorridors?\b/gi, 'కారిడార్'],
+    [/\bentrances?\b/gi, 'ప్రవేశం'],
+    [/\bentry\b/gi, 'ప్రవేశం'],
+    [/\bgates?\b/gi, 'గేట్'],
+    [/\bmain\b/gi, 'ప్రధాన'],
+    [/\bblocks?\b/gi, 'బ్లాక్'],
+    [/\bfloors?\b/gi, 'అంతస్తు'],
+    [/\bdepartments?\b/gi, 'డిపార్ట్‌మెంట్'],
+    [/\blibrary\b/gi, 'లైబ్రరీ'],
+    [/\bresearch\b/gi, 'రీసెర్చ్'],
+    [/\badvanced\b/gi, 'అడ్వాన్స్‌డ్'],
+    [/\bcoding\b/gi, 'కోడింగ్'],
+    [/\bsystems?\b/gi, 'సిస్టమ్స్'],
+    [/\bembedded\b/gi, 'ఎంబెడెడ్'],
+    [/\bcomputing\b/gi, 'కంప్యూటింగ్'],
+    [/\bcomputers?\b/gi, 'కంప్యూటర్'],
+    [/\bsciences?\b/gi, 'సైన్స్'],
+    [/\bengineering\b/gi, 'ఇంజనీరింగ్'],
+    [/\belectronics\b/gi, 'ఎలక్ట్రానిక్స్'],
+    [/\bclouds?\b/gi, 'క్లౌడ్'],
+    [/\bcentral\b/gi, 'సెంట్రల్'],
+    [/\bgrounds?\b/gi, 'గ్రౌండ్'],
+    [/\bcourts?\b/gi, 'కోర్ట్'],
+    [/\badministrative\b/gi, 'పరిపాలన'],
+    [/\badmin\b/gi, 'పరిపాలన'],
+    [/\btechnolog(?:y|ies)\b/gi, 'టెక్నాలజీ'],
+    [/\btech\b/gi, 'టెక్'],
+    [/\bbranch\b/gi, 'బ్రాంచ్'],
+    [/\bjunction\b/gi, 'జంక్షన్'],
+    [/\bwings?\b/gi, 'వింగ్'],
+    [/\bstations?\b/gi, 'స్టేషన్'],
+    [/\brooms?\b/gi, 'గది'],
+    [/\bcenters?\b/gi, 'సెంటర్'],
+    [/\bcentres?\b/gi, 'సెంటర్'],
+    [/\biot\b/gi, 'ఐఓటి'],
+    [/\bcse\b/gi, 'సి.ఎస్.ఇ'],
+    [/\bece\b/gi, 'ఇ.సి.ఇ'],
+    [/\beee\b/gi, 'ఇ.ఇ.ఇ'],
+    [/\bmech\b/gi, 'మెక్'],
+    [/\bcivil\b/gi, 'సివిల్'],
+    [/\bit\b/gi, 'ఐ.టి'],
+    [/\bai\b/gi, 'ఎ.ఐ'],
+    [/\bml\b/gi, 'ఎం.ఎల్'],
+    [/\bhod\b/gi, 'హెచ్.ఒ.డి'],
+    [/\bdata\b/gi, 'డేటా'],
+    [/\bnetworks?\b/gi, 'నెట్‌వర్క్'],
+    [/\bsecurity\b/gi, 'సెక్యూరిటీ'],
+    [/\bvlsi\b/gi, 'వి.ఎల్.ఎస్.ఐ'],
+    [/\bartificial\b/gi, 'ఆర్టిఫిషియల్'],
+    [/\bintelligence\b/gi, 'ఇంటెలిజెన్స్'],
+    [/\bmachine\b/gi, 'మెషిన్'],
+    [/\blearning\b/gi, 'లెర్నింగ్'],
+    [/\bmobile\b/gi, 'మొబైల్'],
+    [/\bweb\b/gi, 'వెబ్'],
+    [/\bfirst\b/gi, 'మొదటి'],
+    [/\bsecond\b/gi, 'రెండవ'],
+    [/\bthird\b/gi, 'మూడవ'],
+    [/\bfourth\b/gi, 'నాల్గవ'],
+    [/\bfifth\b/gi, 'ఐదవ'],
+    [/\byears?\b/gi, 'సంవత్సరం'],
+    [/\bbatch\b/gi, 'బ్యాచ్'],
+    [/\bfaculty\b/gi, 'ఫ్యాకల్టీ'],
+    [/\bmeeting\b/gi, 'మీటింగ్'],
+    [/\bfree\b/gi, 'ఖాళీగా ఉంది'],
+    [/\boccupied\b/gi, 'తరగతి జరుగుతోంది'],
+    [/\bstudent\b/gi, 'విద్యార్థి'],
+    [/\bstudents\b/gi, 'విద్యార్థులు'],
+    [/\bboys\b/gi, 'బాలుర'],
+    [/\bgirls\b/gi, 'బాలికల'],
+    [/\bwaiting\b/gi, 'విశ్రాంతి'],
+    [/\bsports\b/gi, 'క్రీడలు'],
+    [/\bexam\b/gi, 'పరీక్షలు'],
+    [/\bplacement\b/gi, 'ప్లేస్‌మెంట్'],
+    [/\bcell\b/gi, 'విభాగం']
+  ];
+
+  /**
+   * Helper to perform word-by-word Telugu translation on any free text
+   */
+  replaceWords(text: string): string {
+    if (!text) return '';
+    let result = text;
+    for (const [pattern, replacement] of this.wordReplacements) {
+      result = result.replace(pattern, replacement);
+    }
+    return result;
+  }
+
+  /**
+   * Translate a room name
+   */
+  translateRoomName(name: string | null | undefined): string {
+    if (!name) return '';
+    if (!this.isTelugu()) return name;
+    if (this.roomTranslations[name]) return this.roomTranslations[name];
+    return this.replaceWords(name);
+  }
+
+  /**
+   * Translate a building name
+   */
+  translateBuildingName(name: string | null | undefined): string {
+    if (!name) return this.t('label.building_na');
+    if (!this.isTelugu()) return name;
+    if (this.buildingTranslations[name]) return this.buildingTranslations[name];
+    return this.replaceWords(name);
+  }
+
+  /**
+   * Translate room type
+   */
+  translateRoomType(type: string | null | undefined): string {
+    if (!type) return '';
+    if (!this.isTelugu()) {
+      return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+    }
+    return this.roomTypeTranslations[type.toLowerCase()] || this.replaceWords(type);
+  }
+
+  /**
+   * Translate subject
+   */
+  translateSubject(subject: string | null | undefined): string {
+    if (!subject) return '';
+    if (!this.isTelugu()) return subject;
+    if (this.subjectTranslations[subject]) return this.subjectTranslations[subject];
+    return this.replaceWords(subject);
+  }
+
+  /**
+   * Translate occupied by text (e.g. "CSE-A 3rd Year")
+   */
+  translateOccupiedBy(occupiedBy: string | null | undefined): string {
+    if (!occupiedBy) return '';
+    if (!this.isTelugu()) return occupiedBy;
+    return this.replaceWords(occupiedBy);
+  }
+
+  /**
+   * Format room number with localized label
+   */
+  formatRoomNumber(num: string | number | null | undefined): string {
+    if (num == null || num === '') return '';
+    if (this.isTelugu()) return `గది ${num}`;
+    return `Room ${num}`;
+  }
+
+  /**
+   * Format coordinate values (X, Y)
+   */
+  formatCoords(x: number | null | undefined, y: number | null | undefined): string {
+    if (x == null || y == null) return '-';
+    if (this.isTelugu()) {
+      return `X: ${x} పిక్సెల్స్, Y: ${y} పిక్సెల్స్`;
+    }
+    return `X: ${x}px, Y: ${y}px`;
+  }
+
+  /**
+   * Translate QR gate code
+   */
+  translateQrCode(qrCodeId: string | null | undefined): string {
+    if (!qrCodeId) return this.t('label.no_gate');
+    if (!this.isTelugu()) return qrCodeId;
+    if (this.qrCodeTranslations[qrCodeId]) return this.qrCodeTranslations[qrCodeId];
+    return `గేట్: ${qrCodeId}`;
+  }
+
+  /**
+   * Translate floor name
+   */
+  translateFloor(floor: string | null | undefined): string {
+    if (!floor) return '';
+    if (!this.isTelugu()) return floor;
+    if (this.floorTranslations[floor]) return this.floorTranslations[floor];
+    return this.replaceWords(floor);
+  }
 }
