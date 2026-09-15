@@ -985,10 +985,11 @@
       top: 130px;
       left: 16px;
       right: 16px;
-      max-width: 440px;
+      max-width: 520px;
       margin: 0 auto;
-      background: #fef7e0;
-      border: 1px solid #f9ab00;
+      background: #ffffff;
+      border: 1px solid #d2e3fc;
+      border-left: 4px solid #1a73e8;
       border-radius: 12px;
       padding: 10px 14px;
       font-size: 12px;
@@ -998,7 +999,7 @@
       justify-content: space-between;
       gap: 10px;
       z-index: 1200;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     }
 
     /* ==========================================================================
@@ -1020,7 +1021,7 @@
       border-radius: 50%;
       background: #ffffff;
       color: #3c4043;
-      border: none;
+      border: 1px solid #dadce0;
       box-shadow: var(--gm-shadow-1);
       cursor: pointer;
       display: flex;
@@ -1035,8 +1036,13 @@
       box-shadow: var(--gm-shadow-2);
     }
     .gm-fab.tracking-active {
-      color: var(--gm-blue);
+      color: #1a73e8;
       background: #e8f0fe;
+      border: 1.5px solid #1a73e8;
+      box-shadow: 0 2px 10px rgba(26,115,232,0.3);
+    }
+    .gm-fab.searching i {
+      animation: gmSpin 1s linear infinite;
     }
 
     /* ==========================================================================
@@ -1390,10 +1396,13 @@
   <!-- Off-campus Alert Banner -->
   <div class="gm-offcampus-banner" id="offcampus-banner">
     <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-      <i class="fa-solid fa-triangle-exclamation" style="color: #e37400; font-size: 15px;"></i>
-      <span>You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.</span>
+      <i class="fa-solid fa-location-crosshairs" style="color: #1a73e8; font-size: 16px;"></i>
+      <span>📍 You are <strong id="offcampus-dist-text">outside</strong> KHIT Campus. Road route navigation from your location is active.</span>
     </div>
-    <button class="gm-icon-btn" id="close-offcampus-banner" style="width: 24px; height: 24px; font-size: 14px;">&times;</button>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <button id="btn-view-campus" style="padding: 4px 10px; background: #fff; border: 1px solid #dadce0; border-radius: 12px; font-size: 11px; font-weight: 700; color: #1a73e8; cursor: pointer; white-space: nowrap;">View Campus</button>
+      <button class="gm-icon-btn" id="close-offcampus-banner" style="width: 24px; height: 24px; font-size: 14px;">&times;</button>
+    </div>
   </div>
 
   <!-- Start Location Selection Modal -->
@@ -2493,8 +2502,12 @@
       const offcampusSpan = document.querySelector('#offcampus-banner span');
       if (offcampusSpan) {
         offcampusSpan.innerHTML = isTe ? 
-          'మీరు KHIT క్యాంపస్ బయట ఉన్నారు. ప్రారంభ స్థానం <strong>మెయిన్ గేట్</strong> గా సెట్ చేయబడింది.' : 
-          'You are <span id="offcampus-dist-text">outside</span> KHIT Campus. Starting point set to <strong>Main Gate</strong>.';
+          '📍 మీరు KHIT క్యాంపస్ బయట ఉన్నారు. <strong id="offcampus-dist-text"></strong> మీ స్థానం నుండి రోడ్డు రూట్ నావిగేషన్ యాక్టివ్‌గా ఉంది.' : 
+          '📍 You are <strong id="offcampus-dist-text">outside</strong> KHIT Campus. Road route navigation from your location is active.';
+      }
+      const btnViewCamp = document.getElementById('btn-view-campus');
+      if (btnViewCamp) {
+        btnViewCamp.innerText = isTe ? 'క్యాంపస్ చూడండి' : 'View Campus';
       }
 
       // Route planner & AR action elements
@@ -2738,7 +2751,35 @@
       }
     }
 
-    function setUserPosition(coords, label = 'My Location', heading = null) {
+    let userAccuracyCircle = null;
+
+    function updateUserAccuracy(coords, accuracyMeters) {
+      if (!map || !coords) return;
+      const latLng = L.latLng(coords[0], coords[1]);
+      if (!accuracyMeters || isNaN(accuracyMeters) || accuracyMeters <= 0) {
+        if (userAccuracyCircle) {
+          map.removeLayer(userAccuracyCircle);
+          userAccuracyCircle = null;
+        }
+        return;
+      }
+      if (!userAccuracyCircle) {
+        userAccuracyCircle = L.circle(latLng, {
+          radius: accuracyMeters,
+          color: '#1a73e8',
+          weight: 1.5,
+          fillColor: '#4285f4',
+          fillOpacity: 0.12,
+          interactive: false
+        }).addTo(map);
+      } else {
+        userAccuracyCircle.setLatLng(latLng);
+        userAccuracyCircle.setRadius(accuracyMeters);
+      }
+    }
+
+    function setUserPosition(coords, label = 'My Location', heading = null, accuracy = null) {
+      if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
       userLocation = L.latLng(coords[0], coords[1]);
 
       if (!userMarker) {
@@ -2759,6 +2800,9 @@
       } else {
         userMarker.setLatLng(userLocation);
       }
+
+      // Update Google Maps Style Accuracy Radius Halo
+      updateUserAccuracy(coords, accuracy);
 
       if (userMarker && userMarker.getElement()) {
         const el = userMarker.getElement();
@@ -2782,8 +2826,8 @@
           map.panTo(targetPt, { animate: true, duration: 0.45 });
         }
         updateLiveNavigationProgress();
-      } else if (isGpsActive) {
-        map.panTo(userLocation, { animate: true, duration: 0.5 });
+      } else if (isTrackingUser) {
+        map.panTo(userLocation, { animate: true, duration: 0.4 });
       }
 
       checkArrival();
@@ -2822,6 +2866,9 @@
     }
 
     map.on('dragstart', () => {
+      isTrackingUser = false;
+      const fabLoc = document.getElementById('fab-my-location');
+      if (fabLoc) fabLoc.classList.remove('tracking-active');
       if (isNavigating) {
         disableCameraFollow();
       }
@@ -2855,9 +2902,11 @@
       }, true);
     }
 
-    // Start Location state & deadband movement filter
-    const MIN_MOVEMENT_THRESHOLD_METERS = 3.0;
+    // Start Location state & movement filter
+    const MIN_MOVEMENT_THRESHOLD_METERS = 2.0;
     let lastGpsCoords = null;
+    let isTrackingUser = false;
+    let isAcquiringGps = false;
 
     function setStartLocationLabel(text) {
       const el = document.getElementById('current-start-label');
@@ -2869,130 +2918,264 @@
       const distText = document.getElementById('offcampus-dist-text');
       if (!banner) return;
       const km = (distMeters / 1000).toFixed(1);
-      if (distText) distText.innerText = `${km} km outside`;
+      if (distText) distText.innerText = `(${km} km outside)`;
       banner.style.display = 'flex';
     }
 
-    document.getElementById('close-offcampus-banner').addEventListener('click', () => {
-      document.getElementById('offcampus-banner').style.display = 'none';
-    });
+    function hideOffCampusBanner() {
+      const banner = document.getElementById('offcampus-banner');
+      if (banner) banner.style.display = 'none';
+    }
 
-    // Real-time GPS Watcher during navigation (With Deadband Filter!)
-    function startGpsWatch() {
-      if ('geolocation' in navigator) {
-        if (watchGpsId !== null) {
-          navigator.geolocation.clearWatch(watchGpsId);
-        }
-        watchGpsId = navigator.geolocation.watchPosition(
-          (position) => {
-            if (!isNavigating || !isLiveWalking) return;
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            let heading = position.coords.heading;
+    const closeOffcampusBtn = document.getElementById('close-offcampus-banner');
+    if (closeOffcampusBtn) {
+      closeOffcampusBtn.addEventListener('click', () => {
+        hideOffCampusBanner();
+      });
+    }
 
-            // 1. Ignore low-accuracy GPS spikes (> 85m error)
-            if (accuracy && accuracy > 85) {
-              return;
-            }
+    const btnViewCampus = document.getElementById('btn-view-campus');
+    if (btnViewCampus) {
+      btnViewCampus.addEventListener('click', () => {
+        isTrackingUser = false;
+        const fabLoc = document.getElementById('fab-my-location');
+        if (fabLoc) fabLoc.classList.remove('tracking-active');
+        map.flyTo(CAMPUS_CENTER, 18, { animate: true, duration: 0.8 });
+        showAdminToast('Viewing KHIT Campus Center. Tap My Location anytime to return.');
+      });
+    }
 
-            // 2. Deadband Filter: Ignore GPS sensor drift / jitter while standing still!
-            if (lastGpsCoords) {
-              const d = getDistanceMeters(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
-              if (d < MIN_MOVEMENT_THRESHOLD_METERS) {
-                updateWalkStatus(mapT('standingStill'));
-                return; // User has not physically moved >= 3.0 meters; do NOT move camera or trim route!
-              }
-              if (heading === null || isNaN(heading)) {
-                heading = calculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
-              }
-            }
-
-            lastGpsCoords = [lat, lng];
-            updateWalkStatus(mapT('walkingSteps'));
-            setUserPosition([lat, lng], 'Live Walking GPS', heading);
-          },
-          (err) => {
-            console.warn('GPS watch notice:', err.message);
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 1000,
-            timeout: 10000
+    // Network IP Geolocation Fallback
+    async function fetchIpGeolocation() {
+      const apis = [
+        'https://get.geojs.io/v1/ip/geo.json',
+        'https://ipapi.co/json/'
+      ];
+      for (const url of apis) {
+        try {
+          const controller = new AbortController();
+          const tId = setTimeout(() => controller.abort(), 4000);
+          const res = await fetch(url, { signal: controller.signal });
+          clearTimeout(tId);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const lat = parseFloat(data.latitude);
+          const lng = parseFloat(data.longitude);
+          if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+            return {
+              lat: lat,
+              lng: lng,
+              city: data.city || data.region || 'Local Area',
+              accuracy: (data.accuracy && data.accuracy > 0) ? data.accuracy * 1000 : 2500
+            };
           }
+        } catch (e) {
+          console.warn('IP geo lookup attempt failed for ' + url + ':', e);
+        }
+      }
+      return null;
+    }
+
+    function handleAllGpsFailures(err, onError) {
+      isAcquiringGps = false;
+      const syncBtn = document.getElementById('btn-sync-gps');
+      const fabLocation = document.getElementById('fab-my-location');
+      if (syncBtn) syncBtn.classList.remove('spinning');
+      if (fabLocation) fabLocation.classList.remove('searching');
+
+      let errMsg = 'Could not acquire GPS.';
+      if (err) {
+        if (err.code === 1) {
+          errMsg = 'Location permission is blocked. Allow location access in your browser.';
+        } else if (err.code === 2) {
+          errMsg = 'Location signal unavailable. Check device GPS.';
+        } else if (err.code === 3) {
+          errMsg = 'Location request timed out. Please try again.';
+        }
+      }
+      showAdminToast(errMsg);
+
+      if (!userLocation && !lastGpsCoords) {
+        lastGpsCoords = [16.256891, 80.333380];
+        setUserPosition([16.256891, 80.333380], 'Main Gate (Default Start)', null, null);
+        setStartLocationLabel('Main Gate (Gate 1)');
+        map.setView(CAMPUS_CENTER, 18);
+      }
+      if (onError) onError(err);
+    }
+
+    // High-Accuracy Multi-Tier GPS Acquisition Engine
+    async function acquireRealGps(onSuccess, onError, isInitial = false) {
+      if (isAcquiringGps) return;
+      isAcquiringGps = true;
+
+      const syncBtn = document.getElementById('btn-sync-gps');
+      const fabLocation = document.getElementById('fab-my-location');
+      if (syncBtn) syncBtn.classList.add('spinning');
+      if (fabLocation) fabLocation.classList.add('searching');
+      setStartLocationLabel(mapT('acquiringGps') || 'Acquiring GPS...');
+
+      function handlePositionSuccess(lat, lng, accuracy, sourceName = 'GPS') {
+        isAcquiringGps = false;
+        if (syncBtn) syncBtn.classList.remove('spinning');
+        if (fabLocation) {
+          fabLocation.classList.remove('searching');
+          fabLocation.classList.add('tracking-active');
+        }
+
+        lastGpsCoords = [lat, lng];
+        const distToCampus = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+        const accM = accuracy ? Math.round(accuracy) : null;
+        const accLabel = accM ? ` (±${accM}m)` : '';
+
+        if (distToCampus <= 800) {
+          // User is physically on KHIT Campus!
+          setUserPosition([lat, lng], 'My Live Location', null, accuracy);
+          setStartLocationLabel(`Live GPS${accLabel}`);
+          map.flyTo([lat, lng], 19, { animate: true, duration: 0.8 });
+          showAdminToast(`📍 Exact Location Locked on Campus${accLabel}`);
+          hideOffCampusBanner();
+        } else {
+          // Off-Campus (at home / hostel / city): Pin exact home location!
+          setUserPosition([lat, lng], 'My Live Location', null, accuracy);
+          const km = (distToCampus / 1000).toFixed(1);
+          setStartLocationLabel(`Live Location${accLabel} • ${km}km to KHIT`);
+          showOffCampusBanner(distToCampus);
+          const targetZoom = Math.min(16, Math.max(13, 17 - Math.round(Math.log2((accuracy || 100) / 30))));
+          map.flyTo([lat, lng], targetZoom, { animate: true, duration: 0.8 });
+          showAdminToast(`📍 Live Location Locked (${km} km from KHIT)${accLabel}`);
+        }
+
+        isTrackingUser = true;
+        if (isNavigating && selectedPlace) {
+          startGoogleNavigation(selectedPlace);
+        }
+        if (onSuccess) onSuccess([lat, lng]);
+      }
+
+      // Try Browser Geolocation
+      if ('geolocation' in navigator) {
+        // Tier 1: Try High-Accuracy GPS (Satellite / Precision sensor)
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            handlePositionSuccess(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, 'Satellite GPS');
+          },
+          (errTier1) => {
+            console.warn('High-accuracy GPS attempt note:', errTier1.message, 'Trying standard Wi-Fi/Cell positioning...');
+            // Tier 2: Try standard accuracy (works indoors on Wi-Fi/cellular)
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                handlePositionSuccess(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, 'Network GPS');
+              },
+              async (errTier2) => {
+                console.warn('Standard GPS attempt note:', errTier2.message, 'Trying IP Geolocation fallback...');
+                // Tier 3: Network IP Geolocation so user at home is NEVER dropped onto campus!
+                const ipLocation = await fetchIpGeolocation();
+                if (ipLocation) {
+                  handlePositionSuccess(ipLocation.lat, ipLocation.lng, ipLocation.accuracy || 2500, 'IP Network');
+                  showAdminToast(`📍 Located in ${ipLocation.city || 'your area'} via network. Enable GPS for meter-level accuracy.`);
+                } else {
+                  handleAllGpsFailures(errTier2, onError);
+                }
+              },
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+            );
+          },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
         );
+      } else {
+        const ipLocation = await fetchIpGeolocation();
+        if (ipLocation) {
+          handlePositionSuccess(ipLocation.lat, ipLocation.lng, ipLocation.accuracy || 2500, 'IP Network');
+        } else {
+          handleAllGpsFailures(new Error('Geolocation not supported'), onError);
+        }
       }
     }
 
-    function stopGpsWatch() {
-      if (watchGpsId !== null && 'geolocation' in navigator) {
+    // Continuous Live Real-time GPS Watcher
+    function startLiveGpsWatcher() {
+      if (!('geolocation' in navigator)) return;
+      if (watchGpsId !== null) {
         navigator.geolocation.clearWatch(watchGpsId);
         watchGpsId = null;
       }
+
+      watchGpsId = navigator.geolocation.watchPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
+          let heading = position.coords.heading;
+
+          // Reject extreme anomalies (> 3000m error)
+          if (accuracy && accuracy > 3000) return;
+
+          // Deadband filter: avoid camera jitter if moved < 2m
+          if (lastGpsCoords) {
+            const d = getDistanceMeters(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
+            if (d < 2.0 && isNavigating && isLiveWalking) {
+              updateWalkStatus(mapT('standingStill'));
+              return;
+            }
+            if (d < 1.0 && !isNavigating) {
+              updateUserAccuracy([lat, lng], accuracy);
+              return;
+            }
+            if (heading === null || isNaN(heading)) {
+              heading = calculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lng);
+            }
+          }
+
+          lastGpsCoords = [lat, lng];
+          const distToCampus = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+          const accM = accuracy ? Math.round(accuracy) : null;
+          const accLabel = accM ? ` (±${accM}m)` : '';
+
+          if (isNavigating) {
+            updateWalkStatus(mapT('walkingSteps'));
+            setUserPosition([lat, lng], 'Live Walking GPS', heading, accuracy);
+          } else {
+            setUserPosition([lat, lng], 'My Live Location', heading, accuracy);
+            if (distToCampus <= 800) {
+              setStartLocationLabel(`Live GPS${accLabel}`);
+              hideOffCampusBanner();
+            } else {
+              const km = (distToCampus / 1000).toFixed(1);
+              setStartLocationLabel(`Live Location${accLabel} • ${km}km`);
+              showOffCampusBanner(distToCampus);
+            }
+          }
+
+          // If tracking lock is active, follow with camera
+          if (isTrackingUser && !isNavigating) {
+            map.panTo([lat, lng], { animate: true, duration: 0.35 });
+          }
+        },
+        (err) => {
+          console.warn('Live GPS watch notice:', err.message);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 3000,
+          timeout: 15000
+        }
+      );
     }
 
-    // High-Accuracy GPS Acquisition Helper
+    function startGpsWatch() {
+      startLiveGpsWatcher();
+    }
+
+    function stopGpsWatch() {
+      // Kept active to maintain continuous live tracking
+    }
+
     const syncGpsBtn = document.getElementById('btn-sync-gps');
     const startModal = document.getElementById('start-location-modal');
     const openStartBtn = document.getElementById('open-start-picker-btn');
     const closeStartBtn = document.getElementById('close-start-modal');
-
-    function acquireRealGps(onSuccess, onError) {
-      if (!('geolocation' in navigator)) {
-        showAdminToast('Geolocation is not supported by your browser.');
-        if (onError) onError('Geolocation not supported');
-        return;
-      }
-
-      if (syncGpsBtn) syncGpsBtn.classList.add('spinning');
-      setStartLocationLabel('Acquiring GPS...');
-      showAdminToast('Requesting high-accuracy device GPS...');
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          if (syncGpsBtn) syncGpsBtn.classList.remove('spinning');
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const accuracy = pos.coords.accuracy;
-          const distToCampus = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
-
-          if (distToCampus <= 800) {
-            // User is physically on KHIT Campus!
-            lastGpsCoords = [lat, lng];
-            setUserPosition([lat, lng], 'My Live Location');
-            setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
-            map.flyTo([lat, lng], 19);
-            showAdminToast(`GPS Locked on Campus (±${Math.round(accuracy)}m)`);
-            if (isNavigating && selectedPlace) {
-              startGoogleNavigation(selectedPlace);
-            }
-            if (onSuccess) onSuccess([lat, lng]);
-          } else {
-            // Off-campus (at home / hostel): use actual GPS coordinates
-            lastGpsCoords = [lat, lng];
-            setUserPosition([lat, lng], 'My Live Location');
-            setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
-            showOffCampusBanner(distToCampus);
-            map.flyTo([lat, lng], 16);
-            showAdminToast(`GPS Locked (${Math.round(distToCampus/1000)} km from KHIT). Route will follow real roads.`);
-            if (isNavigating && selectedPlace) {
-              startGoogleNavigation(selectedPlace);
-            }
-            if (onSuccess) onSuccess([lat, lng]);
-          }
-        },
-        (err) => {
-          if (syncGpsBtn) syncGpsBtn.classList.remove('spinning');
-          console.warn('GPS lookup error:', err);
-          lastGpsCoords = [16.256891, 80.333380];
-          setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
-          setStartLocationLabel('Main Gate (Gate 1)');
-          showAdminToast('Could not acquire GPS. Defaulted to Main Gate.');
-          if (onError) onError(err);
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    }
+    const fabMyLocation = document.getElementById('fab-my-location');
 
     if (syncGpsBtn) {
       syncGpsBtn.addEventListener('click', () => {
@@ -3000,9 +3183,16 @@
       });
     }
 
-    document.getElementById('fab-my-location').addEventListener('click', () => {
-      acquireRealGps();
-    });
+    if (fabMyLocation) {
+      fabMyLocation.addEventListener('click', () => {
+        isTrackingUser = true;
+        fabMyLocation.classList.add('tracking-active');
+        acquireRealGps((coords) => {
+          const dist = getDistanceMeters(coords[0], coords[1], CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
+          map.flyTo(coords, dist > 800 ? 16 : 19, { animate: true, duration: 0.8 });
+        });
+      });
+    }
 
     if (openStartBtn) {
       openStartBtn.addEventListener('click', () => {
@@ -3031,7 +3221,9 @@
           const rawCoords = btn.dataset.coords.split(',').map(Number);
           const label = btn.dataset.label;
           lastGpsCoords = rawCoords;
-          setUserPosition(rawCoords, label);
+          isTrackingUser = false;
+          if (fabMyLocation) fabMyLocation.classList.remove('tracking-active');
+          setUserPosition(rawCoords, label, null, 5);
           setStartLocationLabel(label);
           map.flyTo(rawCoords, 19);
           showAdminToast(`Start location set to ${label}`);
@@ -4778,45 +4970,10 @@
     // 8. URL PARAMETERS (Auto-Route on QR Scan from Phone Camera)
     // =========================================================================
     function initUserLocation() {
-      if ('geolocation' in navigator) {
-        setStartLocationLabel('Acquiring Campus GPS...');
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const accuracy = pos.coords.accuracy;
-            const dist = getDistanceMeters(lat, lng, CAMPUS_CENTER[0], CAMPUS_CENTER[1]);
-
-            if (dist <= 800) {
-              // User is physically on KHIT Campus!
-              lastGpsCoords = [lat, lng];
-              setUserPosition([lat, lng], 'My Live Location');
-              setStartLocationLabel(`Live GPS (±${Math.round(accuracy)}m)`);
-              map.setView([lat, lng], 19);
-            } else {
-              // User is off-campus (at home / hostel)
-              lastGpsCoords = [lat, lng];
-              setUserPosition([lat, lng], 'My Live Location');
-              setStartLocationLabel(`Live GPS (${(dist/1000).toFixed(1)} km to KHIT)`);
-              showOffCampusBanner(dist);
-              map.setView([lat, lng], 15);
-            }
-          },
-          (err) => {
-            console.warn('GPS initial lookup:', err.message);
-            lastGpsCoords = [16.256891, 80.333380];
-            setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
-            setStartLocationLabel('Main Gate (Gate 1)');
-            map.setView(CAMPUS_CENTER, 18);
-          },
-          { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
-        );
-      } else {
-        lastGpsCoords = [16.256891, 80.333380];
-        setUserPosition([16.256891, 80.333380], 'Main Gate Entrance');
-        setStartLocationLabel('Main Gate (Gate 1)');
-        map.setView(CAMPUS_CENTER, 18);
-      }
+      // 1. Acquire current position using high-precision multi-tier fallback
+      acquireRealGps(null, null, true);
+      // 2. Start continuous live GPS watcher so position stays live and refined
+      startLiveGpsWatcher();
     }
 
     function parseUrl() {
