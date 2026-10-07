@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { 
   Auth, 
   GoogleAuthProvider, 
@@ -25,6 +25,15 @@ export class AuthService {
   currentUser = signal<User | null>(null);
   isAdmin = signal<boolean>(false);
   loading = signal<boolean>(true);
+
+  // Master Admin Email with sole authority over User Management & Database Access granting
+  readonly superAdminEmail = 'pakanatijayasri@gmail.com';
+
+  // Reactive computed: true ONLY when logged in as pakanatijayasri@gmail.com
+  isSuperAdmin = computed<boolean>(() => {
+    const email = this.currentUser()?.email?.toLowerCase().trim();
+    return email === this.superAdminEmail;
+  });
 
   constructor() {
     this.user$.subscribe(async (authUser) => {

@@ -63,6 +63,10 @@ export class DashboardComponent implements OnInit {
   });
 
   switchTab(tabName: string) {
+    if (tabName === 'users' && !this.authService.isSuperAdmin()) {
+      this.activeTab.set('rooms');
+      return;
+    }
     this.activeTab.set(tabName);
   }
 
@@ -208,8 +212,12 @@ export class DashboardComponent implements OnInit {
     }
   }
   
-  // User Management Operations
+  // User Management Operations (Exclusive to pakanatijayasri@gmail.com)
   openUserModal() {
+    if (!this.authService.isSuperAdmin()) {
+      alert('Access Denied: Only pakanatijayasri@gmail.com has permission to manage users & database access.');
+      return;
+    }
     this.userForm.set({
       email: '',
       displayName: '',
@@ -220,8 +228,8 @@ export class DashboardComponent implements OnInit {
   }
 
   async saveUserAccess() {
-    if (!this.authService.isAdmin()) {
-      alert('Access Denied: Only administrators can modify database access.');
+    if (!this.authService.isSuperAdmin()) {
+      alert('Access Denied: Only pakanatijayasri@gmail.com has permission to modify database access.');
       return;
     }
     const form = this.userForm();
@@ -245,8 +253,8 @@ export class DashboardComponent implements OnInit {
   }
 
   async toggleUserAccess(targetUser: AppUser) {
-    if (!this.authService.isAdmin()) {
-      alert('Access Denied: Only administrators can modify database access.');
+    if (!this.authService.isSuperAdmin()) {
+      alert('Access Denied: Only pakanatijayasri@gmail.com has permission to modify database access.');
       return;
     }
     try {
@@ -258,8 +266,8 @@ export class DashboardComponent implements OnInit {
   }
 
   async changeUserRole(targetUser: AppUser, newRole: any) {
-    if (!this.authService.isAdmin()) {
-      alert('Access Denied: Only administrators can modify roles.');
+    if (!this.authService.isSuperAdmin()) {
+      alert('Access Denied: Only pakanatijayasri@gmail.com has permission to modify roles.');
       return;
     }
     try {
@@ -277,8 +285,8 @@ export class DashboardComponent implements OnInit {
 
   async deleteUser(targetUser: AppUser, event: Event) {
     event.stopPropagation();
-    if (!this.authService.isAdmin()) {
-      alert('Access Denied: Only administrators can delete users.');
+    if (!this.authService.isSuperAdmin()) {
+      alert('Access Denied: Only pakanatijayasri@gmail.com has permission to delete users.');
       return;
     }
     if (confirm(this.langService.t('users.delete_confirm'))) {
