@@ -8,7 +8,7 @@ import {
   User 
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -31,42 +31,70 @@ export class AuthService {
       this.currentUser.set(authUser);
       
       if (authUser && authUser.email) {
-        const email = authUser.email.toLowerCase();
+        const email = authUser.email.toLowerCase().trim();
         
-        // 1. Safety fallback for admins
-        if (
+        // 1. Safety fallback for predefined super admins
+        const isSuperAdmin = 
           email === 'pakanatijayasri@gmail.com' || 
           email === 'chinthalacheruvuamareswar@gmail.com' ||
           email === 'balasri.org@gmail.com' ||
-          email === 'jayasri798@gmail.com'
-        ) {
-          this.isAdmin.set(true);
-          this.loading.set(false);
-          return;
-        }
+          email === 'jayasri798@gmail.com' ||
+          email.endsWith('@college-compass.com') ||
+          email.startsWith('admin') ||
+          email.endsWith('@admin.com');
 
-        // 2. Query Firestore admins collection
+        let hasDbAccess = isSuperAdmin;
+        let role: 'admin' | 'staff' | 'student' = isSuperAdmin ? 'admin' : 'student';
+
+        // 2. Query Firestore admins & users collections
         try {
-          const docRef = doc(this.firestore, `admins/${email}`);
-          const docSnap = await getDoc(docRef);
-          
-          if (docSnap.exists()) {
-            this.isAdmin.set(true);
-          } else {
-            // 3. Fallback to check standard dev domain patterns
-            this.isAdmin.set(
-              email.endsWith('@college-compass.com') ||
-              email.startsWith('admin') ||
-              email.endsWith('@admin.com')
-            );
+          const adminDocRef = doc(this.firestore, `admins/${email}`);
+          const adminDocSnap = await getDoc(adminDocRef);
+
+          const userDocRef = doc(this.firestore, `users/${email}`);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (adminDocSnap.exists()) {
+            hasDbAccess = true;
+            role = 'admin';
           }
+
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            if (userData?.['hasDatabaseAccess'] === true || userData?.['role'] === 'admin') {
+              hasDbAccess = true;
+              role = 'admin';
+            } else if (userData?.['role']) {
+              role = userData['role'];
+            }
+          }
+
+          // 3. Auto-record/update user document in the database users list
+          const existingData = userDocSnap.exists() ? userDocSnap.data() : null;
+          await setDoc(userDocRef, {
+            email,
+            displayName: authUser.displayName || existingData?.['displayName'] || email.split('@')[0],
+            photoURL: authUser.photoURL || existingData?.['photoURL'] || '',
+            role: role,
+            hasDatabaseAccess: hasDbAccess,
+            createdAt: existingData?.['createdAt'] || new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+          }, { merge: true });
+
+          // If granted access, sync to admins collection as well
+          if (hasDbAccess && !adminDocSnap.exists()) {
+            await setDoc(adminDocRef, {
+              email,
+              role: 'admin',
+              hasDatabaseAccess: true,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          }
+
+          this.isAdmin.set(hasDbAccess);
         } catch (error) {
-          console.error('Error fetching admin rules from Firestore:', error);
-          this.isAdmin.set(
-            email.endsWith('@college-compass.com') ||
-            email.startsWith('admin') ||
-            email.endsWith('@admin.com')
-          );
+          console.error('Error fetching/updating user in Firestore:', error);
+          this.isAdmin.set(isSuperAdmin);
         }
       } else {
         this.isAdmin.set(false);

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CampusDataService } from '../../core/services/campus-data.service';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
-import { Building, Floor, Room, QrCode, Waypoint, Road } from '../../core/models/campus.model';
+import { Building, Floor, Room, QrCode, Waypoint, Road, AppUser } from '../../core/models/campus.model';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
   buildings = signal<Building[]>([]);
   rooms = signal<Room[]>([]);
   qrCodes = signal<QrCode[]>([]);
+  users = signal<AppUser[]>([]);
   loading = signal<boolean>(true);
   activeTab = signal<string>('rooms');
   qrCodeDataUrls = signal<{[key: string]: string}>({});
@@ -70,12 +71,15 @@ export class DashboardComponent implements OnInit {
   showBuildingModal = signal<boolean>(false);
   showQrModal = signal<boolean>(false);
   showFloorModal = signal<boolean>(false);
+  showUserModal = signal<boolean>(false);
 
   // Form Models
   roomForm = signal<any>({ number: '', name: '', type: 'classroom', x: 0, y: 0, qrCodeId: '', isFree: true, currentSubject: '', occupiedBy: '', buildingId: 'MainBlock', floorId: 'Floor3', buildingName: '' });
   buildingForm = signal<any>({ name: '', code: '', totalFloors: 1, latitude: 0, longitude: 0 });
   qrForm = signal<any>({ code: '', locationName: '', targetRoomId: '', targetBuildingId: 'MainBlock', targetFloorId: 'Floor3' });
   floorForm = signal<any>({ id: '', name: '', level: 1, floorPlanUrl: '' });
+  userForm = signal<any>({ email: '', displayName: '', role: 'admin', hasDatabaseAccess: true });
+  userSearchQuery = signal<string>('');
 
   getFloorsForSelectedBuilding(): string[] {
     const bldgCode = this.roomForm().buildingId;
@@ -204,6 +208,89 @@ export class DashboardComponent implements OnInit {
     }
   }
   
+  // User Management Operations
+  openUserModal() {
+    this.userForm.set({
+      email: '',
+      displayName: '',
+      role: 'admin',
+      hasDatabaseAccess: true
+    });
+    this.showUserModal.set(true);
+  }
+
+  async saveUserAccess() {
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can modify database access.');
+      return;
+    }
+    const form = this.userForm();
+    const cleanEmail = (form.email || '').toLowerCase().trim();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    try {
+      await this.campusService.saveUser({
+        email: cleanEmail,
+        displayName: form.displayName || cleanEmail.split('@')[0],
+        role: form.role,
+        hasDatabaseAccess: form.hasDatabaseAccess
+      });
+      this.showUserModal.set(false);
+      this.loadCampusData();
+    } catch (err: any) {
+      alert(`Error saving user access: ${err.message}`);
+    }
+  }
+
+  async toggleUserAccess(targetUser: AppUser) {
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can modify database access.');
+      return;
+    }
+    try {
+      await this.campusService.toggleUserDatabaseAccess(targetUser);
+      this.loadCampusData();
+    } catch (err: any) {
+      alert(`Error updating access: ${err.message}`);
+    }
+  }
+
+  async changeUserRole(targetUser: AppUser, newRole: any) {
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can modify roles.');
+      return;
+    }
+    try {
+      const hasDbAccess = newRole === 'admin' ? true : targetUser.hasDatabaseAccess;
+      await this.campusService.saveUser({
+        ...targetUser,
+        role: newRole,
+        hasDatabaseAccess: hasDbAccess
+      });
+      this.loadCampusData();
+    } catch (err: any) {
+      alert(`Error changing role: ${err.message}`);
+    }
+  }
+
+  async deleteUser(targetUser: AppUser, event: Event) {
+    event.stopPropagation();
+    if (!this.authService.isAdmin()) {
+      alert('Access Denied: Only administrators can delete users.');
+      return;
+    }
+    if (confirm(this.langService.t('users.delete_confirm'))) {
+      try {
+        await this.campusService.deleteUser(targetUser.email);
+        this.loadCampusData();
+      } catch (err: any) {
+        alert(`Error deleting user: ${err.message}`);
+      }
+    }
+  }
+
   // Search & Filter State
   searchQuery = signal<string>('');
   selectedTypeFilter = signal<string>('all');
@@ -212,6 +299,21 @@ export class DashboardComponent implements OnInit {
   totalBuildingsCount = computed(() => this.buildings().length);
   totalRoomsCount = computed(() => this.rooms().length);
   totalQrCount = computed(() => this.qrCodes().length);
+  totalUsersCount = computed(() => this.users().length);
+  dbAccessUsersCount = computed(() => this.users().filter(u => u.hasDatabaseAccess).length);
+  readOnlyUsersCount = computed(() => this.users().filter(u => !u.hasDatabaseAccess).length);
+
+  filteredUsers = computed(() => {
+    const q = this.userSearchQuery().toLowerCase().trim();
+    return this.users().filter(u => {
+      if (!q) return true;
+      return (
+        u.email.toLowerCase().includes(q) ||
+        (u.displayName && u.displayName.toLowerCase().includes(q)) ||
+        u.role.toLowerCase().includes(q)
+      );
+    });
+  });
   
   // Filtered rooms logic
   filteredRooms = computed(() => {
@@ -295,6 +397,11 @@ export class DashboardComponent implements OnInit {
         this.qrCodeDataUrls.set(urls);
       },
       error: (e) => console.error('Error fetching QR Codes', e)
+    });
+
+    this.campusService.getUsers().subscribe({
+      next: (u) => this.users.set(u),
+      error: (e) => console.error('Error fetching users', e)
     });
 
     this.campusService.getAllRoomsFlat().subscribe({

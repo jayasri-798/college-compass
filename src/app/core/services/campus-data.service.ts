@@ -11,7 +11,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, from, forkJoin, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { Building, Floor, Room, QrCode, Waypoint, Road } from '../models/campus.model';
+import { Building, Floor, Room, QrCode, Waypoint, Road, AppUser } from '../models/campus.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,15 @@ export class CampusDataService {
     { id: 'qr-gate-a', code: 'QR_GATE_A_1029', locationName: 'Main Entrance Block A', targetBuildingId: 'block-a', targetFloorId: 'floor-1', targetRoomId: 'room-101', createdAt: new Date().toISOString() },
     { id: 'qr-gate-b', code: 'QR_GATE_B_2048', locationName: 'Side Entrance Block B', targetBuildingId: 'block-b', targetFloorId: 'floor-2', targetRoomId: 'room-201', createdAt: new Date().toISOString() },
     { id: 'qr-gate-c', code: 'QR_GATE_C_4511', locationName: 'Admin Lobby Entrance', targetBuildingId: 'admin-block', targetFloorId: 'floor-1', targetRoomId: '', createdAt: new Date().toISOString() }
+  ];
+
+  private mockUsers: AppUser[] = [
+    { email: 'chinthalacheruvuamareswar@gmail.com', displayName: 'Amareswar (Owner)', role: 'admin', hasDatabaseAccess: true, createdAt: '2026-09-01T08:00:00Z', lastLoginAt: new Date().toISOString() },
+    { email: 'pakanatijayasri@gmail.com', displayName: 'Jayasri Pakanati', role: 'admin', hasDatabaseAccess: true, createdAt: '2026-09-01T08:00:00Z', lastLoginAt: new Date().toISOString() },
+    { email: 'balasri.org@gmail.com', displayName: 'Balasri Admin', role: 'admin', hasDatabaseAccess: true, createdAt: '2026-09-01T08:00:00Z' },
+    { email: 'jayasri798@gmail.com', displayName: 'Jayasri Lead', role: 'admin', hasDatabaseAccess: true, createdAt: '2026-09-01T08:00:00Z' },
+    { email: 'faculty.cse@khit.ac.in', displayName: 'CSE Department Incharge', role: 'staff', hasDatabaseAccess: true, createdAt: '2026-09-10T10:00:00Z' },
+    { email: 'student.khit@gmail.com', displayName: 'Campus Student Viewer', role: 'student', hasDatabaseAccess: false, createdAt: '2026-09-15T12:00:00Z' }
   ];
 
   /**
@@ -206,20 +215,27 @@ export class CampusDataService {
         });
       }
 
-      // 5. Seed Admin Emails
-      const adminEmails = [
-        'pakanatijayasri@gmail.com',
-        'chinthalacheruvuamareswar@gmail.com',
-        'balasri.org@gmail.com',
-        'jayasri798@gmail.com'
-      ];
-      for (const email of adminEmails) {
-        const adminRef = doc(this.firestore, `admins/${email}`);
-        await setDoc(adminRef, {
-          email,
-          role: 'admin',
-          createdAt: new Date().toISOString()
-        });
+      // 5. Seed Users & Database Admin Permissions
+      for (const u of this.mockUsers) {
+        const userRef = doc(this.firestore, `users/${u.email}`);
+        await setDoc(userRef, {
+          email: u.email,
+          displayName: u.displayName || u.email.split('@')[0],
+          role: u.role,
+          hasDatabaseAccess: u.hasDatabaseAccess,
+          createdAt: u.createdAt || new Date().toISOString(),
+          lastLoginAt: u.lastLoginAt || new Date().toISOString()
+        }, { merge: true });
+
+        if (u.hasDatabaseAccess) {
+          const adminRef = doc(this.firestore, `admins/${u.email}`);
+          await setDoc(adminRef, {
+            email: u.email,
+            role: 'admin',
+            hasDatabaseAccess: true,
+            createdAt: new Date().toISOString()
+          }, { merge: true });
+        }
       }
 
       // 6. Seed Default Campus Map Config
@@ -451,5 +467,95 @@ export class CampusDataService {
   updateCampusMapConfig(imageUrl: string): Promise<void> {
     const docRef = doc(this.firestore, 'configs/campusMap');
     return setDoc(docRef, { imageUrl }, { merge: true });
+  }
+
+  // ==================== USER & DATABASE ACCESS MANAGEMENT ====================
+
+  /**
+   * Fetches real-time users list from Firestore `users` collection.
+   * Falls back to mock accounts if Firestore query fails or is empty.
+   */
+  getUsers(): Observable<AppUser[]> {
+    try {
+      const usersCol = collection(this.firestore, 'users');
+      return (collectionData(usersCol, { idField: 'id' }) as Observable<AppUser[]>).pipe(
+        map(users => {
+          if (!users || users.length === 0) {
+            return this.mockUsers;
+          }
+          // Sort admins first, then by email
+          return users.sort((a, b) => {
+            if (a.hasDatabaseAccess && !b.hasDatabaseAccess) return -1;
+            if (!a.hasDatabaseAccess && b.hasDatabaseAccess) return 1;
+            return a.email.localeCompare(b.email);
+          });
+        }),
+        catchError((err) => {
+          console.warn('Firestore live users streaming failed. Falling back to mock users.', err);
+          return of(this.mockUsers);
+        })
+      );
+    } catch (e) {
+      console.warn('Firestore users stream initialization failed. Using mock users.');
+      return of(this.mockUsers);
+    }
+  }
+
+  /**
+   * Save user and synchronize database access with Firestore `admins` collection.
+   */
+  async saveUser(userData: Partial<AppUser>): Promise<void> {
+    const email = (userData.email || '').toLowerCase().trim();
+    if (!email) throw new Error('Email address is required.');
+
+    const hasAccess = !!userData.hasDatabaseAccess || userData.role === 'admin';
+    const role = userData.role || (hasAccess ? 'admin' : 'student');
+
+    const userRef = doc(this.firestore, `users/${email}`);
+    const adminRef = doc(this.firestore, `admins/${email}`);
+
+    await setDoc(userRef, {
+      email,
+      displayName: userData.displayName || email.split('@')[0],
+      role: role,
+      hasDatabaseAccess: hasAccess,
+      createdAt: userData.createdAt || new Date().toISOString(),
+      lastLoginAt: userData.lastLoginAt || new Date().toISOString()
+    }, { merge: true });
+
+    if (hasAccess) {
+      await setDoc(adminRef, {
+        email,
+        role: 'admin',
+        hasDatabaseAccess: true,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+    } else {
+      await deleteDoc(adminRef).catch(() => {});
+    }
+  }
+
+  /**
+   * 1-Click toggle granting or revoking database access for a user.
+   */
+  async toggleUserDatabaseAccess(user: AppUser): Promise<void> {
+    const newAccess = !user.hasDatabaseAccess;
+    const newRole = newAccess ? (user.role === 'student' ? 'staff' : user.role) : 'student';
+    await this.saveUser({
+      ...user,
+      role: newRole,
+      hasDatabaseAccess: newAccess
+    });
+  }
+
+  /**
+   * Delete user and revoke all database access.
+   */
+  async deleteUser(email: string): Promise<void> {
+    const cleanEmail = email.toLowerCase().trim();
+    const userRef = doc(this.firestore, `users/${cleanEmail}`);
+    const adminRef = doc(this.firestore, `admins/${cleanEmail}`);
+    await deleteDoc(userRef).catch(() => {});
+    await deleteDoc(adminRef).catch(() => {});
   }
 }

@@ -54,3 +54,14 @@ export interface Road {
   fromNode: string;
   toNode: string;
 }
+
+export interface AppUser {
+  id?: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  role: 'admin' | 'staff' | 'student';
+  hasDatabaseAccess: boolean;
+  createdAt?: string;
+  lastLoginAt?: string;
+}

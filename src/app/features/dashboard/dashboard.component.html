@@ -65,6 +65,21 @@
         </a>
         <a href="#" 
             *ngIf="authService.isAdmin()"
+            (click)="switchTab('users'); $event.preventDefault();"
+            [ngClass]="activeTab() === 'users' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
+            class="flex items-center justify-between px-4 py-3 rounded-xl border transition-all">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+            </svg>
+            <span>{{ langService.t('nav.users') }}</span>
+          </div>
+          <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 rounded-full">
+            {{ dbAccessUsersCount() }}
+          </span>
+        </a>
+        <a href="#" 
+            *ngIf="authService.isAdmin()"
             (click)="switchTab('admin'); $event.preventDefault();"
             [ngClass]="activeTab() === 'admin' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20 font-semibold' : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'"
             class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all">
@@ -118,6 +133,7 @@
           <span *ngIf="activeTab() === 'rooms'">{{ langService.t('header.overview') }}</span>
           <span *ngIf="activeTab() === 'buildings'">{{ langService.t('header.buildings') }}</span>
           <span *ngIf="activeTab() === 'qr'">{{ langService.t('header.qr') }}</span>
+          <span *ngIf="activeTab() === 'users'">{{ langService.t('header.users') }}</span>
           <span *ngIf="activeTab() === 'admin'">{{ langService.t('header.admin') }}</span>
         </h2>
         <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center gap-1.5">
@@ -179,7 +195,7 @@
 
       <div *ngIf="!loading()" class="space-y-6">
         <!-- STATS OVERVIEW CARDS -->
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <!-- Buildings Card -->
           <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-lg relative overflow-hidden transition-all hover:border-sky-300 hover:shadow-xl">
             <div class="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-xl translate-x-5 -translate-y-5"></div>
@@ -234,6 +250,29 @@
             </div>
             <div class="mt-4 text-xs text-slate-500">
               {{ langService.t('stats.active_gates') }}
+            </div>
+          </div>
+
+          <!-- Database Access Card -->
+          <div 
+            (click)="authService.isAdmin() ? switchTab('users') : null"
+            [ngClass]="authService.isAdmin() ? 'cursor-pointer hover:border-emerald-300 hover:shadow-xl' : ''"
+            class="p-6 bg-white border border-slate-200 rounded-2xl shadow-lg relative overflow-hidden transition-all">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl translate-x-5 -translate-y-5"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">{{ langService.t('users.title') }}</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ dbAccessUsersCount() }} <span class="text-sm font-normal text-slate-400">/ {{ totalUsersCount() }}</span></h3>
+              </div>
+              <div class="w-12 h-12 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                </svg>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-slate-500 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-emerald-600 font-semibold">{{ dbAccessUsersCount() }} {{ langService.t('users.access_granted') }}</span>
             </div>
           </div>
         </section>
@@ -583,6 +622,144 @@
         </section>
       </div>
 
+      <!-- USERS & DATABASE ACCESS MANAGEMENT TAB -->
+      <section *ngIf="activeTab() === 'users' && authService.isAdmin()" class="bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden animate-fade-in">
+        <!-- Table Actions Header -->
+        <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sky-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+              </svg>
+              {{ langService.t('users.title') }}
+            </h4>
+            <p class="text-slate-500 text-xs mt-1">{{ langService.t('users.desc') }}</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Search Input -->
+            <div class="relative min-w-[220px]">
+              <input 
+                type="text" 
+                [ngModel]="userSearchQuery()" 
+                (ngModelChange)="userSearchQuery.set($event)"
+                [placeholder]="langService.t('users.search')"
+                class="w-full bg-slate-100 border border-slate-200 focus:border-sky-500 text-sm py-2 pl-9 pr-4 rounded-xl text-slate-800 outline-none transition-all placeholder:text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400 absolute left-3 top-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+              </svg>
+            </div>
+
+            <!-- Grant Access Button -->
+            <button 
+              (click)="openUserModal()"
+              class="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow shadow-sky-500/25 transition-all cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.765Z" />
+              </svg>
+              {{ langService.t('users.add_btn') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-500 text-xs font-semibold uppercase bg-slate-50">
+                <th class="px-6 py-4">{{ langService.t('users.col_user') }}</th>
+                <th class="px-6 py-4">{{ langService.t('users.col_email') }}</th>
+                <th class="px-6 py-4">{{ langService.t('users.col_role') }}</th>
+                <th class="px-6 py-4">{{ langService.t('users.col_access') }}</th>
+                <th class="px-6 py-4 text-right">{{ langService.t('label.actions') }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+              <tr *ngFor="let u of filteredUsers()" class="hover:bg-slate-50 transition-colors">
+                <!-- User Profile -->
+                <td class="px-6 py-4 flex items-center gap-3">
+                  <img 
+                    [src]="u.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'" 
+                    alt="User avatar" 
+                    class="w-9 h-9 rounded-full border border-slate-200 object-cover">
+                  <div>
+                    <p class="font-bold text-slate-800 text-sm leading-tight">{{ u.displayName || u.email.split('@')[0] }}</p>
+                    <span *ngIf="u.lastLoginAt" class="text-[11px] text-slate-400">
+                      {{ langService.isTelugu() ? 'చివరి లాగిన్: ' : 'Active: ' }}{{ u.lastLoginAt | date:'mediumDate' }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Email Address -->
+                <td class="px-6 py-4 font-mono text-xs text-slate-700">
+                  {{ u.email }}
+                </td>
+
+                <!-- Role Selector -->
+                <td class="px-6 py-4">
+                  <select 
+                    [ngModel]="u.role" 
+                    (ngModelChange)="changeUserRole(u, $event)"
+                    class="text-xs font-semibold px-2.5 py-1 rounded-lg border outline-none transition-all cursor-pointer"
+                    [ngClass]="{
+                      'bg-sky-50 text-sky-700 border-sky-200': u.role === 'admin',
+                      'bg-purple-50 text-purple-700 border-purple-200': u.role === 'staff',
+                      'bg-slate-100 text-slate-700 border-slate-200': u.role === 'student'
+                    }">
+                    <option value="admin">{{ langService.t('users.role_admin') }}</option>
+                    <option value="staff">{{ langService.t('users.role_staff') }}</option>
+                    <option value="student">{{ langService.t('users.role_student') }}</option>
+                  </select>
+                </td>
+
+                <!-- Database Access Status Badge -->
+                <td class="px-6 py-4">
+                  <span 
+                    [ngClass]="u.hasDatabaseAccess ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'"
+                    class="px-2.5 py-1 rounded-full text-xs font-semibold border inline-flex items-center gap-1.5">
+                    <span [ngClass]="u.hasDatabaseAccess ? 'bg-emerald-500' : 'bg-rose-500'" class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
+                    {{ u.hasDatabaseAccess ? langService.t('users.access_granted') : langService.t('users.access_denied') }}
+                  </span>
+                </td>
+
+                <!-- Action Buttons -->
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <!-- 1-Click Database Access Toggle Button -->
+                    <button 
+                      (click)="toggleUserAccess(u)"
+                      [ngClass]="u.hasDatabaseAccess 
+                        ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-200' 
+                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'"
+                      class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 flex items-center gap-1 cursor-pointer">
+                      <span *ngIf="!u.hasDatabaseAccess">🔑 {{ langService.t('users.btn_grant') }}</span>
+                      <span *ngIf="u.hasDatabaseAccess">🔒 {{ langService.t('users.btn_revoke') }}</span>
+                    </button>
+
+                    <!-- Delete User Button -->
+                    <button 
+                      (click)="deleteUser(u, $event)"
+                      class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-all cursor-pointer"
+                      [title]="langService.t('label.delete')">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- No results fallback -->
+              <tr *ngIf="filteredUsers().length === 0">
+                <td colspan="5" class="text-center py-12 text-slate-400">
+                  {{ langService.t('users.empty') }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- ADMIN CONSOLE MANAGEMENT TAB -->
       <div *ngIf="activeTab() === 'admin' && authService.isAdmin()" class="space-y-6">
         <!-- Database Utilities Header -->
@@ -595,6 +772,14 @@
             <span *ngIf="seedingStatus()" class="text-xs font-semibold px-3 py-1.5 bg-sky-50 text-sky-600 border border-sky-200 rounded-xl animate-pulse">
               {{ seedingStatus() }}
             </span>
+            <button 
+              (click)="switchTab('users')"
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">
+              <svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              {{ langService.t('users.title') }} ({{ dbAccessUsersCount() }})
+            </button>
             <button 
               (click)="seedData()"
               class="flex items-center gap-1.5 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow shadow-sky-500/25 transition-all">
@@ -1097,6 +1282,78 @@
         <div class="pt-4 flex justify-end gap-3">
           <button type="button" (click)="showFloorModal.set(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.cancel') }}</button>
           <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-all">{{ langService.t('btn.save_floor') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- USER / DATABASE ACCESS MODAL -->
+  <div *ngIf="showUserModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">{{ langService.t('users.modal_title') }}</h3>
+          <p class="text-xs text-slate-500">{{ langService.t('users.modal_desc') }}</p>
+        </div>
+        <button (click)="showUserModal.set(false)" class="text-slate-400 hover:text-slate-800 font-bold p-1">✕</button>
+      </div>
+      <form (submit)="saveUserAccess(); $event.preventDefault();" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('users.label_email') }} *</label>
+          <input 
+            type="email" 
+            [(ngModel)]="userForm().email" 
+            name="email" 
+            required 
+            placeholder="user@example.com" 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('users.label_name') }}</label>
+          <input 
+            type="text" 
+            [(ngModel)]="userForm().displayName" 
+            name="displayName" 
+            placeholder="e.g. Dr. Ramesh Kumar" 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none placeholder:text-slate-400">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">{{ langService.t('users.label_role') }}</label>
+          <select 
+            [(ngModel)]="userForm().role" 
+            name="role" 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 rounded-xl px-4 py-2.5 text-slate-800 text-sm outline-none">
+            <option value="student">{{ langService.t('users.role_student') }}</option>
+            <option value="staff">{{ langService.t('users.role_staff') }}</option>
+            <option value="admin">{{ langService.t('users.role_admin') }}</option>
+          </select>
+        </div>
+        <div class="p-4 bg-sky-50/70 border border-sky-100 rounded-xl flex items-center justify-between">
+          <div class="pr-3">
+            <span class="block text-xs font-bold text-slate-800">{{ langService.t('users.label_db_access') }}</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">{{ langService.t('users.db_access_hint') }}</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer shrink-0">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="userForm().hasDatabaseAccess" 
+              name="hasDatabaseAccess" 
+              class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+          </label>
+        </div>
+        <div class="pt-4 flex justify-end gap-3">
+          <button 
+            type="button" 
+            (click)="showUserModal.set(false)" 
+            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">
+            {{ langService.t('btn.cancel') }}
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl shadow shadow-sky-500/25 transition-all">
+            {{ langService.t('users.save_btn') }}
+          </button>
         </div>
       </form>
     </div>
